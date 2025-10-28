@@ -1,26 +1,545 @@
 @import "tailwindcss";
 
+/**
+ * ============================================================================
+ * KRAWL DESIGN SYSTEM - GLOBAL STYLES
+ * ============================================================================
+ * 
+ * This file defines the design tokens and global styles for the Krawl app.
+ * Organized into layers for better maintainability and scalability.
+ * 
+ * Structure:
+ * 1. Design Tokens (CSS Custom Properties)
+ * 2. Tailwind Theme Extensions
+ * 3. Base Styles
+ * 4. Component Utilities
+ * 5. Typography System
+ */
+
+/* ============================================================================
+   1. DESIGN TOKENS - CSS CUSTOM PROPERTIES
+   ============================================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* -------------------------------------------------------------------------
+     COLOR PALETTE - Lokal Verde Brand Colors
+     ------------------------------------------------------------------------- */
+  
+  /* Primary - Verde (Green) */
+  --color-verde-50: #e8f5e9;
+  --color-verde-100: #c8e6c9;
+  --color-verde-200: #a5d6a7;
+  --color-verde-300: #81c784;
+  --color-verde-400: #66bb6a;
+  --color-verde-500: #2D7A3E;  /* Brand primary */
+  --color-verde-600: #2e7d32;
+  --color-verde-700: #1b5e20;
+  --color-verde-800: #145018;
+  --color-verde-900: #0d3810;
+  
+  /* Secondary - Sand (Beige/Tan) */
+  --color-sand-50: #fafaf8;
+  --color-sand-100: #f5f5dc;
+  --color-sand-200: #ede9d5;
+  --color-sand-300: #e0d9c0;
+  --color-sand-400: #d1c8ab;
+  --color-sand-500: #c2b896;
+  --color-sand-600: #a89968;
+  --color-sand-700: #8d7a4a;
+  --color-sand-800: #6b5d38;
+  --color-sand-900: #4a4028;
+  
+  /* Accent - Mango (Yellow/Orange) */
+  --color-mango-50: #fff8e1;
+  --color-mango-100: #ffecb3;
+  --color-mango-200: #ffe082;
+  --color-mango-300: #ffd54f;
+  --color-mango-400: #ffca28;
+  --color-mango-500: #ffc107;
+  --color-mango-600: #ffb300;
+  --color-mango-700: #ffa000;
+  --color-mango-800: #ff8f00;
+  --color-mango-900: #ff6f00;
+  
+  /* Tertiary - Clay (Terracotta) */
+  --color-clay-50: #fef3f2;
+  --color-clay-100: #fde8e5;
+  --color-clay-200: #fbd5cf;
+  --color-clay-300: #f7b5a8;
+  --color-clay-400: #f28e78;
+  --color-clay-500: #e6694d;
+  --color-clay-600: #d15138;
+  --color-clay-700: #af3f2e;
+  --color-clay-800: #8d4229;
+  --color-clay-900: #6b3220;
+  
+  /* Tertiary - Teal */
+  --color-teal-50: #e0f2f1;
+  --color-teal-100: #b2dfdb;
+  --color-teal-200: #80cbc4;
+  --color-teal-300: #4db6ac;
+  --color-teal-400: #26a69a;
+  --color-teal-500: #009688;
+  --color-teal-600: #00897b;
+  --color-teal-700: #00796b;
+  --color-teal-800: #00695c;
+  --color-teal-900: #004d40;
+  
+  /* -------------------------------------------------------------------------
+     NEUTRAL COLORS - Grays for text, borders, backgrounds
+     ------------------------------------------------------------------------- */
+  
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  
+  /* -------------------------------------------------------------------------
+     SEMANTIC COLORS - Status and feedback
+     ------------------------------------------------------------------------- */
+  
+  --color-error: #d32f2f;
+  --color-error-light: #ef5350;
+  --color-error-dark: #c62828;
+  
+  --color-warning: #ffa000;
+  --color-warning-light: #ffb300;
+  --color-warning-dark: #ff8f00;
+  
+  --color-success: #388e3c;
+  --color-success-light: #4caf50;
+  --color-success-dark: #2e7d32;
+  
+  --color-info: #1976d2;
+  --color-info-light: #2196f3;
+  --color-info-dark: #1565c0;
+  
+  /* -------------------------------------------------------------------------
+     SURFACE COLORS - Backgrounds
+     ------------------------------------------------------------------------- */
+  
+  --color-background: #fafafa;
+  --color-background-secondary: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f5f5f5;
+  
+  /* -------------------------------------------------------------------------
+     TEXT COLORS
+     ------------------------------------------------------------------------- */
+  
+  --color-text-primary: #424242;
+  --color-text-secondary: #757575;
+  --color-text-tertiary: #9e9e9e;
+  --color-text-disabled: #bdbdbd;
+  
+  /* -------------------------------------------------------------------------
+     BORDER & DIVIDER COLORS
+     ------------------------------------------------------------------------- */
+  
+  --color-border: #e0e0e0;
+  --color-border-light: #eeeeee;
+  --color-border-dark: #bdbdbd;
+  --color-divider: #e0e0e0;
+  
+  /* -------------------------------------------------------------------------
+     TYPOGRAPHY SCALE
+     ------------------------------------------------------------------------- */
+  
+  --font-family-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-family-display: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+  --font-size-4xl: 2.25rem;     /* 36px */
+  --font-size-5xl: 3rem;        /* 48px */
+  
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* -------------------------------------------------------------------------
+     SPACING SCALE (8px base)
+     ------------------------------------------------------------------------- */
+  
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+  --spacing-20: 5rem;     /* 80px */
+  --spacing-24: 6rem;     /* 96px */
+  
+  /* -------------------------------------------------------------------------
+     BORDER RADIUS
+     ------------------------------------------------------------------------- */
+  
+  --radius-none: 0;
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;
+  
+  /* -------------------------------------------------------------------------
+     SHADOWS
+     ------------------------------------------------------------------------- */
+  
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* -------------------------------------------------------------------------
+     Z-INDEX SCALE
+     ------------------------------------------------------------------------- */
+  
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+  
+  /* -------------------------------------------------------------------------
+     TRANSITIONS
+     ------------------------------------------------------------------------- */
+  
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ============================================================================
+   2. TAILWIND THEME EXTENSIONS
+   ============================================================================ */
+
+@theme {
+  /* Map design tokens to Tailwind utilities */
+  
+  /* Colors */
+  --color-verde-*: initial;
+  --color-verde-50: var(--color-verde-50);
+  --color-verde-100: var(--color-verde-100);
+  --color-verde-200: var(--color-verde-200);
+  --color-verde-300: var(--color-verde-300);
+  --color-verde-400: var(--color-verde-400);
+  --color-verde-500: var(--color-verde-500);
+  --color-verde-600: var(--color-verde-600);
+  --color-verde-700: var(--color-verde-700);
+  --color-verde-800: var(--color-verde-800);
+  --color-verde-900: var(--color-verde-900);
+  
+  --color-sand-*: initial;
+  --color-sand-50: var(--color-sand-50);
+  --color-sand-100: var(--color-sand-100);
+  --color-sand-200: var(--color-sand-200);
+  --color-sand-300: var(--color-sand-300);
+  --color-sand-400: var(--color-sand-400);
+  --color-sand-500: var(--color-sand-500);
+  --color-sand-600: var(--color-sand-600);
+  --color-sand-700: var(--color-sand-700);
+  --color-sand-800: var(--color-sand-800);
+  --color-sand-900: var(--color-sand-900);
+  
+  --color-mango-*: initial;
+  --color-mango-50: var(--color-mango-50);
+  --color-mango-100: var(--color-mango-100);
+  --color-mango-200: var(--color-mango-200);
+  --color-mango-300: var(--color-mango-300);
+  --color-mango-400: var(--color-mango-400);
+  --color-mango-500: var(--color-mango-500);
+  --color-mango-600: var(--color-mango-600);
+  --color-mango-700: var(--color-mango-700);
+  --color-mango-800: var(--color-mango-800);
+  --color-mango-900: var(--color-mango-900);
+  
+  --color-clay-*: initial;
+  --color-clay-50: var(--color-clay-50);
+  --color-clay-100: var(--color-clay-100);
+  --color-clay-200: var(--color-clay-200);
+  --color-clay-300: var(--color-clay-300);
+  --color-clay-400: var(--color-clay-400);
+  --color-clay-500: var(--color-clay-500);
+  --color-clay-600: var(--color-clay-600);
+  --color-clay-700: var(--color-clay-700);
+  --color-clay-800: var(--color-clay-800);
+  --color-clay-900: var(--color-clay-900);
+  
+  --color-teal-*: initial;
+  --color-teal-50: var(--color-teal-50);
+  --color-teal-100: var(--color-teal-100);
+  --color-teal-200: var(--color-teal-200);
+  --color-teal-300: var(--color-teal-300);
+  --color-teal-400: var(--color-teal-400);
+  --color-teal-500: var(--color-teal-500);
+  --color-teal-600: var(--color-teal-600);
+  --color-teal-700: var(--color-teal-700);
+  --color-teal-800: var(--color-teal-800);
+  --color-teal-900: var(--color-teal-900);
+  
+  --color-neutral-*: initial;
+  --color-neutral-50: var(--color-neutral-50);
+  --color-neutral-100: var(--color-neutral-100);
+  --color-neutral-200: var(--color-neutral-200);
+  --color-neutral-300: var(--color-neutral-300);
+  --color-neutral-400: var(--color-neutral-400);
+  --color-neutral-500: var(--color-neutral-500);
+  --color-neutral-600: var(--color-neutral-600);
+  --color-neutral-700: var(--color-neutral-700);
+  --color-neutral-800: var(--color-neutral-800);
+  --color-neutral-900: var(--color-neutral-900);
+  
+  /* Semantic colors */
+  --color-error: var(--color-error);
+  --color-warning: var(--color-warning);
+  --color-success: var(--color-success);
+  --color-info: var(--color-info);
+  
+  /* Background */
+  --color-background: var(--color-background);
+  
+  /* Font family */
+  --font-family-sans: var(--font-family-sans);
+  --font-family-display: var(--font-family-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================================================
+   3. BASE STYLES
+   ============================================================================ */
+
+/* Ensure proper box-sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
+/* Body defaults */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Remove default margins */
+h1, h2, h3, h4, h5, h6, p, ul, ol, figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+/* Remove list styles */
+ul, ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* Image defaults */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form element defaults */
+input, button, textarea, select {
+  font: inherit;
+}
+
+/* ============================================================================
+   4. COMPONENT UTILITIES
+   ============================================================================ */
+
+/* Pattern backgrounds */
+.pattern-woven-subtle {
+  background-color: var(--color-sand-100);
+  background-image: 
+    linear-gradient(45deg, var(--color-sand-200) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-sand-200) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-sand-200) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-sand-200) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.pattern-dots {
+  background-color: var(--color-background);
+  background-image: radial-gradient(var(--color-neutral-300) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Focus visible styles */
+.focus-ring {
+  outline: 2px solid var(--color-verde-500);
+  outline-offset: 2px;
+}
+
+/* Container utilities */
+.container-narrow {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-4);
+  padding-right: var(--spacing-4);
+}
+
+.container-medium {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-4);
+  padding-right: var(--spacing-4);
+}
+
+.container-wide {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-4);
+  padding-right: var(--spacing-4);
+}
+
+/* ============================================================================
+   5. TYPOGRAPHY SYSTEM
+   ============================================================================ */
+
+/* Heading styles */
+.heading-1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+  color: var(--color-text-primary);
+}
+
+.heading-2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+  color: var(--color-text-primary);
+}
+
+.heading-3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+  color: var(--color-text-primary);
+}
+
+.heading-4 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+.heading-5 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+.heading-6 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+/* Body text styles */
+.body-lg {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+}
+
+.body-base {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+.body-sm {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-secondary);
+}
+
+.body-xs {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-secondary);
+}
+
+/* Caption and label styles */
+.text-caption {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-tertiary);
+}
+
+.text-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+}
+
+/* Display text (for hero sections) */
+.text-display {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+  color: var(--color-text-primary);
+}
+
+/* Responsive typography adjustments */
+@media (max-width: 640px) {
+  .heading-1 {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .heading-2 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .text-display {
+    font-size: var(--font-size-4xl);
+  }
 }

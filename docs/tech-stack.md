@@ -25,13 +25,21 @@
 
 ### **Next.js** (React Framework)
 
+**Version:** 16.0.0  
+**Language:** TypeScript
+
 **Rationale:**
 - Enables rapid development of a performant, server-rendered/statically-generated PWA
 - Supports features crucial for SEO and PWA functionality (like service workers for offline support)
 - Aligns with potential team familiarity with React/JavaScript
 - Built-in optimization for production deployments
+- App Router provides modern routing and layout patterns
 
-**Language:** JavaScript/TypeScript
+**Key Dependencies:**
+- `next`: 16.0.0
+- `react`: 19.2.0
+- `react-dom`: 19.2.0
+- `typescript`: ^5
 
 ---
 
@@ -71,6 +79,46 @@
 - Easy implementation of the "Lokal Verde" design system directly within markup
 - Minimal CSS bundle size with tree-shaking
 - Excellent developer experience with modern tooling
+- Integrated with Next.js via @tailwindcss/postcss
+
+**Key Dependencies:**
+- `tailwindcss`: ^4
+- `@tailwindcss/postcss`: ^4
+
+**Implementation:**
+- Complete design system in `globals.css` (545 lines)
+- 60+ color tokens with CSS custom properties
+- Typography utilities and pre-built classes
+- Component utilities (patterns, containers, focus rings)
+- Tailwind theme integration for seamless use
+
+---
+
+## 🎨 Icon Library
+
+### **React Icons** (Lucide Icons)
+
+**Version:** 5.5.0  
+**Icon Set:** Lucide React (`react-icons/lu`)
+
+**Rationale:**
+- Comprehensive, well-designed icon set with consistent style
+- Tree-shakeable - only imports icons actually used
+- Native React components with TypeScript support
+- Line-based icons matching our design system aesthetic
+- Excellent accessibility and customization options
+
+**Usage:**
+```tsx
+import { LuMapPin, LuSearch, LuPlus } from 'react-icons/lu';
+
+<LuMapPin size={20} className="text-verde-700" />
+```
+
+**Implemented Icons:**
+- Navigation: LuMap, LuMapPin, LuSearch, LuRoute, LuPlus, LuUser
+- UI Controls: LuChevronLeft, LuChevronRight, LuSettings
+- And more as needed
 
 ---
 
@@ -136,18 +184,54 @@ This technology stack balances several key requirements for the MVP phase:
 
 ---
 
+## 📱 PWA Features
+
+### Service Worker
+**Status:** ✅ Implemented
+
+**Files:**
+- `frontend/public/sw.js` - Service worker script
+- `frontend/app/register-sw.tsx` - Registration component
+- `frontend/public/manifest.json` - Web app manifest
+
+**Capabilities:**
+- Offline caching strategy
+- Asset precaching for faster loads
+- Network-first with cache fallback
+- Background sync (future enhancement)
+
+**Rationale:**
+- Enables offline functionality critical for local exploration
+- Provides app-like experience on mobile devices
+- Improves performance through intelligent caching
+- Installable on home screen
+
+---
+
 ## 🔧 Additional Considerations
 
 ### Development Tools
-- **Version Control:** Git + GitHub/GitLab
+- **Version Control:** Git + GitHub ✅ Active
 - **API Testing:** Postman or Insomnia
-- **Package Management:** npm/pnpm (Frontend), Maven/Gradle (Backend)
+- **Package Management:** npm (Frontend) ✅ Active, Maven (Backend) ✅ Active
+- **Code Editor:** VS Code, IntelliJ IDEA
+- **Linting:** ESLint (Frontend) ✅ Active
+
+### Implemented Features
+- ✅ **Design System:** Complete CSS custom properties + Tailwind integration
+- ✅ **Component Library:** Navigation components (Sidebar, BottomNav, AppLayout)
+- ✅ **PWA Foundation:** Service worker, manifest, offline support
+- ✅ **TypeScript:** Full type safety across frontend
+- ✅ **Icon System:** Lucide React icons library
+- ✅ **Responsive Design:** Mobile-first approach with Tailwind
 
 ### Future Enhancements
 - **Authentication:** Consider Auth0, Firebase Auth, or Spring Security
 - **Analytics:** Google Analytics 4 or Plausible
 - **Monitoring:** Sentry for error tracking
 - **CI/CD:** GitHub Actions or GitLab CI
+- **Leaflet.js:** Map integration (prepared infrastructure)
+- **API Integration:** Connect frontend to Spring Boot backend
 
 ---
 
@@ -155,6 +239,7 @@ This technology stack balances several key requirements for the MVP phase:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.0 | 2025-10-28 | Updated with implemented features: Next.js 16.0.0, React 19.2.0, TypeScript, Tailwind CSS v4 with complete design system, React Icons (Lucide) v5.5.0, PWA features (service worker, manifest), component library status | Development Team |
 | 1.0.0 | 2025-10-28 | Initial tech stack document | Development Team |
 
 ---
