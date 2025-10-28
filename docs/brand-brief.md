@@ -2,7 +2,7 @@
 
 > **Purpose:** Defines Krawl's brand identity, voice, positioning, and values to guide all marketing, design, and communication decisions.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Last Updated:** 2025-10-28  
 **Status:** Active  
 **Owner:** Marketing & Design Team
@@ -47,31 +47,18 @@
 ## 2. Target Audience
 
 ### 🎯 Primary Audience
-```
-Young Filipino Adults (18-35)
-├─ 📍 Location: Urban/semi-urban areas
-│   └─ Initially: Cebu/Metro Manila
-│
-├─ 💡 Characteristics
-│   ├─ Digitally native
-│   ├─ Socially connected
-│   ├─ Adventurous spirit
-│   └─ Seeking authenticity
-│
-└─ 🔍 Looking For
-    ├─ Authentic local food
-    ├─ Hidden cultural spots
-    ├─ Unique hangouts beyond mainstream
-    ├─ Community recommendations
-    └─ Genuine experiences
-```
+**Young Filipino Adults (18-35)**
+- Urban/semi-urban areas (Cebu/Metro Manila initially)
+- Digitally native, socially connected, adventurous
+- Seeking authentic local food, hidden cultural spots, unique hangouts
+- Value community recommendations and genuine experiences
 
 ### 🧳 Secondary Audience
-
 **Domestic & International Travelers**
 - Seeking genuine, off-the-beaten-path cultural immersion
 - Desire reliable guidance directly from locals
-- Want authentic Filipino experiences
+
+For detailed persona profiles including Bea Santos (The Lokal Explorer), Mike Chen (The Curious Traveler), and Aling Nena Reyes (The Lokal Biz Owner), see [user-persona-profile.md](user-persona-profile.md).
 
 ---
 

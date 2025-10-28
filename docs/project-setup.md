@@ -2,7 +2,7 @@
 
 > **Purpose:** This guide outlines the repository structure, naming conventions, environment setup steps, and configuration needed to begin development on the Krawl PWA.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Last Updated:** 2025-10-28  
 **Status:** Active  
 **Owner:** Development Team
@@ -111,56 +111,13 @@ krawl/                             # ✅ ACTUAL STRUCTURE
 
 ## 📝 Naming Conventions
 
-Consistency in naming is crucial for maintainability.
+For complete naming conventions across frontend, backend, database, and Git, see the [Contributing Guidelines](../CONTRIBUTING.md#-naming-conventions).
 
-### General Rules
-
-| Convention | Usage | Example |
-|------------|-------|---------|
-| `camelCase` | Variables, functions, file names (JS/TS/Java/Kotlin) | `userName`, `fetchGemData()` |
-| `PascalCase` | React components, classes, TypeScript types/interfaces | `GemCard`, `UserEntity`, `GemType` |
-| `UPPER_SNAKE_CASE` | Constants | `MAX_RETRIES`, `API_BASE_URL` |
-| `kebab-case` | CSS classes, URLs, config keys | `gem-card`, `/api/gems`, `api-timeout` |
-
-### Frontend (Next.js/React)
-
-| Item | Convention | Example |
-|------|------------|---------|
-| **Components** | PascalCase | `GemCard.tsx`, `KrawlDetailMap.tsx` |
-| **Pages/Routes** | kebab-case folders, `page.tsx` | `gems/[id]/page.tsx` |
-| **Hooks** | `useCamelCase` | `useMapState.ts`, `useAuth.ts` |
-| **Types** | PascalCase | `GemType.ts`, `KrawlStepProps` |
-
-### Backend (Spring Boot - Java/Kotlin)
-
-| Item | Convention | Example |
-|------|------------|---------|
-| **Classes** | PascalCase | `GemService`, `KrawlController`, `UserEntity` |
-| **Methods/Variables** | camelCase | `findNearbyGems()`, `currentUser` |
-| **Packages** | lowercase | `com.krawl.service`, `com.krawl.controller` |
-| **DTOs** | PascalCase + Suffix | `CreateGemRequest`, `GemResponse` |
-| **Entities** | PascalCase + Entity | `UserEntity`, `GemEntity` |
-| **Repositories** | PascalCase + Repository | `GemRepository`, `UserRepository` |
-| **REST Endpoints** | kebab-case, plural nouns | `/api/gems`, `/api/krawls/{krawlId}/items` |
-
-### Database (PostgreSQL)
-
-| Item | Convention | Example |
-|------|------------|---------|
-| **Tables** | snake_case, plural | `users`, `gem_ratings` |
-| **Columns** | snake_case | `user_id`, `created_at`, `krawl_title` |
-| **Primary Keys** | `[table_singular]_id` | `user_id`, `gem_id` |
-| **Foreign Keys** | `[referenced_table_singular]_id` | `creator_id` (references `users`) |
-| **Indexes** | `idx_[table]_[columns]` | `idx_gems_location` |
-
-### Git Branches
-
-| Branch Type | Convention | Example |
-|-------------|------------|---------|
-| **Main** | `main` or `master` | `main` |
-| **Feature** | `feature/[ticket-id]-[description]` | `feature/KRW-15-add-gem-pinning` |
-| **Bugfix** | `fix/[ticket-id]-[description]` | `fix/KRW-21-map-zoom-issue` |
-| **Release** | `release/v[version]` | `release/v0.1.0` |
+**Quick reference:**
+- Components/Classes: `PascalCase` (e.g., `GemCard.tsx`, `UserEntity`)
+- Variables/Methods: `camelCase` (e.g., `userName`, `findGems()`)
+- Database: `snake_case` (e.g., `user_id`, `gems`)
+- Branches: `feature/[id]-[description]` (e.g., `feature/KRW-15-add-gem-pinning`)
 
 ---
 

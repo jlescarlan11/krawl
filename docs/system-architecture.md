@@ -2,7 +2,7 @@
 
 > **Purpose:** Provides a comprehensive view of the Krawl application's system architecture, component interactions, data flows, and technical stack for the MVP phase.
 
-**Version:** 1.1.0  
+**Version:** 1.2.0  
 **Last Updated:** 2025-10-28  
 **Status:** Active  
 **Owner:** Engineering Team  
@@ -395,39 +395,13 @@ Geospatial Queries:
 
 ## 🚀 Hosting & Deployment
 
-### MVP Architecture (Recommended Stack)
+**Infrastructure Overview:**
+- **Frontend:** Vercel (PWA with global CDN)
+- **Backend:** Render (containerized Spring Boot API)
+- **Database:** Supabase/Render (PostgreSQL with PostGIS)
+- **Images:** Cloudinary (cloud storage with CDN)
 
-```
-Frontend (PWA)         →  Vercel (Primary) / Netlify
-Backend (API)          →  Render (Primary) / Heroku / AWS / Google Cloud
-Database               →  Render PostgreSQL / Supabase (Free tiers available)
-Image Storage          →  Cloudinary (25GB free tier)
-SSL Certificates       →  Let's Encrypt (Automatic via hosting platforms)
-Version Control        →  GitHub (CI/CD integration)
-```
-
-### Cost Structure
-
-**MVP Phase (Free Tier)**:
-- Domain: ~₱500-800/year (~₱42-67/mo)
-- Frontend (Vercel Free): $0
-- Backend (Render Free): $0
-- Database (Supabase/Render Free): $0
-- Image Storage (Cloudinary Free): $0
-- **Total: ~₱42-67/month**
-
-**Post-MVP Scaling (Paid Tier)**:
-- Vercel Pro: $20/mo
-- Render Starter: $7-15/mo
-- Database: $7-25/mo
-- Cloudinary Plus: $99/mo (if needed)
-
-### Scalability Considerations
-
-- **Frontend**: Static hosting with global CDN, automatic edge caching
-- **Backend**: Zero-downtime deployments, horizontal scaling ready
-- **Database**: Vertical scaling initially, read replicas for future growth
-- **Images**: Cloudinary CDN with automatic optimization and transformations
+For complete deployment strategy, CI/CD workflow, database migration, cost breakdown, and monitoring setup, see [hosting-deployment-plan.md](hosting-deployment-plan.md).
 
 ---
 

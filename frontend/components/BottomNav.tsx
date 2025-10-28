@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LuMap, LuSearch, LuPlus, LuRoute, LuUser } from 'react-icons/lu';
+import { LuMap, LuSearch, LuRoute, LuUser } from 'react-icons/lu';
 
 const navItems = [
   { href: '/', label: 'Map', icon: LuMap },
   { href: '/explore', label: 'Explore', icon: LuSearch },
-  { href: '/add', label: 'Add', icon: LuPlus },
   { href: '/krawls', label: 'Krawls', icon: LuRoute },
   { href: '/profile', label: 'Profile', icon: LuUser },
 ];

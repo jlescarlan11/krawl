@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -26,12 +28,20 @@ export async function apiFetch<T>(
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      const errorMessage = `API Error: ${response.status} ${response.statusText}`;
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
 
     return await response.json();
   } catch (error) {
     console.error('API Fetch Error:', error);
+    if (error instanceof Error) {
+      // Only show toast if we haven't already shown one
+      if (!error.message.includes('API Error:')) {
+        toast.error('Network error. Please check your connection.');
+      }
+    }
     throw error;
   }
 }
@@ -48,4 +58,3 @@ export const api = {
   
   // Add more endpoints as needed
 };
-

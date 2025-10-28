@@ -236,7 +236,8 @@ gitGraph
 
 ### 🎨 Frontend CI/CD Pipeline
 
-**Platform**: Vercel/Netlify Git Integration
+**Platform**: Vercel/Netlify G
+egration
 
 #### Workflow
 
