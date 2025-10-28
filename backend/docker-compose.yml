@@ -1,0 +1,28 @@
+services:
+     postgis-db:
+       image: postgis/postgis:15-3.3
+       container_name: krawl-db
+       environment:
+         POSTGRES_DB: krawl
+         POSTGRES_USER: ${DB_USER}
+         POSTGRES_PASSWORD: ${DB_PASSWORD}
+         POSTGRES_INITDB_ARGS: "--encoding=UTF8 --auth-host=scram-sha-256"
+       ports:
+         - "5434:5432"
+       volumes:
+         - postgis-data:/var/lib/postgresql/data
+       networks:
+         - geospatial-network
+       restart: unless-stopped
+       healthcheck:
+         test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d krawl"]
+         interval: 10s
+         timeout: 5s
+         retries: 5
+
+volumes:
+  postgis-data:
+    driver: local
+networks:
+  geospatial-network:
+    driver: bridge

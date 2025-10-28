@@ -68,35 +68,35 @@ This document outlines the visual and interactive design progression for key scr
 ### 1.3 High-Fidelity Prototype (Full Color & Interaction)
 
 #### Header
-- `bg-forest-green`
+- `bg-verde-700` (Forest Green #1b5e20)
 - White **Krawl wordmark**
 - White **Login/Sign Up** text OR **User Avatar** image
 
 #### Search/Filter
-- `bg-white`, `text-charcoal-gray`
-- Icons use `charcoal-gray`
+- `bg-white`, `text-neutral-700` (Charcoal Gray #404040)
+- Icons use `neutral-700`
 
 #### Map Area
 - **Full-color map tiles**
 
 | Element | Styling | Interaction |
 |---------|---------|-------------|
-| **Clusters** | `mango-yellow` background with `charcoal-gray` number, size varies with count | Tapping cluster smoothly animates zoom towards the cluster bounds |
-| **Pending Gems** | Small `neutral-gray-light` dots | — |
-| **Verified Gems** | `forest-green` map pins (custom icon) | Tapping pin smoothly opens Gem Detail Drawer from bottom |
+| **Clusters** | `bg-mango-400` (#ffca28) with `text-neutral-700` number, size varies with count | Tapping cluster smoothly animates zoom towards the cluster bounds |
+| **Pending Gems** | Small `bg-neutral-300` (#d4d4d4) dots | — |
+| **Verified Gems** | `bg-verde-700` (#1b5e20) map pins (custom icon) | Tapping pin smoothly opens Gem Detail Drawer from bottom |
 
 #### Controls
-- **Re-center button**: `bg-white` with `forest-green` icon
-- **FAB**: `mango-yellow` with `charcoal-gray` icon, subtle shadow (`shadow-lg`)
+- **Re-center button**: `bg-white` with `text-verde-700` icon
+- **FAB**: `bg-mango-400` (#ffca28) with `text-neutral-700` icon, subtle shadow (`shadow-lg`)
 - **Interaction**: Tapping FAB animates open the Add Gem modal
 
 #### Bottom Nav
-- `bg-white`, `border-t`
-- Icons are `neutral-gray-medium`
-- Active tab icon and label are `forest-green`
+- `bg-white`, `border-t border-neutral-200`
+- Icons are `text-neutral-500` (#737373)
+- Active tab icon and label are `text-verde-700` (#1b5e20)
 - **Interaction**: Tapping tabs smoothly transitions content (if applicable) or navigates
 
-**Focus**: Applying "Lokal Verde" palette, specific icon choices, interactive states (hover effects on buttons using darker shades), animations (zoom, modal transitions).
+**Focus**: Applying "Lokal Verde" palette from `globals.css`, specific icon choices (Lucide React), interactive states (hover effects using CSS custom properties), animations (zoom, modal transitions using `--transition-*` variables).
 
 ---
 
@@ -159,38 +159,38 @@ Buttons have clear touch targets (`p-2`)
 ### 2.3 High-Fidelity Prototype (Full Color & Interaction)
 
 #### Layout
-- Card is `bg-off-white`
+- Card is `bg-neutral-50` (#fafafa)
 - Dim overlay `bg-black/50`
 
 #### Header
-- Name `text-charcoal-gray`
-- Close icon `neutral-gray-medium`
+- Name `text-neutral-700` (#404040)
+- Close icon `text-neutral-500` (#737373)
 
 #### Sub-Header
-- **Stars**: `mango-yellow` fill
-- **Vouch count**: `text-forest-green`
+- **Stars**: `text-mango-400` (#ffca28) fill
+- **Vouch count**: `text-verde-700` (#1b5e20)
 
 **Status Badges**:
 
 | Status | Styling |
 |--------|---------|
-| Verified | `bg-forest-green text-white` |
-| Pending | `bg-neutral-gray-light text-charcoal-gray` |
-| Stale | `bg-mango-yellow text-charcoal-gray` |
-| Closed | `bg-red-600 text-white` |
+| Verified | `bg-verde-700 text-white` (#1b5e20) |
+| Pending | `bg-neutral-200 text-neutral-700` (#e5e5e5 / #404040) |
+| Stale | `bg-mango-400 text-neutral-800` (#ffca28 / #262626) |
+| Closed | `bg-error text-white` (#d32f2f) |
 
 #### Image
 - Displays actual user photos in a **swipeable carousel**
 
 #### Content Sections
-- **Headings**: `text-forest-green`
-- **Body text**: `text-charcoal-gray`
-- **Tags**: `bg-sandy-beige text-charcoal-gray`
-- **Founder** `@username` can be a link (`text-forest-green`)
-- **Dividers**: `border-neutral-gray-light`
+- **Headings**: `text-verde-700` (#1b5e20)
+- **Body text**: `text-neutral-700` (#404040)
+- **Tags**: `bg-sand-100 text-neutral-800` (#f5f5dc / #262626)
+- **Founder** `@username` can be a link (`text-verde-700`)
+- **Dividers**: `border-neutral-200` (#e5e5e5)
 
 #### Actions
-- Icons use `forest-green`
+- Icons use `text-verde-700` (#1b5e20)
 - **Interactions**:
   - **Vouch button**: Provides visual feedback (e.g., fills icon, briefly shows "+1"), then might disable if user already vouched
   - **Rate**: Opens rating modal
@@ -198,7 +198,7 @@ Buttons have clear touch targets (`p-2`)
   - **Report**: Opens report reason modal
 
 #### Animation
-Drawer slides up smoothly from the bottom on pin tap.
+Drawer slides up smoothly from the bottom on pin tap using `--transition-base` (200ms).
 
 ---
 
@@ -248,23 +248,23 @@ Standard form layout with labels above inputs:
 ### 3.3 High-Fidelity Prototype (Full Color & Interaction)
 
 #### Layout
-- Modal: `bg-off-white`
+- Modal: `bg-neutral-50` (#fafafa)
 - Overlay: `bg-black/50`
 
 #### Header
-- Title: `text-charcoal-gray`
+- Title: `text-neutral-700` (#404040)
 
 #### Map Preview
 - Uses actual map tile snapshot
 
 #### Form
-- **Labels**: `text-charcoal-gray`
-- **Inputs**: `border-neutral-gray-light focus:border-forest-green focus:ring-forest-green/50`
-- **Tags component**: Uses `sandy-beige` for selected tag chips
+- **Labels**: `text-neutral-700` (#404040)
+- **Inputs**: `border-neutral-300 focus:border-verde-700 focus:ring-verde-700/50` (#d4d4d4 → #1b5e20)
+- **Tags component**: Uses `bg-sand-100` (#f5f5dc) for selected tag chips
 
 #### Actions
-- **Cancel button**: `bg-neutral-gray-light text-charcoal-gray hover:bg-neutral-gray-medium`
-- **Submit button**: `bg-forest-green text-white hover:bg-forest-green-dark`
+- **Cancel button**: `bg-neutral-200 text-neutral-700 hover:bg-neutral-300` (#e5e5e5 / #404040)
+- **Submit button**: `bg-verde-700 text-white hover:bg-verde-800` (#1b5e20 → #145018)
 
 #### Interaction
 - Modal appears with a subtle **scale/fade-in animation**
@@ -331,28 +331,28 @@ Standard component
 ### 4.3 High-Fidelity Prototype (Full Color & Interaction)
 
 #### Header
-- `bg-forest-green`
+- `bg-verde-700` (#1b5e20)
 - White icons/text
 
 #### Content Area
-- `bg-off-white`
-- **Title**: `text-charcoal-gray`
-- **Creator link**: `text-forest-green`
+- `bg-neutral-50` (#fafafa)
+- **Title**: `text-neutral-800` (#262626)
+- **Creator link**: `text-verde-700` (#1b5e20)
 - **Reputation badge**: Uses appropriate color/icon
-- **Stars**: `mango-yellow`
-- **Description**: `text-charcoal-gray`
+- **Stars**: `text-mango-400` (#ffca28)
+- **Description**: `text-neutral-700` (#404040)
 - **Map**: Uses color tiles
 
 **Stops List**:
-- **Headings**: `text-forest-green`
-- **Gem names**: `text-charcoal-gray font-semibold`
-- **Notes/Secrets**: `text-neutral-gray-dark`
-- **Dividers**: `border-neutral-gray-light`
+- **Headings**: `text-verde-700` (#1b5e20)
+- **Gem names**: `text-neutral-800 font-semibold` (#262626)
+- **Notes/Secrets**: `text-neutral-600` (#525252)
+- **Dividers**: `border-neutral-200` (#e5e5e5)
 
 #### Footer Actions
-- `bg-white border-t`
-- **Download button**: `border border-forest-green text-forest-green hover:bg-forest-green/10`
-- **Start Krawl button**: `bg-forest-green text-white hover:bg-forest-green-dark`
+- `bg-white border-t border-neutral-200`
+- **Download button**: `border border-verde-700 text-verde-700 hover:bg-verde-50` (#1b5e20)
+- **Start Krawl button**: `bg-verde-700 text-white hover:bg-verde-800` (#1b5e20 → #145018)
 
 #### Interaction
 - **Scrolling** the page might subtly shrink/fade the header
@@ -404,21 +404,21 @@ Standard component
 ### 5.3 High-Fidelity Prototype (Full Color & Interaction)
 
 #### Header
-- `bg-forest-green text-white`
+- `bg-verde-700 text-white` (#1b5e20)
 
 #### Map Area
-- **Route line**: Uses bright `mango-yellow` or a distinct vibrant blue for high visibility
-- **Next stop pin**: Emphasized (larger, maybe pulsing slightly)
+- **Route line**: Uses bright `stroke-mango-400` (#ffca28) or `stroke-info` (#1976d2) for high visibility
+- **Next stop pin**: Emphasized (larger, maybe pulsing slightly using CSS animations)
 - **User location marker**: Standard blue dot
 
 #### Navigation Info
-- `bg-black/50 text-white rounded-md p-1`
+- `bg-black/50 text-white rounded-md p-2` (uses `--radius-md`)
 
 #### Stop Detail Card
-- `bg-off-white`
-- **Headings**: `text-forest-green`
-- **Notes/Secrets**: `text-charcoal-gray`
-- **Check Off button**: `bg-forest-green text-white hover:bg-forest-green-dark`
+- `bg-neutral-50` (#fafafa)
+- **Headings**: `text-verde-700` (#1b5e20)
+- **Notes/Secrets**: `text-neutral-700` (#404040)
+- **Check Off button**: `bg-verde-700 text-white hover:bg-verde-800` (#1b5e20 → #145018)
 
 #### Interaction
 - **Card slides up smoothly** when GPS indicates arrival zone
@@ -431,13 +431,15 @@ Standard component
 
 ## 📊 Design Progression Summary
 
-| Screen | Key Interactive Elements | Primary Color Usage | Critical Animations |
+| Screen | Key Interactive Elements | Primary Color Usage (from globals.css) | Critical Animations |
 |--------|-------------------------|-------------------|-------------------|
-| **Home/Map** | Cluster zoom, pin tap, FAB modal | Forest green (nav), Mango yellow (clusters, FAB) | Zoom transitions, drawer slide-up |
-| **Gem Detail** | Vouch, Rate, Photo actions | Forest green (verified), Mango yellow (stars) | Drawer slide-up, interaction feedback |
-| **Add Gem Form** | Form validation, tag selection | Forest green (submit, focus) | Modal scale/fade-in, loading states |
-| **Krawl Detail** | Stop list, map preview, action buttons | Forest green (header, links, buttons) | Header shrink, highlight effects |
-| **Krawl Mode** | GPS arrival, check-off actions | Forest green (header), Mango yellow (route) | Card slide-up, map pan/zoom, checkmark animation |
+| **Home/Map** | Cluster zoom, pin tap, FAB modal | `verde-700` (nav), `mango-400` (clusters, FAB) | Zoom transitions, drawer slide-up (`--transition-base`) |
+| **Gem Detail** | Vouch, Rate, Photo actions | `verde-700` (verified), `mango-400` (stars) | Drawer slide-up, interaction feedback |
+| **Add Gem Form** | Form validation, tag selection | `verde-700` (submit, focus), `sand-100` (tags) | Modal scale/fade-in, loading states |
+| **Krawl Detail** | Stop list, map preview, action buttons | `verde-700` (header, links, buttons) | Header shrink, highlight effects |
+| **Krawl Mode** | GPS arrival, check-off actions | `verde-700` (header), `mango-400`/`info` (route) | Card slide-up, map pan/zoom, checkmark animation |
+
+> **Color Reference:** All colors are implemented as CSS custom properties in `frontend/globals.css` and available through Tailwind utility classes.
 
 ---
 
@@ -473,6 +475,7 @@ Standard component
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.0 | 2025-10-28 | **Updated all color references to match `globals.css` implementation:** Replaced generic color names (forest-green, charcoal-gray, sandy-beige, etc.) with accurate Tailwind classes and hex values from globals.css (verde-700, neutral-700, sand-100, mango-400, etc.); updated all component styling with specific hex color codes; added CSS custom property references for transitions and animations; updated Design Progression Summary table with accurate color tokens; added note about color implementation in globals.css | Design Team |
 | 1.0.0 | 2025-10-28 | Initial design progression documentation | Design Team |
 
 ---
