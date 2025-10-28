@@ -2,11 +2,11 @@
 
 > **Purpose:** Provides a comprehensive view of the Krawl application's system architecture, component interactions, data flows, and technical stack for the MVP phase.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Last Updated:** 2025-10-28  
 **Status:** Active  
 **Owner:** Engineering Team  
-**Tech Stack:** Next.js, Spring Boot, PostgreSQL + PostGIS
+**Tech Stack:** Next.js, Spring Boot, PostgreSQL + PostGIS, Cloudinary, OpenStreetMap
 
 ---
 
@@ -20,8 +20,9 @@
 6. [Hosting & Deployment](#-hosting--deployment)
 7. [Technology Stack Summary](#-technology-stack-summary)
 8. [Key Architectural Decisions](#-key-architectural-decisions)
-9. [Changelog](#-changelog)
-10. [Related Documents](#-related-documents)
+9. [Development Environment](#️-development-environment)
+10. [Changelog](#-changelog)
+11. [Related Documents](#-related-documents)
 
 ---
 
@@ -47,7 +48,7 @@
              │
 ┌────────────▼─────────────┐          ┌─────────────────────┐
 │   🎨 Frontend Layer      │          │  🗺️  Map Tiles      │
-│   (PWA - Next.js)        │◄─────────┤  Google Maps / OSM  │
+│   (PWA - Next.js)        │◄─────────┤  OpenStreetMap      │
 │                          │          │  (Tile Server)      │
 │  • UI Rendering          │          └─────────────────────┘
 │  • Client State          │
@@ -56,6 +57,7 @@
 │  • Service Workers       │
 │  • Offline Caching       │
 │  • GPS Integration       │
+│  • IndexedDB Storage     │
 └────────────┬─────────────┘
              │
              │ RESTful API
@@ -64,14 +66,15 @@
              │
 ┌────────────▼─────────────┐          ┌─────────────────────┐
 │   ⚙️  Backend Layer      │          │  📦 Image Storage   │
-│   (Spring Boot API)      │◄────────►│  AWS S3 / GCS       │
-│                          │          │  Cloudinary         │
-│  • Business Logic        │          └─────────────────────┘
-│  • Authentication        │
+│   (Spring Boot API)      │◄────────►│  Cloudinary         │
+│                          │          │  (Primary: CDN +    │
+│  • Business Logic        │          │   Transformations)  │
+│  • Authentication        │          └─────────────────────┘
 │  • JWT Generation        │
 │  • Geospatial Queries    │
 │  • Reputation System     │
 │  • Status Management     │
+│  • Duplicate Detection   │
 └────────────┬─────────────┘
              │
              │ SQL Queries
@@ -96,16 +99,21 @@
 
 ### 1️⃣ Client (User Device)
 
-**Type**: Web Browser on Mobile/Desktop
+**Type**: Web Browser on Mobile/Desktop (PWA-Compatible)
 
-**Technology Stack**:
-- HTML5
-- CSS3
-- JavaScript (ES6+)
+**Required Capabilities**:
+- Modern web browser (Chrome, Safari, Firefox, Edge)
+- GPS/Location services
+- Service Worker support
+- IndexedDB support
+- Cache API support
+- localStorage support
 
 **Interaction**:
-- Users interact with the Krawl PWA interface
-- Responsive design for both mobile and desktop experiences
+- Users access Krawl PWA through web browser
+- Progressive Web App installable on mobile/desktop
+- Responsive design adapts to all screen sizes
+- Works offline after initial load and download
 
 ---
 
@@ -115,11 +123,13 @@
 | Component | Technology |
 |-----------|------------|
 | Framework | Next.js (React) |
-| Styling | Tailwind CSS |
-| Maps | Leaflet.js |
+| Styling | Tailwind CSS v4 |
+| Maps | Leaflet.js with plugins |
 | State Management | React Hooks/Context |
 | Offline Support | Service Workers |
-| Hosting | Vercel / Netlify |
+| Local Storage | IndexedDB, Cache API, LocalStorage |
+| Hosting | Vercel (Primary) / Netlify |
+| Version Control | Git + GitHub |
 
 **Key Responsibilities**:
 
@@ -137,7 +147,11 @@
   - Offline caching of Krawl data
   - Map tile caching
   - Service worker implementation
-- ✅ **Responsive Design**: Tailwind CSS styling
+- ✅ **Offline Storage**:
+  - IndexedDB (~50 MB) - Krawl metadata, stop details
+  - Cache API (~100 MB) - Map tiles, static images
+  - LocalStorage (~5 MB) - Auth tokens, user settings
+- ✅ **Responsive Design**: Tailwind CSS v4 styling
 
 ---
 
@@ -148,8 +162,10 @@
 |-----------|------------|
 | Framework | Spring Boot |
 | Language | Java / Kotlin |
-| API Type | RESTful |
-| Hosting | Render / AWS / Google Cloud |
+| API Type | RESTful (JSON over HTTP/HTTPS) |
+| Build Tool | Maven / Gradle |
+| Hosting | Render (Primary) / Heroku / AWS / Google Cloud |
+| Password Hashing | bcrypt (cost factor 12) |
 
 **Key Responsibilities**:
 
@@ -186,9 +202,10 @@
 **Technology Stack**:
 | Component | Technology |
 |-----------|------------|
-| Database | PostgreSQL |
-| Extension | PostGIS |
-| Hosting | AWS RDS / Google Cloud SQL / Render |
+| Database | PostgreSQL 14+ |
+| Extension | PostGIS 3.0+ |
+| Hosting | Render PostgreSQL / Supabase / AWS RDS / Google Cloud SQL / Neon |
+| Migration Tool | Flyway / Liquibase |
 
 **Key Responsibilities**:
 
@@ -215,20 +232,27 @@
 ### 5️⃣ External Services
 
 #### 📸 Image Storage
-**Providers**: AWS S3 / Google Cloud Storage / Cloudinary
+**Primary Provider**: Cloudinary (AWS S3 / Google Cloud Storage as alternatives)
+
+**Why Cloudinary?**
+- Generous free tier (25GB storage, 25GB bandwidth/month)
+- Built-in image transformations and optimization
+- Integrated CDN for fast global delivery
+- Simple API integration
 
 **Interaction Flow**:
 1. Frontend sends image via `POST /gems/{gemId}/photos`
-2. Backend receives and uploads to cloud storage
-3. Backend stores resulting URL in `gem_photos` table
-4. Frontend loads images directly from CDN URLs
+2. Backend receives and uploads to Cloudinary
+3. Backend stores resulting CDN URL in `gem_photos` table
+4. Frontend loads optimized images directly from Cloudinary CDN URLs
 
 #### 🗺️ Map Tiles/APIs
-**Providers**: Google Maps Platform / OpenStreetMap
+**Primary Provider**: OpenStreetMap (OSM)
 
 **Interaction**:
-- Frontend (Leaflet) fetches map tiles for display
-- Potential future integration for Geocoding/Directions APIs
+- Frontend (Leaflet.js) fetches map tiles for display
+- Offline map tile caching via Service Worker
+- Future integration possibilities: Geocoding/Directions APIs
 
 ---
 
@@ -273,14 +297,15 @@
 └──────────────────────────────────────────────────────────────────┘
 
 Map Tile Loading:
-  PWA ──────► Google Maps/OSM Tile Server ──────► Map Display
+  PWA ──────► OpenStreetMap Tile Server ──────► Map Display
              (Direct HTTP requests for tiles)
+             └──────► Service Worker Cache (Offline)
 
 Image Upload/Display:
-  PWA ──────► Backend API ──────► S3/GCS Storage
-                                        │
-  PWA ◄──── Image URL stored in DB ─────┘
-  PWA ──────► CDN URL (Direct Load) ──────► Image Display
+  PWA ──────► Backend API ──────► Cloudinary Storage
+                                       │
+  PWA ◄──── Image CDN URL stored in DB ─┘
+  PWA ──────► Cloudinary CDN (Direct Load) ──────► Image Display
 
 Geospatial Queries:
   PWA ──────► Backend API ──────► PostgreSQL PostGIS
@@ -338,8 +363,8 @@ Geospatial Queries:
    POST /api/gems/{gemId}/photos
    Body: multipart/form-data with image
 
-5. Backend → Image Storage (S3/GCS)
-   Uploads image, gets URL
+5. Backend → Image Storage (Cloudinary)
+   Uploads image with transformations, gets CDN URL
 
 6. Backend → Database
    INSERT INTO gem_photos (gem_id, photo_url, ...)
@@ -354,33 +379,55 @@ Geospatial Queries:
 
 ## 🔒 Security Considerations
 
-| Layer | Security Measure |
-|-------|-----------------|
-| **Frontend** | JWT token stored securely (httpOnly cookies or secure localStorage) |
-| **API** | JWT validation on all protected endpoints |
-| **Database** | Prepared statements to prevent SQL injection |
-| **Images** | Signed URLs for uploads, CDN for delivery |
-| **HTTPS** | All communication encrypted via TLS/SSL |
+| Layer | Security Measure | Implementation |
+|-------|-----------------|----------------|
+| **Frontend** | JWT token storage | HttpOnly cookies or secure localStorage |
+| **Transport** | HTTPS only | TLS/SSL 1.3+ enforced |
+| **API** | JWT validation | Verify signature on every protected request |
+| **API** | Rate limiting | Max 100 req/min per IP/user |
+| **Database** | SQL injection prevention | Prepared statements (JPA/Hibernate) |
+| **Database** | Password hashing | bcrypt with cost factor 12 |
+| **Images** | Secure uploads | Cloudinary signed URLs for uploads |
+| **Images** | Content delivery | Cloudinary CDN with optimizations |
+| **CORS** | Cross-origin policy | Properly configured for frontend domain |
 
 ---
 
 ## 🚀 Hosting & Deployment
 
-### MVP Architecture
+### MVP Architecture (Recommended Stack)
 
 ```
-Frontend (PWA)         →  Vercel / Netlify
-Backend (API)          →  Render / AWS / Google Cloud
-Database               →  AWS RDS / Google Cloud SQL / Render PostgreSQL
-Image Storage          →  AWS S3 / Google Cloud Storage / Cloudinary
+Frontend (PWA)         →  Vercel (Primary) / Netlify
+Backend (API)          →  Render (Primary) / Heroku / AWS / Google Cloud
+Database               →  Render PostgreSQL / Supabase (Free tiers available)
+Image Storage          →  Cloudinary (25GB free tier)
+SSL Certificates       →  Let's Encrypt (Automatic via hosting platforms)
+Version Control        →  GitHub (CI/CD integration)
 ```
+
+### Cost Structure
+
+**MVP Phase (Free Tier)**:
+- Domain: ~₱500-800/year (~₱42-67/mo)
+- Frontend (Vercel Free): $0
+- Backend (Render Free): $0
+- Database (Supabase/Render Free): $0
+- Image Storage (Cloudinary Free): $0
+- **Total: ~₱42-67/month**
+
+**Post-MVP Scaling (Paid Tier)**:
+- Vercel Pro: $20/mo
+- Render Starter: $7-15/mo
+- Database: $7-25/mo
+- Cloudinary Plus: $99/mo (if needed)
 
 ### Scalability Considerations
 
-- **Frontend**: Static hosting with CDN for global distribution
-- **Backend**: Horizontal scaling with load balancer
+- **Frontend**: Static hosting with global CDN, automatic edge caching
+- **Backend**: Zero-downtime deployments, horizontal scaling ready
 - **Database**: Vertical scaling initially, read replicas for future growth
-- **Images**: CDN caching for optimal delivery
+- **Images**: Cloudinary CDN with automatic optimization and transformations
 
 ---
 
@@ -392,15 +439,23 @@ Image Storage          →  AWS S3 / Google Cloud Storage / Cloudinary
 ├────────────────────┬───────────────────────────────────────┤
 │ Layer              │ Technologies                          │
 ├────────────────────┼───────────────────────────────────────┤
-│ Frontend           │ Next.js, React, TypeScript, Tailwind  │
-│ Mapping            │ Leaflet.js                            │
+│ Frontend           │ Next.js, React, TypeScript, Tailwind v4│
+│ Mapping            │ Leaflet.js with plugins               │
 │ Backend            │ Spring Boot, Java/Kotlin              │
-│ Database           │ PostgreSQL + PostGIS                  │
-│ Authentication     │ JWT (JSON Web Tokens)                 │
-│ Image Storage      │ AWS S3 / GCS / Cloudinary             │
-│ Map Tiles          │ Google Maps / OpenStreetMap           │
+│ Database           │ PostgreSQL 14+ with PostGIS 3.0+      │
+│ Authentication     │ JWT, bcrypt (cost factor 12)          │
+│ Image Storage      │ Cloudinary (Primary)                  │
+│ Map Tiles          │ OpenStreetMap (Primary)               │
 │ API Protocol       │ REST (JSON over HTTP/HTTPS)           │
 │ PWA Features       │ Service Workers, Web App Manifest     │
+│ Offline Storage    │ IndexedDB, Cache API, LocalStorage    │
+│ Build Tools        │ npm/pnpm (Frontend), Maven/Gradle (BE)│
+│ Migration Tool     │ Flyway / Liquibase                    │
+│ Version Control    │ Git + GitHub                          │
+│ CI/CD              │ Vercel/Render auto-deploy from Git    │
+│ Hosting (Frontend) │ Vercel (Primary), Netlify             │
+│ Hosting (Backend)  │ Render (Primary), Heroku, AWS, GCP    │
+│ Hosting (Database) │ Render PostgreSQL, Supabase, AWS RDS  │
 └────────────────────┴───────────────────────────────────────┘
 ```
 
@@ -409,12 +464,104 @@ Image Storage          →  AWS S3 / Google Cloud Storage / Cloudinary
 ## 🎯 Key Architectural Decisions
 
 1. **PWA First**: Enables offline functionality and mobile app-like experience
+   - IndexedDB for Krawl data (~50 MB)
+   - Cache API for map tiles and images (~100 MB)
+   - LocalStorage for auth tokens and settings (~5 MB)
+
 2. **PostGIS Integration**: Native geospatial queries for performance
+   - Efficient proximity searches using `ST_DWithin`
+   - Accurate distance calculations with geography type
+   - Spatial indexing with GIST for fast queries
+
 3. **JWT Authentication**: Stateless authentication for scalability
+   - bcrypt password hashing (cost factor 12)
+   - Token expiration: 24 hours (access), 30 days (refresh)
+   - Secure storage in HttpOnly cookies or secure localStorage
+
 4. **Separated Frontend/Backend**: Independent scaling and deployment
-5. **Cloud Storage for Images**: Reduces database load and improves delivery
+   - Frontend: Static hosting with global CDN (Vercel)
+   - Backend: Containerized API with zero-downtime deploys (Render)
+   - Enables independent version updates and rollbacks
+
+5. **Cloudinary for Images**: Optimized image delivery and management
+   - 25GB free tier suitable for MVP
+   - Built-in transformations and optimizations
+   - Integrated CDN for fast global delivery
+   - Simple API integration
+
 6. **RESTful API**: Standard, well-documented communication protocol
-7. **Leaflet over Google Maps**: Open-source flexibility with tile provider choice
+   - JSON over HTTP/HTTPS
+   - Rate limiting: 100 req/min per IP/user
+   - Comprehensive endpoint structure under `/api/*`
+
+7. **Leaflet.js + OpenStreetMap**: Open-source flexibility with tile provider choice
+   - No API key costs for basic usage
+   - Extensive plugin ecosystem (marker clustering, etc.)
+   - Offline map tile caching capability
+
+8. **Free/Low-Cost Hosting**: Enables MVP launch with minimal costs
+   - Start with free tiers (Vercel, Render, Supabase/Render DB)
+   - Pay-as-you-grow model
+   - Easy upgrade paths without architecture changes
+
+9. **Database Migration Management**: Version-controlled schema changes
+   - Flyway/Liquibase for controlled migrations
+   - Prevents manual schema drift
+   - Automated deployment integration
+
+10. **Git-Based CI/CD**: Automated deployments from version control
+    - GitHub as central repository
+    - Auto-deploy on push to main branch
+    - Automated testing before production deploy
+
+---
+
+## 🛠️ Development Environment
+
+### Local Development Setup
+
+**Prerequisites**:
+- Git (version control)
+- Node.js (Latest LTS) - Frontend development
+- JDK 17+ - Backend development
+- Docker & Docker Compose - Local database
+- Code Editor (VS Code, IntelliJ IDEA, etc.)
+
+**Repository Structure**:
+```
+krawl/
+├── frontend/          # Next.js PWA Frontend
+├── backend/           # Spring Boot Backend API
+├── docs/              # Project documentation
+├── init-scripts/      # Database initialization scripts
+├── docker-compose.yml # Local PostgreSQL + PostGIS setup
+└── README.md
+```
+
+**Local Services**:
+| Service | Port | URL |
+|---------|------|-----|
+| Frontend (Next.js) | 3000 | http://localhost:3000 |
+| Backend (Spring Boot) | 8080 | http://localhost:8080 |
+| PostgreSQL + PostGIS | 5432 | localhost:5432 |
+
+**Database Connection (Local)**:
+```
+Host: localhost
+Port: 5432
+Database: krawl
+User: krawl_user
+Password: (from .env file)
+Connection String: postgresql://krawl_user:password@localhost:5432/krawl
+```
+
+### Development Workflow
+
+1. Clone repository from GitHub
+2. Start PostgreSQL + PostGIS via Docker Compose
+3. Run backend (Spring Boot) - auto-runs migrations
+4. Run frontend (Next.js)
+5. Access app at http://localhost:3000
 
 ---
 
@@ -422,6 +569,7 @@ Image Storage          →  AWS S3 / Google Cloud Storage / Cloudinary
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.0 | 2025-10-28 | Updated with comprehensive details from all docs: specific hosting recommendations (Vercel, Render, Cloudinary, Supabase), offline storage breakdown, cost structure, development environment, expanded architectural decisions, security details | Engineering Team |
 | 1.0.0 | 2025-10-28 | Initial system architecture documentation | Engineering Team |
 
 ---

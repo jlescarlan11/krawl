@@ -107,6 +107,9 @@
 - ✅ Initial `application.yml` (or `.properties`) created with placeholders for DB connection
 - ✅ Project builds successfully (`./gradlew build` or `mvnw package`)
 - ✅ Basic database migration tool (Flyway/Liquibase) configured
+- ✅ Spring Scheduler or Quartz configured for scheduled jobs
+- ✅ SLF4J/Logback logging framework configured
+- ✅ Environment variable handling configured (.env support)
 
 **Assignee:** [Backend Dev]
 
@@ -120,6 +123,8 @@
 
 **Acceptance Criteria:**
 - ✅ `application.yml` correctly configured with local DB credentials
+- ✅ CORS configuration implemented for frontend origin (localhost:3000)
+- ✅ Global exception handler created for standardized error responses
 - ✅ Backend application starts successfully (`./gradlew bootRun` or `mvnw spring-boot:run`) and connects to the database
 - ✅ Initial database migration script(s) reflecting the full MVP schema run successfully on startup
 
@@ -153,11 +158,36 @@
 **Acceptance Criteria:**
 - ✅ `tailwind.config.ts` created and configured with "Lokal Verde" theme tokens
 - ✅ Global CSS includes Tailwind directives
+- ✅ Leaflet and Leaflet.markercluster libraries installed
+- ✅ Basic map component created and renders correctly**
 - ✅ Frontend is configured to send API requests to `http://localhost:8080/api`
+- ✅ Environment variable handling configured (.env.local)
+- ✅ Global error handling and toast notification system setup
 - ✅ Basic layout structure (Header, Content Area, Bottom Nav) is in place using Tailwind
 - ✅ Basic PWA manifest (`public/manifest.json`) and service worker setup initiated
 
 **Assignee:** [Frontend Dev]
+
+---
+
+### Task PS-8a: Configure Full PWA Infrastructure
+
+**Description:** Set up complete Progressive Web App infrastructure including service worker with caching strategies, manifest configuration, and offline capability foundation.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ Service Worker registered and handles basic caching strategies
+- ✅ PWA manifest fully configured with app metadata, icons, theme colors
+- ✅ Cache API properly initialized for offline data storage
+- ✅ IndexedDB setup and tested for structured data storage
+- ✅ Network detection utilities implemented
+- ✅ App installable as PWA on mobile devices
+- ✅ Offline fallback page created
+
+**Assignee:** [Frontend Dev]
+
+**Dependencies:** Requires PS-7, PS-8 completed
 
 ---
 
@@ -191,6 +221,46 @@
 - ✅ Any setup issues are documented and resolved
 
 **Assignee:** [Designated Tester / Another Dev]
+
+---
+
+### Task PS-11: Configure External Storage Service
+
+**Description:** Set up and configure external image storage service (AWS S3, Cloudinary, or similar) for hosting user-uploaded Gem photos.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ Storage service account created (S3 bucket or Cloudinary account)
+- ✅ Access credentials configured in backend environment variables
+- ✅ CORS configured for web uploads
+- ✅ Upload and retrieval tested successfully
+- ✅ Storage configuration documented (bucket name, region, CDN URL)
+- ✅ Image optimization/resizing configured (if using Cloudinary)
+
+**Assignee:** [Backend Dev / DevOps]
+
+**Dependencies:** Required before BE-GEM-6
+
+---
+
+### Task PS-12: Setup API Documentation
+
+**Description:** Configure SpringDoc/Swagger for automatic API documentation generation and interactive API testing interface.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ SpringDoc OpenAPI dependency added to backend
+- ✅ Swagger UI accessible at `/swagger-ui.html`
+- ✅ API endpoints automatically documented with annotations
+- ✅ Request/Response DTOs documented with examples
+- ✅ Authentication endpoints properly documented
+- ✅ Public vs. protected endpoints clearly marked
+
+**Assignee:** [Backend Dev]
+
+**Dependencies:** Should be done alongside PS-5
 
 ---
 
@@ -283,6 +353,66 @@
 
 ---
 
+### Task FE-AUTH-6: Build "My Krawls" Page UI
+
+**Description:** Create the page where users can view and manage all Krawls they have created.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ `/my-krawls` page exists and is accessible from bottom navigation or profile menu
+- ✅ Fetches user's Krawls from `/api/users/me/krawls` endpoint
+- ✅ Displays Krawls as cards/list items showing title, description, rating, stop count
+- ✅ Each Krawl card has "Edit", "View", and "Delete" (optional for MVP) buttons
+- ✅ Shows "Create New Krawl" prominent call-to-action button
+- ✅ Handles empty state (no Krawls created yet)
+- ✅ Indicates which Krawls are downloaded for offline use
+- ✅ Styled according to Design System
+
+**Assignee:** [Frontend Dev]
+
+**Dependencies:** Requires BE-AUTH-5 completed
+
+---
+
+### Task FE-AUTH-7: Implement Profile Edit UI
+
+**Description:** Create UI for users to edit their own profile information (bio, display name, etc.).
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ "Edit Profile" button visible on own profile page
+- ✅ Edit form/modal includes fields for Bio, Display Name (optional)
+- ✅ Form validation implemented
+- ✅ Calls PATCH `/api/users/me` endpoint with updates
+- ✅ Success/error feedback provided
+- ✅ Profile view updates after successful save
+
+**Assignee:** [Frontend Dev]
+
+**Dependencies:** Requires BE-AUTH-6 completed
+
+---
+
+### Task BE-AUTH-3: Configure Spring Security & JWT
+
+**Description:** Set up Spring Security to protect relevant API endpoints, configure JWT filters for validating incoming tokens, and implement a `UserDetailsService` to load user data for authentication checks.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ Spring Security dependencies added
+- ✅ Security configuration class exists, defining public (`/api/auth/**`) and protected endpoints
+- ✅ JWT filter correctly intercepts requests, validates tokens, and sets authentication context
+- ✅ `UserDetailsService` implementation correctly loads user data by username/email
+- ✅ Unauthorized requests to protected endpoints return 401/403 errors
+- ✅ CORS configured correctly
+
+**Assignee:** [Backend Dev]
+
+---
+
 ### Task BE-AUTH-1: Implement User Registration Endpoint
 
 **Description:** Create the `POST /api/auth/register` endpoint in Spring Boot to handle new user sign-ups, validate input, hash passwords, and save the user to the database.
@@ -318,24 +448,6 @@
 
 ---
 
-### Task BE-AUTH-3: Configure Spring Security & JWT
-
-**Description:** Set up Spring Security to protect relevant API endpoints, configure JWT filters for validating incoming tokens, and implement a `UserDetailsService` to load user data for authentication checks.
-
-**Status:** `To Do`
-
-**Acceptance Criteria:**
-- ✅ Spring Security dependencies added
-- ✅ Security configuration class exists, defining public (`/api/auth/**`) and protected endpoints
-- ✅ JWT filter correctly intercepts requests, validates tokens, and sets authentication context
-- ✅ `UserDetailsService` implementation correctly loads user data by username/email
-- ✅ Unauthorized requests to protected endpoints return 401/403 errors
-- ✅ CORS configured correctly
-
-**Assignee:** [Backend Dev]
-
----
-
 ### Task BE-AUTH-4: Implement User Profile Endpoint
 
 **Description:** Create the `GET /api/users/{username}` endpoint to retrieve public profile information for a given user.
@@ -350,6 +462,46 @@
 - ✅ Endpoint is publicly accessible (no auth required)
 
 **Assignee:** [Backend Dev]
+
+---
+
+### Task BE-AUTH-5: Implement User Krawls Endpoint
+
+**Description:** Create the `GET /api/users/me/krawls` endpoint to retrieve all Krawls created by the authenticated user.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ Endpoint exists, requires authentication
+- ✅ Returns list of Krawls created by the authenticated user
+- ✅ Includes summary data (id, title, description, rating, stop count, created date)
+- ✅ Sorted by creation date (newest first)
+- ✅ Returns empty array if user has no Krawls
+- ✅ Endpoint returns 401 if not authenticated
+
+**Assignee:** [Backend Dev]
+
+**Dependencies:** None
+
+---
+
+### Task BE-AUTH-6: Implement Update Profile Endpoint
+
+**Description:** Create the `PATCH /api/users/me` endpoint to allow users to update their own profile information.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ Endpoint exists, requires authentication
+- ✅ Accepts `UpdateProfileRequest` DTO (bio, displayName)
+- ✅ Validates input (length limits, sanitization)
+- ✅ Updates only the authenticated user's profile
+- ✅ Returns updated user profile data
+- ✅ Returns appropriate error responses (400 for validation errors)
+
+**Assignee:** [Backend Dev]
+
+**Dependencies:** None
 
 ---
 
@@ -390,6 +542,26 @@
 - ✅ Interaction works smoothly on both desktop (click) and mobile (tap)
 
 **Assignee:** [Frontend Dev]
+
+---
+
+### Task BE-GEM-8: Implement Tag Management Endpoints
+
+**Description:** Create endpoints for fetching available tags and creating new tags for Gem categorization.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ `GET /api/tags` endpoint exists and is publicly accessible
+- ✅ Returns list of all available tags with usage count
+- ✅ `POST /api/tags` endpoint exists (optional, or tags auto-created on Gem submission)
+- ✅ Tag names are normalized (lowercase, trimmed)
+- ✅ Duplicate tag prevention implemented
+- ✅ Common/popular tags can be suggested to users
+
+**Assignee:** [Backend Dev]
+
+**Dependencies:** Should be completed before FE-GEM-2
 
 ---
 
@@ -555,8 +727,16 @@
 - ✅ Endpoint is protected by Spring Security, requiring a valid JWT
 - ✅ Unauthorized requests return 401
 - ✅ Authenticated user's ID is correctly extracted and used as `founder_id`
+- ✅ Accepts `CreateGemRequest` DTO (name, description, tags, latitude, longitude)
+- ✅ Validates required fields and coordinate ranges
+- ✅ Calls duplicate check logic (BE-GEM-3)
+- ✅ If duplicates found, returns 409 Conflict with duplicate list
+- ✅ If no duplicates (or force=true query param), saves Gem using BE-GEM-4 logic
+- ✅ Returns 201 Created with Gem details on success
 
 **Assignee:** [Backend Dev]
+
+**Dependencies:** Requires BE-GEM-3, BE-GEM-4, BE-GEM-8 completed
 
 ---
 
@@ -788,6 +968,28 @@
 
 ---
 
+### Task BE-KRAWL-4: Implement Update Krawl Metadata Endpoint
+
+**Description:** Create the `PUT /api/krawls/{krawlId}` endpoint to update Krawl basic information (title, description, visibility).
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ Endpoint exists, requires authentication
+- ✅ Verifies the authenticated user is the creator of the Krawl
+- ✅ Accepts `UpdateKrawlRequest` DTO (title, description, visibility)
+- ✅ Validates input
+- ✅ Updates Krawl metadata in database
+- ✅ Returns updated Krawl details
+- ✅ Returns 403 Forbidden if user is not the creator
+- ✅ Returns 404 if Krawl not found
+
+**Assignee:** [Backend Dev]
+
+**Dependencies:** Requires BE-KRAWL-1 completed
+
+---
+
 ### Task BE-KRAWL-2: Implement Add/Update Krawl Items Endpoint
 
 **Description:** Create the `PUT /api/krawls/{krawlId}/items` endpoint to receive the full ordered list of Gems and notes for a Krawl, replacing the existing items.
@@ -937,10 +1139,14 @@
 **Status:** `To Do`
 
 **Acceptance Criteria:**
-- ✅ Endpoint accepts parameters like `?q=lugaw`, `?tags=food,streetfood`, `?minRating=4`, `?status=verified`
-- ✅ Backend logic filters Gems based on provided parameters using database queries (including text search, tag joins, and potentially spatial context)
-- ✅ Endpoint returns the filtered list of Gems
-- ✅ Query parameters are documented in API documentation
+- ✅ Endpoint accepts parameters like `?q=Intramuros`, `?lat=...&lon=...&radius=...`, `?minCreatorTier=KantoGuide`, `?tags=history`
+- ✅ Accepts sorting parameters: `?sort=featured`, `?sort=nearby`, `?sort=popular`, `?sort=newest`
+- ✅ "Featured" logic: high-rated Krawls (>4.0) with sufficient ratings (>10)
+- ✅ "Nearby" logic: Krawls with Gems within specified radius of lat/lon
+- ✅ "Popular" logic: sorted by rating_count and average_rating
+- ✅ Backend logic filters Krawls based on parameters. Nearby requires joining with `krawl_items` and `gems` and using spatial queries. Tag filtering requires joins
+- ✅ Endpoint returns the filtered list of Krawls (summary data)
+- ✅ Query parameters are documented
 
 **Assignee:** [Backend Dev]
 
@@ -996,6 +1202,26 @@
 ---
 
 ## ⭐ Epic 6: Community Interaction & Quality (US 6.x)
+
+### Task BE-QUAL-7: Implement User Interaction Status Endpoint
+
+**Description:** Create the `GET /api/gems/{gemId}/user-status` endpoint to check if the current authenticated user has already vouched for or rated a specific Gem.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ Endpoint exists, requires authentication
+- ✅ Queries `gem_vouches` table for user's vouch status
+- ✅ Queries `gem_ratings` table for user's existing rating
+- ✅ Returns JSON: `{ "hasVouched": true/false, "userRating": null or 1-5, "userComment": "..." }`
+- ✅ Returns 200 OK with status data
+- ✅ Returns 404 if Gem doesn't exist
+
+**Assignee:** [Backend Dev]
+
+**Dependencies:** Should be completed before FE-QUAL-1, FE-QUAL-2
+
+---
 
 ### Task FE-QUAL-1: Implement Vouch Button UI & Logic
 
@@ -1298,6 +1524,27 @@
 
 ---
 
+### Task FE-KMODE-5: Implement Geolocation Permission Handling
+
+**Description:** Implement UI and logic to request, handle, and gracefully manage geolocation permissions and availability.
+
+**Status:** `To Do`
+
+**Acceptance Criteria:**
+- ✅ App requests geolocation permission when user starts Krawl Mode
+- ✅ Clear explanation modal shown before permission request
+- ✅ Handles permission denied state with helpful message
+- ✅ Handles geolocation unavailable state (no GPS hardware)
+- ✅ Handles geolocation timeout/error states
+- ✅ Provides fallback option (manual "I'm here" button) if GPS unavailable
+- ✅ Permission status persisted and rechecked appropriately
+
+**Assignee:** [Frontend Dev]
+
+**Dependencies:** Should be done before or alongside FE-KMODE-2, FE-KMODE-3
+
+---
+
 ### Task FE-KMODE-2: Implement Krawl Mode Navigation
 
 **Description:** Use the device's Geolocation API to display the user's current location and show the path/direction towards the next stop on the (potentially offline) map.
@@ -1407,14 +1654,14 @@
 
 | Epic | Total Tasks | To Do | In Progress | Done |
 |------|-------------|-------|-------------|------|
-| Epic 1: Project Setup | 10 | 10 | 0 | 0 |
-| Epic 2: Auth & Profile | 9 | 9 | 0 | 0 |
-| Epic 3: Gem Creation | 16 | 16 | 0 | 0 |
-| Epic 4: Krawl Creation | 7 | 7 | 0 | 0 |
+| Epic 1: Project Setup | 13 | 13 | 0 | 0 |
+| Epic 2: Auth & Profile | 13 | 13 | 0 | 0 |
+| Epic 3: Gem Creation | 17 | 17 | 0 | 0 |
+| Epic 4: Krawl Creation | 8 | 8 | 0 | 0 |
 | Epic 5: Discovery | 6 | 6 | 0 | 0 |
-| Epic 6: Quality & Community | 15 | 15 | 0 | 0 |
-| Epic 7: Krawl Mode & Offline | 9 | 9 | 0 | 0 |
-| **TOTAL** | **72** | **72** | **0** | **0** |
+| Epic 6: Quality & Community | 16 | 16 | 0 | 0 |
+| Epic 7: Krawl Mode & Offline | 10 | 10 | 0 | 0 |
+| **TOTAL** | **83** | **83** | **0** | **0** |
 
 ---
 
@@ -1423,6 +1670,45 @@
 - `To Do` - Task has not been started
 - `In Progress` - Task is currently being worked on
 - `Done` - Task has been completed and verified
+
+---
+
+## 🔗 Task Dependencies & Recommended Order
+
+### Epic 1: Must Complete in Order
+1. PS-1, PS-2, PS-3 (can be parallel)
+2. PS-4 → PS-5 → PS-6 (sequential)
+3. PS-7 → PS-8 → PS-8a (sequential)
+4. PS-11, PS-12 (can be parallel with above)
+5. PS-9 (anytime after PS-4, PS-7)
+6. PS-10 (must be last)
+
+### Epic 2: Recommended Order
+1. **BE-AUTH-3** (Spring Security - DO FIRST)
+2. BE-AUTH-1, BE-AUTH-2 (can be parallel)
+3. BE-AUTH-4, BE-AUTH-5, BE-AUTH-6 (can be parallel)
+4. FE-AUTH-1, FE-AUTH-2 (can be parallel)
+5. FE-AUTH-3, FE-AUTH-4 (sequential)
+6. FE-AUTH-5, FE-AUTH-6, FE-AUTH-7 (can be parallel)
+7. T-AUTH-1
+
+### Epic 3: Critical Dependencies
+- **PS-11 must complete before BE-GEM-6** (photo upload needs storage)
+- **BE-GEM-8 should complete before FE-GEM-2** (tags available)
+- **BE-GEM-1 must complete before FE-GEM-6** (display Gems)
+- BE-GEM-3, BE-GEM-4 must complete before BE-GEM-2 can fully work
+
+### Epic 4: Dependencies
+- **Requires Epic 3 BE-GEM-1** (to search/add Gems to Krawl)
+- **FE-KRAWL-1 must complete before FE-KRAWL-2**
+- **BE-KRAWL-1 must complete before BE-KRAWL-2, BE-KRAWL-4**
+
+### Epic 6: Dependencies
+- **PS-5 scheduler must be configured** before BE-QUAL-5
+
+### Epic 7: Dependencies
+- **PS-8a (full PWA) must complete** before any Epic 7 tasks
+- **Epic 4 must be substantially complete** (need Krawls to download)
 
 ---
 
