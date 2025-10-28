@@ -120,7 +120,9 @@ For specific monochrome print or limited-color applications.
 
 This palette evokes **nature**, **trustworthiness**, and **Filipino warmth**.
 
-> **Accessibility:** Ensure sufficient contrast for WCAG AA minimum compliance
+> **Implementation:** Complete color system with 10-shade scales (50-900) for all brand colors is defined as CSS custom properties in `frontend/globals.css`. This enables consistent theming and easy color management across the entire application.
+
+> **Accessibility:** Ensure sufficient contrast for WCAG AA minimum compliance. All color combinations are tested for accessibility.
 
 ### 3.1. 🌿 Primary Colors
 
@@ -141,6 +143,8 @@ RGB: 46, 125, 50
 
 **Evokes:** Nature, growth, trust
 
+**Complete Scale:** `--color-verde-50` through `--color-verde-900` (10 shades) available in `globals.css`
+
 </td>
 <td width="33%">
 
@@ -155,6 +159,8 @@ RGB: 245, 245, 220
 - Neutral surfaces
 
 **Evokes:** Earthy, clean
+
+**Complete Scale:** `--color-sand-50` through `--color-sand-900` (10 shades) available in `globals.css`
 
 </td>
 <td width="33%">
@@ -172,21 +178,34 @@ RGB: 255, 202, 40
 
 **Evokes:** Energy, sunshine, Filipino vibrancy
 
+**Complete Scale:** `--color-mango-50` through `--color-mango-900` (10 shades) available in `globals.css`
+
 </td>
 </tr>
 </table>
+
+> **Additional Color Families:** Complete scales for Clay (terracotta) and Teal are also available in `globals.css`. See `ui-ux-design-system.md` for full color documentation.
 
 ---
 
 ### 3.2. ⚫ Neutral Colors
 
-| Color | Hex | Use Case |
-|-------|-----|----------|
-| **Off-White** | `#FAFAFA` | Main background color for clean, airy feel |
-| **Charcoal Gray** | `#424242` | Primary body text (high contrast on light backgrounds) |
-| **Medium Gray** | `#757575` | Secondary text, subtle borders, placeholder text |
-| **Light Gray** | `#E0E0E0` | Borders, dividers |
-| **Disabled Gray** | `#BDBDBD` | Disabled button backgrounds/text |
+Complete 10-shade grayscale palette for versatile UI needs:
+
+| Color | Variable | Hex | Use Case |
+|-------|----------|-----|----------|
+| **Neutral 50** | `--color-neutral-50` | `#fafafa` | Main background color for clean, airy feel |
+| **Neutral 100** | `--color-neutral-100` | `#f5f5f5` | Card backgrounds, hover states |
+| **Neutral 200** | `--color-neutral-200` | `#e5e5e5` | Borders, dividers |
+| **Neutral 300** | `--color-neutral-300` | `#d4d4d4` | Lighter borders |
+| **Neutral 400** | `--color-neutral-400` | `#a3a3a3` | Placeholder text |
+| **Neutral 500** | `--color-neutral-500` | `#737373` | Secondary text, helper text |
+| **Neutral 600** | `--color-neutral-600` | `#525252` | Secondary headings |
+| **Neutral 700** | `--color-neutral-700` | `#404040` | Primary body text |
+| **Neutral 800** | `--color-neutral-800` | `#262626` | Dark text, strong emphasis |
+| **Neutral 900** | `--color-neutral-900` | `#171717` | Very dark text, maximum contrast |
+
+> **Semantic Tokens:** `--color-text-primary` (#424242), `--color-text-secondary` (#757575), `--color-text-tertiary` (#9e9e9e), and `--color-text-disabled` (#bdbdbd) are also defined for consistent text color usage.
 
 ---
 
@@ -223,23 +242,38 @@ Readability, modernity, and warmth guide our typography.
 
 ### 4.1. 🔤 Primary Font
 
-**Inter** (or **Poppins** as alternative)
+**Manrope**
 
-> A clean, highly legible sans-serif font suitable for UI
+> A clean, modern sans-serif font with excellent legibility for UI. Manrope features slightly rounded forms that complement our "Lokal Verde" aesthetic.
+
+**Implementation:** Defined in `frontend/globals.css` as:
+```css
+--font-family-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+```
+
+**Fallback Stack:** System fonts ensure text displays correctly even before Manrope loads.
 
 ---
 
 ### 4.2. 📊 Scale & Weights
 
 #### Type Scale
+
+Implemented as CSS custom properties in `globals.css`:
+
 ```
-12px  ─  Small text, captions
-14px  ─  Body text, secondary
-16px  ─  Body text, primary
-20px  ─  H3, Subheadings
-24px  ─  H2, Section headers
-32px  ─  H1, Page titles
+12px (0.75rem)   ─  Small text, captions (--font-size-xs)
+14px (0.875rem)  ─  Body text, secondary (--font-size-sm)
+16px (1rem)      ─  Body text, primary (--font-size-base)
+18px (1.125rem)  ─  Large body, subheadings (--font-size-lg)
+20px (1.25rem)   ─  H4, Card titles (--font-size-xl)
+24px (1.5rem)    ─  H3, Section headers (--font-size-2xl)
+30px (1.875rem)  ─  H2, Page titles (--font-size-3xl)
+36px (2.25rem)   ─  H1, Hero headings (--font-size-4xl)
+48px (3rem)      ─  Display text (--font-size-5xl)
 ```
+
+> All sizes are available as both Tailwind classes (`text-xs`, `text-sm`, etc.) and pre-built typography classes (`.heading-1`, `.body-base`, etc.).
 
 #### Weight Applications
 
@@ -291,12 +325,32 @@ Readability, modernity, and warmth guide our typography.
 ---
 
 ### 4.3. 📏 Line Height
+
+Implemented as CSS custom properties in `globals.css`:
+
 ```
 Body Text
-└─ Line Height: 1.5 (24px for 16px text)
+├─ --line-height-normal: 1.5 (24px for 16px text)
+└─ Use for: Body copy, paragraphs, descriptions
 
 Headings
-└─ Line Height: 1.2 - 1.3 (tighter for impact)
+├─ --line-height-tight: 1.25 (tighter for impact)
+└─ Use for: H1-H3, display text
+
+Relaxed
+├─ --line-height-relaxed: 1.75
+└─ Use for: Long-form content, blog posts
+```
+
+### 4.4. 🎯 Font Weights
+
+Defined as CSS custom properties in `globals.css`:
+
+```css
+--font-weight-normal: 400     /* Regular, default body text */
+--font-weight-medium: 500     /* Labels, emphasis */
+--font-weight-semibold: 600   /* Headings, buttons */
+--font-weight-bold: 700       /* Strong emphasis, H1-H2 */
 ```
 
 > Optimize for readability and visual hierarchy
@@ -412,19 +466,29 @@ Consistent spacing creates **visual rhythm** and **clarity**.
 ### 7.1. 🎯 Base Unit System
 
 **8px Base Unit**
+
+Comprehensive spacing system defined as CSS custom properties in `globals.css`:
+
 ```
-Spacing Scale
-├─ 4px   (0.5 unit)
-├─ 8px   (1 unit)
-├─ 12px  (1.5 units)
-├─ 16px  (2 units)
-├─ 24px  (3 units)
-├─ 32px  (4 units)
-├─ 40px  (5 units)
-└─ 48px  (6 units)
+Spacing Scale (CSS Variables)
+├─ 0px   →  --spacing-0
+├─ 4px   →  --spacing-1   (0.5 unit)
+├─ 8px   →  --spacing-2   (1 unit)
+├─ 12px  →  --spacing-3   (1.5 units)
+├─ 16px  →  --spacing-4   (2 units)
+├─ 20px  →  --spacing-5   (2.5 units)
+├─ 24px  →  --spacing-6   (3 units)
+├─ 32px  →  --spacing-8   (4 units)
+├─ 40px  →  --spacing-10  (5 units)
+├─ 48px  →  --spacing-12  (6 units)
+├─ 64px  →  --spacing-16  (8 units)
+├─ 80px  →  --spacing-20  (10 units)
+└─ 96px  →  --spacing-24  (12 units)
 ```
 
 **Use for:** Margins, padding, layout gaps
+
+> **Tailwind Integration:** Fully compatible with Tailwind's spacing utilities (e.g., `p-4` = 16px, `m-6` = 24px).
 
 ---
 
@@ -647,6 +711,7 @@ For brand guideline clarifications or special use cases, refer to the design sys
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.0 | 2025-10-28 | **Updated to reflect `globals.css` implementation:** Changed primary font from Inter/Poppins to Manrope with implementation details; documented complete 10-shade color scales for all brand colors (Verde, Sand, Mango) with CSS variable names; updated Neutral colors table with accurate hex values from globals.css and added semantic text color tokens; expanded type scale to include all 9 sizes with CSS variable references; added font weight CSS variables; updated line-height with CSS variables; expanded spacing scale from 8 to 13 values with CSS variable names; added Tailwind integration notes | Design Team |
 | 1.0.0 | 2025-10-28 | Initial brand guidelines | Design Team |
 
 ---

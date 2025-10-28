@@ -80,17 +80,112 @@
 - Minimal CSS bundle size with tree-shaking
 - Excellent developer experience with modern tooling
 - Integrated with Next.js via @tailwindcss/postcss
+- New `@theme` directive for seamless CSS custom property integration
 
 **Key Dependencies:**
 - `tailwindcss`: ^4
 - `@tailwindcss/postcss`: ^4
 
-**Implementation:**
-- Complete design system in `globals.css` (545 lines)
-- 60+ color tokens with CSS custom properties
-- Typography utilities and pre-built classes
-- Component utilities (patterns, containers, focus rings)
-- Tailwind theme integration for seamless use
+**Implementation:** Complete design system in `frontend/app/globals.css` (545 lines)
+
+#### CSS Architecture
+
+The styling system is organized into five distinct layers:
+
+**1. Design Tokens (CSS Custom Properties)**
+```css
+:root {
+  /* Color Palette */
+  --color-verde-50 through --color-verde-900  /* 10 shades */
+  --color-sand-50 through --color-sand-900    /* 10 shades */
+  --color-mango-50 through --color-mango-900  /* 10 shades */
+  --color-clay-50 through --color-clay-900    /* 10 shades */
+  --color-teal-50 through --color-teal-900    /* 10 shades */
+  --color-neutral-50 through --color-neutral-900  /* 10 shades */
+  
+  /* Semantic Colors */
+  --color-text-primary, --color-text-secondary, --color-text-tertiary
+  --color-background, --color-surface, --color-border
+  --color-error, --color-warning, --color-success, --color-info
+  
+  /* Typography */
+  --font-family-sans: 'Manrope', -apple-system, ...
+  --font-size-xs through --font-size-5xl  /* 9 sizes */
+  --font-weight-normal, --font-weight-medium, --font-weight-semibold, --font-weight-bold
+  --line-height-tight, --line-height-normal, --line-height-relaxed
+  
+  /* Spacing (8px base grid) */
+  --spacing-0 through --spacing-24  /* 13 values */
+  
+  /* Border Radius */
+  --radius-none, --radius-sm, --radius-md, --radius-lg, --radius-xl, --radius-2xl, --radius-full
+  
+  /* Shadows */
+  --shadow-xs, --shadow-sm, --shadow-md, --shadow-lg, --shadow-xl
+  
+  /* Z-Index Scale */
+  --z-index-dropdown, --z-index-sticky, --z-index-fixed, --z-index-modal, etc.
+  
+  /* Transitions */
+  --transition-fast, --transition-base, --transition-slow
+}
+```
+
+**2. Tailwind Theme Extensions**
+
+Uses Tailwind v4's `@theme` directive to map CSS custom properties to Tailwind utilities:
+
+```css
+@theme {
+  --color-verde-*: initial;
+  --color-verde-50: var(--color-verde-50);
+  /* ... maps all 60+ color tokens */
+  
+  --font-family-sans: var(--font-family-sans);
+}
+```
+
+This enables seamless use of design tokens through Tailwind classes:
+- `text-verde-700` → `var(--color-verde-700)`
+- `bg-sand-100` → `var(--color-sand-100)`
+- `font-sans` → `var(--font-family-sans)`
+
+**3. Base Styles**
+- Global resets and defaults
+- Body styling with Manrope font
+- Typography base styles
+
+**4. Component Utilities**
+```css
+.pattern-woven-subtle  /* Cross-hatch background pattern */
+.pattern-dots          /* Dot grid pattern */
+.focus-ring            /* Accessible focus indicator */
+.container-narrow      /* 640px centered container */
+.container-medium      /* 1024px centered container */
+.container-wide        /* 1280px centered container */
+```
+
+**5. Typography System**
+
+Pre-built typography classes for consistent text styling:
+```css
+.heading-1, .heading-2, .heading-3, .heading-4, .heading-5, .heading-6
+.body-lg, .body-base, .body-sm, .body-xs
+.text-label, .text-caption, .text-display
+```
+
+Each class includes appropriate font-size, weight, line-height, and letter-spacing.
+
+#### Benefits of This Architecture
+
+✅ **Single Source of Truth:** All design tokens in one place  
+✅ **Easy Theming:** Update CSS variables to change entire theme  
+✅ **Type Safety:** Works with Tailwind's autocomplete in IDEs  
+✅ **Performance:** Minimal CSS output with Tailwind's JIT compiler  
+✅ **Maintainability:** Clear separation of concerns  
+✅ **Scalability:** Easy to add new tokens or utilities  
+✅ **Accessibility:** Built-in patterns like `.focus-ring` for a11y  
+✅ **Dark Mode Ready:** Structure supports future theme variants
 
 ---
 
@@ -239,6 +334,7 @@ This technology stack balances several key requirements for the MVP phase:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2.0 | 2025-10-28 | **Major Update:** Documented complete CSS architecture and Tailwind v4 integration from `globals.css`: Added detailed CSS Architecture section explaining 5-layer system (Design Tokens, Tailwind Theme Extensions, Base Styles, Component Utilities, Typography System); documented 60+ CSS custom properties for colors, typography, spacing, shadows, z-index, and transitions; explained `@theme` directive usage for seamless Tailwind integration; documented Manrope font as primary typeface; added Benefits of This Architecture section highlighting scalability, maintainability, and performance advantages | Development Team |
 | 1.1.0 | 2025-10-28 | Updated with implemented features: Next.js 16.0.0, React 19.2.0, TypeScript, Tailwind CSS v4 with complete design system, React Icons (Lucide) v5.5.0, PWA features (service worker, manifest), component library status | Development Team |
 | 1.0.0 | 2025-10-28 | Initial tech stack document | Development Team |
 

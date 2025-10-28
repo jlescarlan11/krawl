@@ -215,7 +215,7 @@ Cool complementary color for variety and visual interest. Complete 10-shade scal
 
 #### ⚪ Neutral Grays
 
-Complete 10-shade grayscale palette for text, borders, and backgrounds.
+Complete 10-shade grayscale palette for text, borders, and backgrounds (from `globals.css`).
 
 <table>
 <tr>
@@ -235,42 +235,42 @@ Complete 10-shade grayscale palette for text, borders, and backgrounds.
 </tr>
 <tr>
 <td><code>neutral-200</code></td>
-<td><code>#e0e0e0</code></td>
+<td><code>#e5e5e5</code></td>
 <td>Borders, dividers</td>
 </tr>
 <tr>
 <td><code>neutral-300</code></td>
-<td><code>#bdbdbd</code></td>
-<td>Disabled elements</td>
+<td><code>#d4d4d4</code></td>
+<td>Lighter borders, disabled backgrounds</td>
 </tr>
 <tr>
 <td><code>neutral-400</code></td>
-<td><code>#9e9e9e</code></td>
-<td>Placeholder text</td>
+<td><code>#a3a3a3</code></td>
+<td>Placeholder text, disabled text</td>
 </tr>
 <tr>
 <td><code>neutral-500</code></td>
-<td><code>#757575</code></td>
+<td><code>#737373</code></td>
 <td>Secondary text, helper text</td>
 </tr>
 <tr>
 <td><code>neutral-600</code></td>
-<td><code>#616161</code></td>
-<td>Secondary headings</td>
+<td><code>#525252</code></td>
+<td>Secondary headings, emphasized secondary text</td>
 </tr>
 <tr>
 <td><code>neutral-700</code></td>
-<td><code>#424242</code></td>
+<td><code>#404040</code></td>
 <td>Primary text, headings</td>
 </tr>
 <tr>
 <td><code>neutral-800</code></td>
-<td><code>#2d2d2d</code></td>
-<td>Dark text</td>
+<td><code>#262626</code></td>
+<td>Dark text, strong emphasis</td>
 </tr>
 <tr>
 <td><code>neutral-900</code></td>
-<td><code>#1a1a1a</code></td>
+<td><code>#171717</code></td>
 <td>Very dark text, maximum contrast</td>
 </tr>
 </table>
@@ -280,9 +280,40 @@ Complete 10-shade grayscale palette for text, borders, and backgrounds.
 | Purpose | Class | Hex | Usage |
 |---------|-------|-----|-------|
 | **❌ Error** | `error` | `#d32f2f` | Error messages, destructive actions |
-| **⚠️ Warning** | `warning` | `#f57c00` | Warnings, alerts, cautions |
+| **⚠️ Warning** | `warning` | `#ffa000` | Warnings, alerts, cautions |
 | **✅ Success** | `success` | `#388e3c` | Success messages, confirmations |
 | **ℹ️ Info** | `info` | `#1976d2` | Informational messages, tips |
+
+#### 📝 Text Color Tokens
+
+CSS custom properties for text colors (defined in `globals.css`):
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--color-text-primary` | `#424242` | Primary body text, default color |
+| `--color-text-secondary` | `#757575` | Secondary text, captions |
+| `--color-text-tertiary` | `#9e9e9e` | Tertiary text, placeholders |
+| `--color-text-disabled` | `#bdbdbd` | Disabled text and elements |
+
+#### 🎨 Surface Color Tokens
+
+CSS custom properties for backgrounds and surfaces:
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--color-background` | `#fafafa` | Main page background |
+| `--color-background-secondary` | `#ffffff` | Secondary backgrounds |
+| `--color-surface` | `#ffffff` | Card and component surfaces |
+| `--color-surface-hover` | `#f5f5f5` | Hover state for surfaces |
+
+#### 🔲 Border Color Tokens
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--color-border` | `#e0e0e0` | Default borders |
+| `--color-border-light` | `#eeeeee` | Light borders, subtle dividers |
+| `--color-border-dark` | `#bdbdbd` | Emphasized borders |
+| `--color-divider` | `#e0e0e0` | Section dividers |
 
 > **⚠️ Accessibility:** All color combinations in this system meet WCAG AA contrast requirements. The complete system uses CSS custom properties for easy theming and global updates.
 
@@ -294,7 +325,9 @@ Complete 10-shade grayscale palette for text, borders, and backgrounds.
 
 > **💡 Implementation Note:** The design system includes comprehensive typography utilities implemented in `frontend/globals.css` with pre-built classes like `.heading-1` through `.heading-6`, `.body-lg`, `.body-sm`, etc. See `frontend/DESIGN_SYSTEM.md` for complete typography documentation.
 
-**Primary Font:** Inter (Fallback: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif)
+**Primary Font:** Manrope (Fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif)
+
+> **Design System Implementation:** The font family is defined as CSS custom property `--font-family-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;` in `globals.css` and automatically applied to all text via Tailwind's font-sans class.
 
 #### Type Scale
 
@@ -373,40 +406,43 @@ Complete 10-shade grayscale palette for text, borders, and backgrounds.
 
 #### Font Weights
 
-Implemented in design system with CSS custom properties:
+Implemented in design system with CSS custom properties (`globals.css`):
 
 ```css
-Regular (400)    →  Body text, default (--font-weight-regular)
+Regular (400)    →  Body text, default (--font-weight-normal)
 Medium (500)     →  Labels, emphasis (--font-weight-medium)
 Semibold (600)   →  Headings, buttons (--font-weight-semibold)
 Bold (700)       →  Strong emphasis, H1 (--font-weight-bold)
-Extrabold (800)  →  Very strong emphasis (--font-weight-extrabold)
 ```
+
+> All font weights are defined as CSS custom properties in `:root` and can be referenced throughout the application.
 
 #### Pre-built Typography Classes
 
-The design system includes ready-to-use typography classes:
+The design system includes ready-to-use typography classes (defined in `globals.css`):
 
 ```css
 /* Headings */
-.heading-1  →  48px, Bold (700), 1.1 line-height
-.heading-2  →  36px, Bold (700), 1.2 line-height
-.heading-3  →  28px, Semibold (600), 1.3 line-height
-.heading-4  →  24px, Semibold (600), 1.4 line-height
-.heading-5  →  20px, Semibold (600), 1.4 line-height
-.heading-6  →  18px, Semibold (600), 1.5 line-height
+.heading-1  →  36px (2.25rem), Bold (700), 1.25 line-height, -0.025em letter-spacing
+.heading-2  →  30px (1.875rem), Bold (700), 1.25 line-height, -0.025em letter-spacing
+.heading-3  →  24px (1.5rem), Semibold (600), 1.25 line-height, -0.025em letter-spacing
+.heading-4  →  20px (1.25rem), Semibold (600), 1.5 line-height
+.heading-5  →  18px (1.125rem), Semibold (600), 1.5 line-height
+.heading-6  →  16px (1rem), Semibold (600), 1.5 line-height
 
 /* Body Text */
-.body-lg    →  18px, Regular (400), 1.6 line-height
-.body-base  →  16px, Regular (400), 1.5 line-height
-.body-sm    →  14px, Regular (400), 1.5 line-height
-.body-xs    →  12px, Regular (400), 1.4 line-height
+.body-lg    →  18px (1.125rem), Regular (400), 1.75 line-height
+.body-base  →  16px (1rem), Regular (400), 1.5 line-height
+.body-sm    →  14px (0.875rem), Regular (400), 1.5 line-height
+.body-xs    →  12px (0.75rem), Regular (400), 1.5 line-height
 
 /* Special */
-.text-label   →  14px, Medium (500), 1.4 line-height
-.text-caption →  12px, Regular (400), 1.3 line-height
-.text-display →  64px, Bold (700), 1.1 line-height
+.text-label   →  14px (0.875rem), Medium (500), 1.5 line-height
+.text-caption →  12px (0.75rem), Regular (400), 1.5 line-height
+.text-display →  48px (3rem), Bold (700), 1.25 line-height, -0.025em letter-spacing
 ```
+
+> **Responsive Typography:** `.heading-1` and `.heading-2` automatically scale down on mobile (≤640px) for better readability.
 
 #### Default Styles
 
@@ -427,16 +463,23 @@ The design system includes ready-to-use typography classes:
 Use multiples of 4px and 8px for margins, padding, and gaps.
 
 #### Spacing Scale
+
+Comprehensive spacing scale defined as CSS custom properties in `globals.css`:
+
 ```
-space-1    →    4px     (0.5 unit)
-space-2    →    8px     (1 unit)
-space-3    →   12px     (1.5 units)
-space-4    →   16px     (2 units)
-space-6    →   24px     (3 units)
-space-8    →   32px     (4 units)
-space-10   →   40px     (5 units)
-space-12   →   48px     (6 units)
-space-16   →   64px     (8 units)
+--spacing-0   →    0px     (0 unit)
+--spacing-1   →    4px     (0.25rem, 0.5 unit)
+--spacing-2   →    8px     (0.5rem, 1 unit)
+--spacing-3   →   12px     (0.75rem, 1.5 units)
+--spacing-4   →   16px     (1rem, 2 units)
+--spacing-5   →   20px     (1.25rem, 2.5 units)
+--spacing-6   →   24px     (1.5rem, 3 units)
+--spacing-8   →   32px     (2rem, 4 units)
+--spacing-10  →   40px     (2.5rem, 5 units)
+--spacing-12  →   48px     (3rem, 6 units)
+--spacing-16  →   64px     (4rem, 8 units)
+--spacing-20  →   80px     (5rem, 10 units)
+--spacing-24  →   96px     (6rem, 12 units)
 ```
 
 **Apply consistently for:**
@@ -445,50 +488,147 @@ space-16   →   64px     (8 units)
 - Element margins
 - Grid/flex gaps
 
+> **Tailwind Integration:** These spacing values are fully compatible with Tailwind's spacing utilities (e.g., `p-4`, `m-6`, `gap-8`).
+
 ---
 
 ### 2.4. ⚪ Border Radius
 
-| Size | Class | Value | Usage |
-|------|-------|-------|-------|
-| **Small** | `rounded` | 4px | Inputs, tags, small elements |
-| **Medium** | `rounded-md` | 8px | **Buttons, cards, modals (Default)** |
-| **Large** | `rounded-lg` | 12px | Larger containers, image galleries |
-| **Full** | `rounded-full` | 9999px | Pills, circular avatars/icons |
+Defined as CSS custom properties in `globals.css`:
+
+| Size | Class | CSS Variable | Value | Usage |
+|------|-------|--------------|-------|-------|
+| **None** | `rounded-none` | `--radius-none` | 0 | Sharp corners |
+| **Small** | `rounded-sm` | `--radius-sm` | 4px (0.25rem) | Inputs, tags, small elements |
+| **Medium** | `rounded-md` | `--radius-md` | 8px (0.5rem) | **Buttons, cards, modals (Default)** |
+| **Large** | `rounded-lg` | `--radius-lg` | 12px (0.75rem) | Larger containers, image galleries |
+| **Extra Large** | `rounded-xl` | `--radius-xl` | 16px (1rem) | Featured sections, hero cards |
+| **2X Large** | `rounded-2xl` | `--radius-2xl` | 24px (1.5rem) | Very large containers |
+| **Full** | `rounded-full` | `--radius-full` | 9999px | Pills, circular avatars/icons |
 
 ---
 
 ### 2.5. 🌑 Shadows / Elevation
 
-Use subtle shadows to create depth and hierarchy.
+Use subtle shadows to create depth and hierarchy. Defined as CSS custom properties in `globals.css`:
 
 <table>
 <tr>
 <th>Shadow</th>
 <th>Class</th>
+<th>CSS Variable</th>
 <th>Usage</th>
+</tr>
+<tr>
+<td><strong>Extra Small</strong></td>
+<td><code>shadow-xs</code></td>
+<td><code>--shadow-xs</code></td>
+<td>Minimal elevation, subtle borders alternative</td>
 </tr>
 <tr>
 <td><strong>Small</strong></td>
 <td><code>shadow-sm</code></td>
+<td><code>--shadow-sm</code></td>
 <td>Slight elevation (hover effects)</td>
 </tr>
 <tr>
 <td><strong>Medium</strong></td>
 <td><code>shadow-md</code></td>
+<td><code>--shadow-md</code></td>
 <td><strong>Standard elevation for Cards, Buttons (Default)</strong></td>
 </tr>
 <tr>
 <td><strong>Large</strong></td>
 <td><code>shadow-lg</code></td>
+<td><code>--shadow-lg</code></td>
 <td>Modals, dropdowns, prominent elements</td>
 </tr>
 <tr>
 <td><strong>Extra Large</strong></td>
 <td><code>shadow-xl</code></td>
+<td><code>--shadow-xl</code></td>
 <td>Very prominent elements (use sparingly)</td>
 </tr>
 </table>
+
+> **Design Note:** All shadows use subtle black with opacity (0.05-0.1) for a natural, non-intrusive appearance.
+
+---
+
+### 2.6. 🎨 Utility Classes
+
+The design system includes specialized utility classes in `globals.css` for common patterns:
+
+#### Pattern Backgrounds
+
+```css
+/* Woven Pattern (Subtle) */
+.pattern-woven-subtle
+→ Sandy beige background with cross-hatch pattern
+→ Use for: Section backgrounds, decorative areas
+
+/* Dot Pattern */
+.pattern-dots
+→ Subtle dot grid pattern
+→ Use for: Empty states, texture backgrounds
+```
+
+#### Focus Ring
+
+```css
+.focus-ring
+→ 2px verde-500 outline with 2px offset
+→ Use for: Accessible focus indicators on custom elements
+```
+
+#### Container Utilities
+
+Pre-built container classes with automatic centering and padding:
+
+| Class | Max Width | Padding | Usage |
+|-------|-----------|---------|-------|
+| `.container-narrow` | 640px | 16px (1rem) | Forms, single-column content |
+| `.container-medium` | 1024px | 16px (1rem) | Standard content sections |
+| `.container-wide` | 1280px | 16px (1rem) | Wide layouts, dashboards |
+
+> **Usage Tip:** These containers automatically center content and add horizontal padding for consistent layouts.
+
+---
+
+### 2.7. 🎯 Z-Index Scale
+
+Standardized z-index values defined in `globals.css` to prevent conflicts:
+
+```css
+--z-index-dropdown:       1000
+--z-index-sticky:         1020
+--z-index-fixed:          1030
+--z-index-modal-backdrop: 1040
+--z-index-modal:          1050
+--z-index-popover:        1060
+--z-index-tooltip:        1070
+```
+
+> **Best Practice:** Always use these predefined values to maintain proper stacking context.
+
+---
+
+### 2.8. ⚡ Transitions
+
+Standardized transition durations in `globals.css`:
+
+```css
+--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1)
+→ Use for: Micro-interactions, hover effects
+
+--transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1)
+→ Use for: Standard interactions (default)
+
+--transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1)
+→ Use for: Complex animations, page transitions
+```
+
+> **Easing Function:** All transitions use a smooth cubic-bezier easing (0.4, 0, 0.2, 1) for natural motion.
 
 ---
 
@@ -1159,17 +1299,19 @@ xl:                4+ columns
 
 When creating new components, ensure:
 
-- [ ] Uses "Lokal Verde" color palette
-- [ ] Applies 8px spacing system
-- [ ] Uses Inter font with correct scale
-- [ ] Includes appropriate border radius (default: `rounded-md`)
-- [ ] Has proper shadow elevation
+- [ ] Uses "Lokal Verde" color palette with complete color scales (50-900)
+- [ ] Applies 8px spacing system (uses CSS custom properties from `globals.css`)
+- [ ] Uses Manrope font with correct type scale
+- [ ] Includes appropriate border radius (default: `rounded-md`, uses `--radius-*` variables)
+- [ ] Has proper shadow elevation (uses `--shadow-*` variables)
 - [ ] Meets WCAG AA contrast requirements
-- [ ] Includes hover/active/focus states
+- [ ] Includes hover/active/focus states with proper transitions (`--transition-*` variables)
 - [ ] Is responsive (mobile-first)
 - [ ] Has accessible labels/alt text
-- [ ] Uses consistent iconography
+- [ ] Uses consistent iconography (Lucide React)
 - [ ] Follows established patterns
+- [ ] Leverages pre-built typography classes (`.heading-*`, `.body-*`)
+- [ ] Uses utility classes where applicable (`.pattern-*`, `.container-*`, `.focus-ring`)
 
 ---
 
@@ -1380,17 +1522,19 @@ When creating new components, ensure:
 ### Component Quality Standards
 
 All implemented components follow:
-- ✅ "Lokal Verde" color palette with complete scales
-- ✅ 8px spacing system
-- ✅ Inter font with correct type scale
-- ✅ Appropriate border radius (default: `rounded-md`)
-- ✅ Proper shadow elevation
+- ✅ "Lokal Verde" color palette with complete scales (50-900 for all colors)
+- ✅ 8px spacing system with CSS custom properties (`--spacing-*`)
+- ✅ Manrope font with correct type scale
+- ✅ Appropriate border radius (default: `rounded-md`, uses `--radius-*` variables)
+- ✅ Proper shadow elevation (uses `--shadow-*` variables)
 - ✅ WCAG AA contrast requirements
-- ✅ Hover/active/focus states with transitions
+- ✅ Hover/active/focus states with transitions (uses `--transition-*` variables)
 - ✅ Responsive design (mobile-first)
 - ✅ Accessible labels and ARIA attributes
 - ✅ Consistent Lucide React iconography
 - ✅ Established design patterns
+- ✅ Pre-built typography classes (`.heading-*`, `.body-*`, `.text-*`)
+- ✅ Utility classes for patterns and containers
 
 ---
 
@@ -1398,6 +1542,7 @@ All implemented components follow:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2.0 | 2025-10-28 | **Major Update:** Documented complete `globals.css` implementation including: Manrope font (changed from Inter), accurate neutral color values, comprehensive spacing scale (13 values), complete border radius scale (7 values), shadow scale (5 values), z-index scale, transition system, pattern utilities, container utilities, focus ring utility, semantic color tokens (text, surface, border), updated typography classes with accurate sizes and line-heights, responsive typography behavior | Design Team |
 | 1.1.0 | 2025-10-28 | Updated with comprehensive design system implementation: complete color scales (60+ tokens), typography classes, Lucide React icons, implemented components (Sidebar, BottomNav, AppLayout, pages), PWA features | Design Team |
 | 1.0.0 | 2025-10-28 | Initial UI/UX design system | Design Team |
 
