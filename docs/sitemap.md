@@ -1,11 +1,11 @@
-# 🗺️ Krawl PWA - Sitemap
-## *Navigational Structure & User Flows*
+# 🗺️ Sitemap: Krawl PWA
 
-<div align="center">
+> **Purpose:** This sitemap outlines the primary pages/views, navigational structure, and user flows of the Krawl Progressive Web App, defining the information architecture and access patterns.
 
-*This sitemap outlines the primary pages/views and navigational structure of the Krawl Progressive Web App.*
-
-</div>
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Product Team
 
 ---
 
@@ -741,6 +741,26 @@ Core Principle
 
 *This sitemap provides the structural foundation for intuitive navigation and seamless user experience throughout the Krawl PWA.*
 
-**Version 1.0** • Last Updated: October 2025
-
 </div>
+
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial sitemap | Product Team |
+
+---
+
+## 📚 Related Documents
+
+- [Wireframe](./wireframe.md) - Page layouts and wireframes
+- [User Journey](./user-journey.md) - User flow through site
+- [Content Plan](./content-plan.md) - Content for each page
+- [UI/UX Design System](./ui-ux-design-system.md) - Navigation patterns
+- [Scope of Work](./scope-of-work.md) - Feature pages
+
+---
+
+*Document maintained by Product Team • Last reviewed: 2025-10-28*

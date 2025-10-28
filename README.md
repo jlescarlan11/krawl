@@ -1,3 +1,48 @@
+## 🗄️ Database Setup
+
+### Local Development with Docker
+
+**Prerequisites:**
+- Docker and Docker Compose installed
+
+**Quick Start:**
+
+1. Create a `.env` file in the project root:
+```env
+DB_USER=krawl_user
+DB_PASSWORD=krawl_dev_password_2025
+```
+
+2. Start the PostgreSQL + PostGIS container:
+```bash
+docker-compose up -d
+```
+
+3. Verify the container is running:
+```bash
+docker ps
+```
+
+**Connection Details:**
+
+| Parameter | Value |
+|-----------|-------|
+| Host | `localhost` |
+| Port | `5432` |
+| Database | `krawl` |
+| Username | `krawl_user` |
+| Password | `krawl_dev_password_2025` |
+
+**Features:**
+- PostgreSQL 15 with PostGIS 3.4 extension
+- Automatic PostGIS initialization
+- Persistent data volume
+- Health checks configured
+
+For detailed setup instructions, see [Project Setup Documentation](docs/project-setup.md).
+
+---
+
 ## 🧩 Naming Conventions
 
 To maintain consistency across the project, all contributors should follow these naming conventions.

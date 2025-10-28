@@ -1,33 +1,41 @@
-# Krawl API Documentation (MVP)
+# 🔧 API Documentation: Krawl MVP
 
-> **Version:** 1.0.0  
-> **Last Updated:** October 28, 2025  
-> **Base URL:** `/api` or `/api/v1`
+> **Purpose:** Complete REST API reference for the Krawl MVP backend, covering authentication, endpoints, data formats, and error handling for developers integrating with the platform.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Backend Team  
+**Tech Stack:** Spring Boot, JWT, PostgreSQL/PostGIS  
+**Base URL:** `/api` or `/api/v1`
 
 ---
 
-## Table of Contents
+## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Authentication](#authentication)
-- [Data Format](#data-format)
-- [Error Handling](#error-handling)
-- [API Endpoints](#api-endpoints)
+- [Overview](#-overview)
+- [Authentication](#-authentication)
+- [Data Format](#-data-format)
+- [Error Handling](#️-error-handling)
+- [API Endpoints](#-api-endpoints)
   - [Authentication](#1-authentication-auth)
   - [Gems](#2-gems-gems)
   - [Krawls](#3-krawls-krawls)
   - [Community Interactions](#4-community-interactions)
   - [User Profiles & Saved Krawls](#5-user-profiles--saved-krawls)
+- [Additional Notes](#additional-notes)
+- [Changelog](#-changelog)
+- [Related Documents](#-related-documents)
 
 ---
 
-## Overview
+## 📋 Overview
 
 This document outlines the REST API endpoints, data formats, and authentication mechanisms for the **Krawl MVP backend**, built with **Spring Boot**.
 
 ---
 
-## Authentication
+## 🔐 Authentication
 
 ### Method
 **Token-based Authentication** using JWT (JSON Web Tokens)
@@ -52,7 +60,7 @@ Authorization: Bearer <your_jwt_token>
 
 ---
 
-## Data Format
+## 📊 Data Format
 
 | Type | Format | Content-Type |
 |------|--------|--------------|
@@ -61,7 +69,7 @@ Authorization: Bearer <your_jwt_token>
 
 ---
 
-## Error Handling
+## ⚠️ Error Handling
 
 All error responses follow a standard structure with appropriate HTTP status codes.
 
@@ -90,7 +98,7 @@ All error responses follow a standard structure with appropriate HTTP status cod
 
 ---
 
-## API Endpoints
+## 🌐 API Endpoints
 
 ---
 
@@ -715,5 +723,23 @@ This documentation covers the core endpoints anticipated for the **Krawl MVP** b
 
 ---
 
-**End of Documentation**
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial API documentation for MVP | Backend Team |
+
+---
+
+## 📚 Related Documents
+
+- [Database Schema](./database-schema.md)
+- [System Design](./system-design.md)
+- [Security Plan](./security-plan.md)
+- [Testing Plan](./testing-plan.md)
+- [Project Setup](./project-setup.md)
+
+---
+
+*API documentation maintained by Backend Team • Last reviewed: 2025-10-28*
 

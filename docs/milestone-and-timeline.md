@@ -1,5 +1,11 @@
-# 🗓️ Krawl MVP - Milestone Plan & Timeline
-## *Approx. 12 Weeks to Launch*
+# 📅 Milestone Plan & Timeline: Krawl MVP
+
+> **Purpose:** This document outlines the 12-week development timeline for the Krawl MVP, breaking down deliverables, milestones, and success criteria for each phase.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Project Lead
 
 ---
 
@@ -170,3 +176,24 @@ graph LR
 *From setup to launch in 12 weeks — Building the living map of Filipino culture*
 
 </div>
+
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial milestone and timeline document | Project Lead |
+
+---
+
+## 📚 Related Documents
+
+- [Project Brief](./project-brief.md) - Project overview
+- [Project Proposal](./project-proposal.md) - Detailed proposal
+- [Scope of Work](./scope-of-work.md) - Feature scope and deliverables
+- [Kanban Task](./kanban-task.md) - Detailed task breakdown
+
+---
+
+*Document maintained by Project Lead • Last reviewed: 2025-10-28*

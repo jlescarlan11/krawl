@@ -1,6 +1,24 @@
-# Krawl - Version Control & Branching Strategy
+# 📘 Version Control Strategy: Krawl
 
-This document outlines the Git branching model, naming conventions, and workflow practices for the Krawl project to ensure code consistency, collaboration, and maintainability.
+> **Purpose:** This document defines the Git branching model, naming conventions, workflow practices, and commit standards for the Krawl project to ensure code consistency and effective collaboration.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Development Team
+
+---
+
+## 📋 Table of Contents
+
+1. [Repository Platform](#1-repository-platform)
+2. [Main Branch](#2-main-branch)
+3. [Branching Model](#3-branching-model-feature-branch-workflow)
+4. [Naming Conventions](#4-naming-conventions)
+5. [Commit Message Guidelines](#5-commit-message-guidelines)
+6. [Pull Request Process](#6-pull-request-process)
+7. [CI/CD Integration](#7-cicd-integration)
+8. [Best Practices](#8-best-practices)
 
 ---
 
@@ -281,4 +299,25 @@ This branching strategy prioritizes:
 - **Stability**: Protected main branch ensures production reliability
 
 All team members are expected to follow these guidelines to maintain a healthy, organized codebase.
+
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial version control strategy | Development Team |
+
+---
+
+## 📚 Related Documents
+
+- [Project Setup](./project-setup.md) - Development environment setup
+- [Kanban Task](./kanban-task.md) - Task tracking and management
+- [Testing Plan](./testing-plan.md) - Testing workflow and CI integration
+- [Hosting Deployment Plan](./hosting-deployment-plan.md) - Deployment procedures
+
+---
+
+*Document maintained by Development Team • Last reviewed: 2025-10-28*
 

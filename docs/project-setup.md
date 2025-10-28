@@ -1,6 +1,22 @@
-# 🚀 Krawl - Project Setup Documentation
+# 🛠️ Project Setup Guide: Krawl
 
-This document outlines the repository structure, naming conventions, and steps required to set up the development environment for the Krawl PWA.
+> **Purpose:** This guide outlines the repository structure, naming conventions, environment setup steps, and configuration needed to begin development on the Krawl PWA.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Development Team
+
+---
+
+## 📋 Table of Contents
+
+1. [Repository Structure](#-repository-structure)
+2. [Naming Conventions](#-naming-conventions)
+3. [Prerequisites](#-prerequisites)
+4. [Setup Steps](#-setup-steps)
+5. [Configuration](#-configuration)
+6. [Verification](#-verification)
 
 ---
 
@@ -150,15 +166,48 @@ cd krawl-app
 
 #### 2️⃣ Run Database
 
-Navigate to the directory containing `docker-compose.yml` (if using Docker).
+##### Using Docker (Recommended)
 
-Start the PostgreSQL + PostGIS container:
+**Create Environment File:**
+
+Create a `.env` file in the project root with the following content:
+
+```env
+# Database Configuration for Local Development
+DB_USER=krawl_user
+DB_PASSWORD=krawl_dev_password_2025
+```
+
+**Start the PostgreSQL + PostGIS Container:**
 
 ```bash
 docker-compose up -d
 ```
 
-> **Alternative:** Install PostgreSQL + PostGIS locally and configure connection details.
+**Verify the Container is Running:**
+
+```bash
+docker ps
+```
+
+You should see the `krawl-postgres` container running.
+
+**Database Connection Details:**
+
+| Parameter | Value |
+|-----------|-------|
+| Host | `localhost` |
+| Port | `5432` |
+| Database | `krawl` |
+| Username | `krawl_user` (from .env) |
+| Password | `krawl_dev_password_2025` (from .env) |
+| Connection String | `postgresql://krawl_user:krawl_dev_password_2025@localhost:5432/krawl` |
+
+**PostGIS Extension:**
+
+The PostGIS extension is automatically enabled via the init script at `init-scripts/01-init-postgis.sql`.
+
+> **Alternative:** Install PostgreSQL + PostGIS locally and configure connection details manually.
 
 ---
 
@@ -297,5 +346,23 @@ Please ensure you follow the naming conventions and project structure outlined i
 
 ---
 
-**Last Updated:** October 28, 2025
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial project setup guide | Development Team |
+
+---
+
+## 📚 Related Documents
+
+- [Tech Stack](./tech-stack.md) - Technology choices and rationale
+- [System Architecture](./system-architecture.md) - System design and architecture
+- [Version Control Strategy](./version-control-strategy.md) - Git workflow and branching
+- [Database Schema](./database-schema.md) - Database structure and setup
+- [API Documentation](./api-documentation.md) - Backend API specifications
+
+---
+
+*Document maintained by Development Team • Last reviewed: 2025-10-28*
 

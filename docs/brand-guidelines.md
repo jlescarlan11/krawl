@@ -639,6 +639,25 @@ For brand guideline clarifications or special use cases, refer to the design sys
 
 *These guidelines ensure Krawl maintains a cohesive, recognizable, and authentic brand identity across all touchpoints.*
 
-**Version 1.0** • Last Updated: October 2025
-
 </div>
+
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial brand guidelines | Design Team |
+
+---
+
+## 📚 Related Documents
+
+- [Brand Brief](./brand-brief.md) - Brand identity and values
+- [Mood Board](./mood-board.md) - Visual inspiration  
+- [UI/UX Design System](./ui-ux-design-system.md) - Design system implementation
+- [Content Plan](./content-plan.md) - Content strategy and voice
+
+---
+
+*Document maintained by Design Team • Last reviewed: 2025-10-28*
