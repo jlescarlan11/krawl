@@ -2,7 +2,7 @@
 
 > **Purpose:** This document defines the complete PostgreSQL database schema for Krawl, including all tables, relationships, indexes, and geospatial configurations using PostGIS.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Last Updated:** 2025-10-28  
 **Status:** Active  
 **Owner:** Backend Team  
@@ -47,10 +47,12 @@ CREATE TABLE users (
     creator_score NUMERIC(3, 2) DEFAULT 0.00,
     reputation_tier VARCHAR(50) DEFAULT 'Newcomer',
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMPTZ -- Soft delete support
 );
 
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_deleted_at ON users(deleted_at);
 ```
 
 ### Fields
@@ -66,6 +68,7 @@ CREATE INDEX idx_users_email ON users(email);
 | `reputation_tier` | VARCHAR(50) | User reputation level (e.g., Newcomer, Trail Maker, Kanto Guide) |
 | `created_at` | TIMESTAMPTZ | Account creation timestamp |
 | `updated_at` | TIMESTAMPTZ | Last update timestamp |
+| `deleted_at` | TIMESTAMPTZ | Last delete timestamp |
 
 ---
 
@@ -81,7 +84,7 @@ CREATE TABLE gems (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     location GEOGRAPHY(Point, 4326) NOT NULL,
-    founder_id UUID NOT NULL REFERENCES users(user_id) ON DELETE SET NULL,
+    founder_id UUID REFERENCES users(user_id) ON DELETE SET NULL,
     vouch_count INTEGER DEFAULT 0 NOT NULL,
     average_rating NUMERIC(3, 2) DEFAULT 0.00 NOT NULL,
     rating_count INTEGER DEFAULT 0 NOT NULL,
@@ -89,11 +92,13 @@ CREATE TABLE gems (
     lifecycle_status VARCHAR(50) DEFAULT 'open' NOT NULL,
     last_verified_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMPTZ  -- Soft delete support
 );
 
 CREATE INDEX idx_gems_location ON gems USING GIST (location);
 CREATE INDEX idx_gems_founder_id ON gems(founder_id);
+CREATE INDEX idx_gems_deleted_at ON gems(deleted_at);
 ```
 
 ### Fields
@@ -113,6 +118,7 @@ CREATE INDEX idx_gems_founder_id ON gems(founder_id);
 | `last_verified_at` | TIMESTAMPTZ | Last "Vibe Check" timestamp |
 | `created_at` | TIMESTAMPTZ | Creation timestamp |
 | `updated_at` | TIMESTAMPTZ | Last update timestamp |
+| `deleted_at` | TIMESTAMPTZ | Soft delete timestamp (NULL if active) |
 
 ### Notes
 - The spatial index (`GIST`) enables efficient location-based queries
@@ -183,7 +189,7 @@ Stores photos uploaded for Gems.
 CREATE TABLE gem_photos (
     photo_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     gem_id UUID NOT NULL REFERENCES gems(gem_id) ON DELETE CASCADE,
-    uploader_id UUID NOT NULL REFERENCES users(user_id) ON DELETE SET NULL,
+    uploader_id UUID REFERENCES users(user_id) ON DELETE SET NULL,
     photo_url VARCHAR(1024) NOT NULL,
     caption TEXT,
     is_featured BOOLEAN DEFAULT FALSE,
@@ -293,6 +299,9 @@ CREATE TABLE gem_reports (
     report_type VARCHAR(50) NOT NULL,
     comment TEXT,
     status VARCHAR(50) DEFAULT 'pending' NOT NULL,
+    reviewed_at TIMESTAMPTZ,  -- NEW: When reviewed
+    reviewed_by UUID REFERENCES users(user_id) ON DELETE SET NULL,  -- NEW: Admin who reviewed
+    resolution_notes TEXT,  -- NEW: Admin notes
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -331,10 +340,12 @@ CREATE TABLE krawls (
     average_rating NUMERIC(3, 2) DEFAULT 0.00 NOT NULL,
     rating_count INTEGER DEFAULT 0 NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMPTZ  -- Soft delete support
 );
 
 CREATE INDEX idx_krawls_creator_id ON krawls(creator_id);
+CREATE INDEX idx_krawls_deleted_at ON krawls(deleted_at);
 ```
 
 ### Fields
@@ -350,6 +361,7 @@ CREATE INDEX idx_krawls_creator_id ON krawls(creator_id);
 | `rating_count` | INTEGER | Total number of ratings |
 | `created_at` | TIMESTAMPTZ | Creation timestamp |
 | `updated_at` | TIMESTAMPTZ | Last update timestamp |
+| `deleted_at` | TIMESTAMPTZ | Soft delete timestamp (NULL if active) |
 
 ### Future Enhancements
 - `estimated_distance` - Calculated distance of the route
@@ -528,10 +540,196 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Apply to all tables with updated_at
 CREATE TRIGGER update_users_updated_at
     BEFORE UPDATE ON users
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_gems_updated_at
+    BEFORE UPDATE ON gems
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_gem_ratings_updated_at
+    BEFORE UPDATE ON gem_ratings
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_krawls_updated_at
+    BEFORE UPDATE ON krawls
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+```
+
+### Example Trigger for Gem Rating Stats
+
+```sql
+CREATE OR REPLACE FUNCTION update_gem_rating_stats()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Recalculate average_rating and rating_count for the affected gem
+    UPDATE gems
+    SET 
+        average_rating = COALESCE(
+            (SELECT AVG(rating)::NUMERIC(3,2) 
+             FROM gem_ratings 
+             WHERE gem_id = COALESCE(NEW.gem_id, OLD.gem_id)), 
+            0.00
+        ),
+        rating_count = COALESCE(
+            (SELECT COUNT(*) 
+             FROM gem_ratings 
+             WHERE gem_id = COALESCE(NEW.gem_id, OLD.gem_id)), 
+            0
+        )
+    WHERE gem_id = COALESCE(NEW.gem_id, OLD.gem_id);
+    
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_gem_rating_stats
+    AFTER INSERT OR UPDATE OR DELETE ON gem_ratings
+    FOR EACH ROW
+    EXECUTE FUNCTION update_gem_rating_stats();
+```
+
+### Example Trigger for Gem Vouch Count
+
+```sql
+CREATE OR REPLACE FUNCTION update_gem_vouch_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE gems
+    SET vouch_count = (
+        SELECT COUNT(*) 
+        FROM gem_vouches 
+        WHERE gem_id = COALESCE(NEW.gem_id, OLD.gem_id)
+    )
+    WHERE gem_id = COALESCE(NEW.gem_id, OLD.gem_id);
+    
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_gem_vouch_count
+    AFTER INSERT OR DELETE ON gem_vouches
+    FOR EACH ROW
+    EXECUTE FUNCTION update_gem_vouch_count();
+```
+
+### Example Trigger for Krawl Rating Stats
+
+```sql
+CREATE OR REPLACE FUNCTION update_krawl_rating_stats()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE krawls
+    SET 
+        average_rating = COALESCE(
+            (SELECT AVG(rating)::NUMERIC(3,2) 
+             FROM krawl_ratings 
+             WHERE krawl_id = COALESCE(NEW.krawl_id, OLD.krawl_id)), 
+            0.00
+        ),
+        rating_count = COALESCE(
+            (SELECT COUNT(*) 
+             FROM krawl_ratings 
+             WHERE krawl_id = COALESCE(NEW.krawl_id, OLD.krawl_id)), 
+            0
+        )
+    WHERE krawl_id = COALESCE(NEW.krawl_id, OLD.krawl_id);
+    
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_krawl_rating_stats
+    AFTER INSERT OR UPDATE OR DELETE ON krawl_ratings
+    FOR EACH ROW
+    EXECUTE FUNCTION update_krawl_rating_stats();
+```
+
+### Example Trigger for User Creator Score
+
+```sql
+CREATE OR REPLACE FUNCTION update_user_creator_score()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE users
+    SET creator_score = COALESCE(
+        (SELECT AVG(k.average_rating)::NUMERIC(3,2)
+         FROM krawls k
+         WHERE k.creator_id = (
+             SELECT creator_id 
+             FROM krawls 
+             WHERE krawl_id = COALESCE(NEW.krawl_id, OLD.krawl_id)
+         )
+         AND k.rating_count >= 3  -- Only count krawls with at least 3 ratings
+        ),
+        0.00
+    )
+    WHERE user_id = (
+        SELECT creator_id 
+        FROM krawls 
+        WHERE krawl_id = COALESCE(NEW.krawl_id, OLD.krawl_id)
+    );
+    
+    RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_user_creator_score
+    AFTER INSERT OR UPDATE OR DELETE ON krawl_ratings
+    FOR EACH ROW
+    EXECUTE FUNCTION update_user_creator_score();
+```
+
+### Default Tags Seeding
+
+```sql
+-- Insert default tags
+INSERT INTO tags (tag_name) VALUES
+    ('Food & Drinks'),
+    ('Nature & Parks'),
+    ('Art & Culture'),
+    ('Shopping'),
+    ('Nightlife'),
+    ('Historical'),
+    ('Adventure'),
+    ('Family-Friendly'),
+    ('Photography'),
+    ('Local Favorite'),
+    ('Hidden Gem'),
+    ('Budget-Friendly'),
+    ('Luxury'),
+    ('Seasonal');
+```
+
+### Useful Views
+
+```sql
+-- View: Active gems (not soft-deleted)
+CREATE VIEW active_gems AS
+SELECT * FROM gems WHERE deleted_at IS NULL;
+
+-- View: Active users (not soft-deleted)
+CREATE VIEW active_users AS
+SELECT * FROM users WHERE deleted_at IS NULL;
+
+-- View: Public krawls with creator info
+CREATE VIEW public_krawls_with_creator AS
+SELECT 
+    k.*,
+    u.username as creator_username,
+    u.creator_score as creator_score,
+    u.reputation_tier as creator_tier
+FROM krawls k
+JOIN users u ON k.creator_id = u.user_id
+WHERE k.visibility = 'public' 
+  AND k.deleted_at IS NULL
+  AND u.deleted_at IS NULL;
 ```
 
 ---
@@ -575,6 +773,7 @@ ORDER BY sk.saved_at DESC;
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.0 | 2025-10-28 | Added triggers, views, and improved formatting | Backend Team |
 | 1.0.0 | 2025-10-28 | Initial database schema | Backend Team |
 
 ---
