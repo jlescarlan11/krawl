@@ -1,6 +1,27 @@
-# Krawl - System Architecture Diagram (MVP)
+# 🏗️ System Architecture: Krawl MVP
 
-> **High-Level Overview**: This diagram provides a comprehensive view of the Krawl application's components and their interactions.
+> **Purpose:** Provides a comprehensive view of the Krawl application's system architecture, component interactions, data flows, and technical stack for the MVP phase.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Engineering Team  
+**Tech Stack:** Next.js, Spring Boot, PostgreSQL + PostGIS
+
+---
+
+## 📋 Table of Contents
+
+1. [Architecture Overview](#-architecture-overview)
+2. [Core Components](#-core-components)
+3. [Data Flow Overview](#-data-flow-overview)
+4. [API Communication Patterns](#-api-communication-patterns)
+5. [Security Considerations](#-security-considerations)
+6. [Hosting & Deployment](#-hosting--deployment)
+7. [Technology Stack Summary](#-technology-stack-summary)
+8. [Key Architectural Decisions](#-key-architectural-decisions)
+9. [Changelog](#-changelog)
+10. [Related Documents](#-related-documents)
 
 ---
 
@@ -397,6 +418,23 @@ Image Storage          →  AWS S3 / Google Cloud Storage / Cloudinary
 
 ---
 
-*Last Updated: October 28, 2025*  
-*Version: MVP 1.0*
+## 📝 Changelog
 
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial system architecture documentation | Engineering Team |
+
+---
+
+## 📚 Related Documents
+
+- [API Documentation](./api-documentation.md)
+- [Database Schema](./database-schema.md)
+- [Tech Stack](./tech-stack.md)
+- [System Design](./system-design.md)
+- [Security Plan](./security-plan.md)
+- [Hosting & Deployment Plan](./hosting-deployment-plan.md)
+
+---
+
+*Technical documentation maintained by Engineering Team • Last reviewed: 2025-10-28*

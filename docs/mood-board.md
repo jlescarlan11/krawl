@@ -567,6 +567,25 @@ Night Markets         Beach Scenes
 
 *The mood board should feel like walking through your favorite kanto at golden hour – familiar, warm, alive, and full of stories waiting to be shared.*
 
-**Version 1.0** • October 2025
-
 </div>
+
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial mood board | Design Team |
+
+---
+
+## 📚 Related Documents
+
+- [Brand Brief](./brand-brief.md) - Brand foundation
+- [Brand Guidelines](./brand-guidelines.md) - Brand standards
+- [UI/UX Design System](./ui-ux-design-system.md) - Design implementation
+- [Design Progression](./design-progression.md) - Design evolution
+
+---
+
+*Document maintained by Design Team • Last reviewed: 2025-10-28*

@@ -1,9 +1,29 @@
-# 🗺️ Project Proposal: Krawl
-## *The Living Map of Filipino Culture*
+# 🎯 Project Proposal: Krawl
+
+> **Purpose:** This proposal presents the comprehensive business case for Krawl, including problem statement, solution approach, target audience, goals, timeline, and budget for the MVP phase.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Project Lead
+
+---
+
+## 📋 Table of Contents
+
+1. [Overview](#1--overview)
+2. [Problem Statement](#2--problem-statement)
+3. [Solution: Krawl](#3--solution-krawl)
+4. [Goals (Initial Phase)](#4--goals-initial-phase---approx-12-weeks-mvp)
+5. [Target Audience](#5--target-audience)
+6. [Timeline](#6--timeline-high-level---12-weeks-mvp)
+7. [Budget](#7--budget-initial-phase---mvp-estimate-in-php)
 
 ---
 
 ## 1. 🎯 Overview
+
+**The Living Map of Filipino Culture**
 
 **Krawl** is a community-driven Progressive Web App (PWA) designed to map and share authentic, hyperlocal Filipino culture. Moving beyond generic listings, Krawl empowers users ("**Locals**") to pin points of interest ("**Gems**") – from hidden food stalls and street art to historical markers – and weave them into curated, step-by-step trails ("**Krawls**").
 
@@ -170,3 +190,25 @@ Week 12    │ 🌱 Content Seeding & Launch Readiness
 *This proposal outlines Krawl's unique value in bridging the gap between discovery and guided experience for exploring Filipino culture, leveraging a community-first approach and a practical PWA launch strategy.*
 
 </div>
+
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial project proposal | Project Lead |
+
+---
+
+## 📚 Related Documents
+
+- [Project Brief](./project-brief.md) - High-level project overview
+- [Scope of Work](./scope-of-work.md) - Detailed feature specifications
+- [Milestone and Timeline](./milestone-and-timeline.md) - Detailed 12-week breakdown
+- [Budget and Resource](./budget-and-resource.md) - Detailed budget analysis
+- [User Personas](./user-persona-profile.md) - Target audience profiles
+
+---
+
+*Document maintained by Project Lead • Last reviewed: 2025-10-28*

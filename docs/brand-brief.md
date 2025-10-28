@@ -1,29 +1,50 @@
 # 🎨 Brand Brief: Krawl
-## *Discover the Real Philippines*
+
+> **Purpose:** Defines Krawl's brand identity, voice, positioning, and values to guide all marketing, design, and communication decisions.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Marketing & Design Team
 
 ---
 
+## 📋 Table of Contents
+
+1. [Brand Foundation](#1-brand-foundation)
+2. [Target Audience](#2-target-audience)
+3. [Brand Story](#3-brand-story)
+4. [Tone of Voice](#4-tone-of-voice)
+5. [Unique Selling Points](#5-unique-selling-points)
+6. [Brand Personality](#6-brand-personality)
+7. [Brand Voice Examples](#7-brand-voice-examples)
+8. [Brand Positioning](#8-brand-positioning)
+9. [Core Brand Values](#9-core-brand-values)
+10. [Additional Tagline Options](#10-additional-tagline-options)
+
+---
+
+## 1. Brand Foundation
+
 <div align="center">
 
-## 🎯 Mission
+### 🎯 Mission
 
 **To empower locals to map, share, and celebrate authentic Filipino culture through community-driven discovery and guided, interactive experiences.**
 
-</div>
-
----
-
-<div align="center">
-
-## 🌟 Vision
+### 🌟 Vision
 
 **To be the most trusted and engaging platform for discovering the Philippines' rich hyperlocal identity, fostering community pride, and connecting people to genuine experiences, one Krawl at a time.**
 
+### 💬 Tagline
+
+**"Stop Scrolling, Start Krawling."**
+
 </div>
 
 ---
 
-## 👥 Target Audience
+## 2. Target Audience
 
 ### 🎯 Primary Audience
 ```
@@ -54,7 +75,7 @@ Young Filipino Adults (18-35)
 
 ---
 
-## 📖 Brand Story
+## 3. Brand Story
 
 > **The Problem**
 
@@ -82,7 +103,7 @@ It's more than just a map; it's an invitation to explore your community's unique
 
 ---
 
-## 🎙️ Tone of Voice
+## 4. Tone of Voice
 
 ### 🇵🇭 Authentic & Local
 **Speak naturally, use relatable Filipino references/Taglish where appropriate.**
@@ -134,7 +155,7 @@ It's more than just a map; it's an invitation to explore your community's unique
 
 ---
 
-## 💎 Unique Selling Points (USPs)
+## 5. Unique Selling Points (USPs)
 
 ### 🧭 1. Guided "Krawl Mode"
 **The Core Differentiator**
@@ -207,7 +228,7 @@ Solution: Downloadable Krawls
 
 ---
 
-## 🎨 Brand Personality Matrix
+## 6. Brand Personality
 ```
 We Are                     We Are Not
 ├─ 🏘️  Local              ├─ 🏢 Corporate
@@ -220,7 +241,7 @@ We Are                     We Are Not
 
 ---
 
-## 💬 Brand Voice Examples
+## 7. Brand Voice Examples
 
 ### ❌ Don't Say
 
@@ -252,7 +273,7 @@ We Are                     We Are Not
 
 ---
 
-## 🎯 Brand Positioning Statement
+## 8. Brand Positioning
 
 <div align="center">
 
@@ -272,7 +293,7 @@ We Are                     We Are Not
 
 ---
 
-## 🏆 Core Brand Values
+## 9. Core Brand Values
 ```
 🤝 COMMUNITY FIRST
    └─ Built by locals, for locals
@@ -292,27 +313,37 @@ We Are                     We Are Not
 
 ---
 
-<div align="center">
+## 10. Additional Tagline Options
 
-## 🌟 Tagline Options
-
-### Primary
-**"Stop Scrolling, Start Krawling."**
-
-### Alternative
+### Alternative Taglines
 - "Your Neighborhood, Mapped by Neighbors"
 - "Discover Local, Krawl Like a Local"
 - "The Real Philippines, One Krawl at a Time"
 - "Explore More, Scroll Less"
 
----
-
 ### 🎨 Brand Essence
 
 **Community-Powered Discovery**
 
----
-
 *Authentic • Local • Guided • Yours*
 
-</div>
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial brand brief with mission, vision, USPs, and voice guidelines | Marketing Team |
+
+---
+
+## 📚 Related Documents
+
+- [Brand Guidelines](./brand-guidelines.md)
+- [UI/UX Design System](./ui-ux-design-system.md)
+- [Content Plan](./content-plan.md)
+- [User Persona Profile](./user-persona-profile.md)
+
+---
+
+*Brand documentation maintained by Marketing & Design Team • Last reviewed: 2025-10-28*

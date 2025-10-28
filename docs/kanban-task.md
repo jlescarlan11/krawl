@@ -1,8 +1,24 @@
-# 🗂️ Krawl - Kanban Tasks Board
+# 📋 Kanban Task Board: Krawl MVP
 
-**Project Setup & MVP Features**
+> **Purpose:** This document contains the comprehensive task breakdown for the Krawl MVP development, organized by epics covering project setup, frontend features, backend API development, and deployment.
 
-These tasks cover the initial configuration, environment setup, and the core features for the Krawl MVP.
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Project Lead
+
+---
+
+## 📋 Table of Contents
+
+1. [Board Columns](#-board-columns)
+2. [Epic 1: Initial Project Setup](#-epic-1-initial-project-setup--environment-configuration)
+3. [Epic 2: Core Authentication & Profile](#-epic-2-core-authentication--profile-us-1x)
+4. [Epic 3: Gem Creation & Display](#-epic-3-gem-creation--display-us-2x)
+5. [Epic 4: Krawl Creation & Display](#-epic-4-krawl-creation--display-us-3x)
+6. [Epic 5: Discovery & Exploration](#-epic-5-discovery--exploration-us-4x)
+7. [Epic 6: Community Interaction & Quality](#-epic-6-community-interaction--quality-us-6x)
+8. [Epic 7: Krawl Mode & Offline](#-epic-7-krawl-mode--offline-us-5x-us-8x)
 
 ---
 
@@ -1430,5 +1446,23 @@ These tasks cover the initial configuration, environment setup, and the core fea
 
 ---
 
-**Last Updated:** October 28, 2025
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial Kanban task board | Project Lead |
+
+---
+
+## 📚 Related Documents
+
+- [Scope of Work](./scope-of-work.md) - Feature specifications and requirements
+- [Milestone and Timeline](./milestone-and-timeline.md) - Overall project timeline
+- [User Stories](./user-story.md) - Detailed user stories and acceptance criteria
+- [Version Control Strategy](./version-control-strategy.md) - Git workflow and task branches
+- [Project Setup](./project-setup.md) - Development environment setup
+
+---
+
+*Document maintained by Project Lead • Last reviewed: 2025-10-28*
 

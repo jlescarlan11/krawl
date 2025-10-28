@@ -1,4 +1,14 @@
-# 🗄️ Krawl - PostgreSQL Database Schema
+# 🗄️ Database Schema: Krawl
+
+> **Purpose:** This document defines the complete PostgreSQL database schema for Krawl, including all tables, relationships, indexes, and geospatial configurations using PostGIS.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Backend Team  
+**Tech Stack:** PostgreSQL 14+, PostGIS 3.0+
+
+---
 
 > **Note:** This schema requires PostgreSQL with the PostGIS extension enabled for geographical data handling.
 
@@ -561,12 +571,23 @@ ORDER BY sk.saved_at DESC;
 
 ---
 
-## 📝 License & Version
+## 📝 Changelog
 
-- **Schema Version:** 1.0
-- **Last Updated:** October 27, 2025
-- **PostgreSQL Version:** 14+
-- **PostGIS Version:** 3.0+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial database schema | Backend Team |
 
 ---
+
+## 📚 Related Documents
+
+- [System Architecture](./system-architecture.md) - Overall system design
+- [System Design](./system-design.md) - Data flow and design patterns
+- [API Documentation](./api-documentation.md) - API endpoints using this schema
+- [Project Setup](./project-setup.md) - Database setup instructions
+- [Database Testing Guide](./database-testing-guide.md) - Testing procedures
+
+---
+
+*Document maintained by Backend Team • Last reviewed: 2025-10-28*
 

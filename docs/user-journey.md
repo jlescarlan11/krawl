@@ -1,6 +1,11 @@
-# 🗺️ Krawl - User Journey Maps
+# 🗺️ User Journey Maps: Krawl
 
-> *These maps illustrate typical paths users might take through the Krawl PWA to achieve their goals, based on the defined personas.*
+> **Purpose:** This document illustrates typical paths users might take through the Krawl PWA to achieve their goals, based on the defined personas, showing touchpoints, thoughts, feelings, and opportunities for improvement.
+
+**Version:** 1.0.0  
+**Last Updated:** 2025-10-28  
+**Status:** Active  
+**Owner:** Product Team
 
 ---
 
@@ -81,5 +86,23 @@
 
 ---
 
-*Last Updated: October 2025*
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial user journey maps | Product Team |
+
+---
+
+## 📚 Related Documents
+
+- [User Persona Profile](./user-persona-profile.md) - Detailed user personas
+- [User Stories](./user-story.md) - Feature requirements
+- [Wireframe](./wireframe.md) - UI wireframes for user flows
+- [UI/UX Design System](./ui-ux-design-system.md) - Design implementation
+- [Scope of Work](./scope-of-work.md) - Feature scope
+
+---
+
+*Document maintained by Product Team • Last reviewed: 2025-10-28*
 

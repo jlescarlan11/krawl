@@ -410,3 +410,25 @@ All main screens include a bottom navigation bar with 4 tabs:
 - [ ] Responsive breakpoints for tablet/desktop views
 - [ ] Animation specifications for transitions
 
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-10-28 | Initial wireframes | Design Team |
+
+---
+
+## 📚 Related Documents
+
+- [UI/UX Design System](./ui-ux-design-system.md) - Design system and components
+- [Design Progression](./design-progression.md) - Design evolution from wireframes
+- [User Journey](./user-journey.md) - User flow analysis
+- [Sitemap](./sitemap.md) - Site structure
+- [Brand Guidelines](./brand-guidelines.md) - Brand standards
+
+---
+
+*Document maintained by Design Team • Last reviewed: 2025-10-28*
+
