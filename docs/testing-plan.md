@@ -6,7 +6,7 @@
 
 ## 1. Overall Goal
 
-To verify that the Krawl PWA meets the functional and non-functional requirements defined in the User Stories (`Krawl_FeatureList_UserStories.md`) and Scope of Work (`Krawl_SoW_MVP.md`), providing a **stable, usable, and valuable experience** for initial users.
+To verify that the Krawl PWA meets the functional and non-functional requirements defined in the User Stories (`user-story.md`) and Scope of Work (`scope-of-work.md`), providing a **stable, usable, and valuable experience** for initial users.
 
 ---
 
@@ -65,7 +65,7 @@ To verify that the Krawl PWA meets the functional and non-functional requirement
 
 #### Scope
 
-All major user journeys defined in `Krawl_UserJourneyMaps.md` and `Krawl_FeatureList_UserStories.md`:
+All major user journeys defined in `user-journey.md` and `user-story.md`:
 
 - User Registration & Login
 - Pinning a New Gem (including duplicate flow)
@@ -90,7 +90,7 @@ All major user journeys defined in `Krawl_UserJourneyMaps.md` and `Krawl_Feature
 
 ## 3. Key Areas & Scenarios for UAT
 
-*Based on Epics in `Krawl_Kanban_ProjectSetup.md`*
+*Based on Epics in `kanban-task.md`*
 
 ### 3.1 Authentication & Profile
 
