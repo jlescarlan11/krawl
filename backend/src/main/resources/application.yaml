@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: backend
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/krawl
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  # JPA/Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Let Flyway handle schema
+    show-sql: true
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    schemas: public
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT}
+
+# Logging Configuration
+logging:
+  level:
+    com.krawl.backend: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
