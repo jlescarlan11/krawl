@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import RegisterServiceWorker from "./register-sw";
+import Toaster from "@/components/Toaster";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({
       </head>
       <body className={`${manrope.variable} antialiased`}>
         <RegisterServiceWorker />
+        <Toaster />
         {children}
       </body>
     </html>

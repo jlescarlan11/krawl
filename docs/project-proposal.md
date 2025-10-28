@@ -2,7 +2,7 @@
 
 > **Purpose:** This proposal presents the comprehensive business case for Krawl, including problem statement, solution approach, target audience, goals, timeline, and budget for the MVP phase.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Last Updated:** 2025-10-28  
 **Status:** Active  
 **Owner:** Project Lead
@@ -119,55 +119,29 @@ A non-intrusive revenue model allows local businesses to "claim" their Gem (whic
 
 ---
 
-## 6. 📅 Timeline (High-Level - 12 Weeks MVP)
-```
-Week 1-2   │ 🏗️  Project Setup & Foundation
-           │     Architecture, Design System Basics
-           │
-Week 3-6   │ ⚙️  Core Feature Development
-           │     Auth, Gem Pinning, Krawl Creation, Map Display
-           │
-Week 7-8   │ 👥 Community & Quality Features
-           │     Vouching, Rating, Reporting, Profiles
-           │
-Week 9-10  │ 🧭 Krawl Mode & Offline Implementation
-           │     Location-aware guidance, Offline downloads
-           │
-Week 11    │ 🧪 Testing, Bug Fixing & Deployment Prep
-           │     QA, Performance optimization
-           │
-Week 12    │ 🌱 Content Seeding & Launch Readiness
-           │     Final content push, Go-live
-```
+## 6. 📅 Timeline
+
+**MVP Development: 12 Weeks**
+- Weeks 1-2: Project Setup & Foundation
+- Weeks 3-6: Core Feature Development (Auth, Gems, Krawls, Map)
+- Weeks 7-8: Community & Quality Features
+- Weeks 9-10: Krawl Mode & Offline Implementation
+- Week 11: Testing, Bug Fixing & Deployment
+- Week 12: Content Seeding & Launch Readiness
+
+For detailed milestones, deliverables, and success criteria for each phase, see [milestone-and-timeline.md](milestone-and-timeline.md).
 
 ---
 
-## 7. 💰 Budget (Initial Phase - MVP Estimate in PHP)
+## 7. 💰 Budget
 
-### 📊 Budget Breakdown
+**MVP Phase (3 Months):**
+- **Sweat Equity Approach:** ₱2,700 - 7,200 (domain, seeding, contingency)
+- **Freelance Approach:** ₱182,000 - 527,000+ (includes development costs)
 
-| Category | Cost (Sweat Equity) | Cost (Freelance) |
-|----------|---------------------|------------------|
-| **👨‍💻 Human Resources** | Sweat Equity | ₱170,000 - 510,000+ |
-| | *Primarily founders/team* | *Development/design freelancers* |
-| **☁️ Infrastructure** | ₱0 - 4,000 | ₱0 - 4,000 |
-| | *Free tiers for hosting PWA, backend API, database* | *3 months, minimal cost unless scaling needed* |
-| **🌐 Domain Name** | ₱700/year | ₱700/year |
-| **🗺️ Map API Costs** | ₱0 | ₱0 |
-| | *Google Maps free tier likely sufficient for MVP* | |
-| **🛠️ Tools** | ₱0 | ₱0 |
-| | *Free tiers for design/project management* | |
-| **📣 Marketing/Seeding** | ₱1,000 - 2,500 | ₱1,000 - 2,500 |
-| | *Small incentives for "Founding Users"* | |
-| **🔧 Contingency** | ₱1,000 | ₱10,000 |
-| | | |
-| **💵 TOTAL (3 Months)** | **₱2,700 - 7,200** | **₱182,000 - 527,000+** |
+**Strategy:** Leverage free tiers (hosting, tools) and community-driven content for lean launch.
 
-### 💡 Budget Strategy
-
-- **Lean Start:** Leverage free tiers and open-source tools
-- **Community-First:** Rely on "Founding Users" for initial content
-- **Scalable:** Infrastructure costs only increase with success
+For detailed budget breakdown by category, cost optimization strategies, and resource allocation, see [budget-and-resource.md](budget-and-resource.md).
 
 ---
 

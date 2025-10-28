@@ -2,13 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LuMapPin, LuSearch, LuRoute, LuPlus, LuUser, LuSettings, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
+import { LuMapPin, LuSearch, LuRoute, LuUser, LuSettings, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
 const navItems = [
   { href: '/', label: 'Map', icon: LuMapPin },
   { href: '/explore', label: 'Explore Gems', icon: LuSearch },
   { href: '/krawls', label: 'Krawls', icon: LuRoute },
-  { href: '/add', label: 'Add Gem', icon: LuPlus },
 ];
 
 interface SidebarProps {

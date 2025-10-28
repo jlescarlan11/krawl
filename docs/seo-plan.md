@@ -2,7 +2,7 @@
 
 > **Purpose:** This document outlines the comprehensive Search Engine Optimization (SEO) strategy for the Krawl Progressive Web App, focusing on attracting organic traffic from users seeking genuine local Filipino experiences, hidden gems, and community-driven recommendations.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Last Updated:** 2025-10-28  
 **Status:** Active  
 **Owner:** Marketing Team
@@ -17,19 +17,16 @@ This document outlines the comprehensive Search Engine Optimization (SEO) strate
 
 ## 🎯 Target Audience Recap
 
-### Primary Audience
-**Young Filipino Adults** seeking authentic local spots in their cities:
-- Local food establishments (street food, traditional cuisine)
-- Cultural landmarks and experiences
-- Community hangout spots
-- Hidden neighborhood gems
+**Primary:** Young Filipino Adults (18-35) seeking authentic local spots
+**Secondary:** Domestic & International Travelers seeking off-the-beaten-path experiences
 
-### Secondary Audience
-**Domestic & International Travelers** looking for:
-- Non-touristy experiences in the Philippines
-- Community-recommended locations
-- Authentic cultural immersion
-- Off-the-beaten-path destinations
+**SEO Focus:**
+- Local discovery keywords (neighborhood-specific)
+- Cultural experience search terms
+- Hidden gem and authentic food queries
+- Travel planning and guide searches
+
+For detailed persona profiles, goals, frustrations, and user journeys, see [user-persona-profile.md](user-persona-profile.md) and [user-journey.md](user-journey.md).
 
 ---
 

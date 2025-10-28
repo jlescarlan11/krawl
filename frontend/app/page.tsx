@@ -1,10 +1,13 @@
 import AppLayout from '@/components/AppLayout';
-import MapArea from '@/components/MapArea';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import MapWrapper from '@/components/MapWrapper';
 
 export default function Home() {
   return (
-    <AppLayout showBottomNav={true}>
-      <MapArea />
-    </AppLayout>
+   <ErrorBoundary>
+      <AppLayout showBottomNav={true}>
+        <MapWrapper />
+      </AppLayout>
+    </ErrorBoundary>
   );
 }
