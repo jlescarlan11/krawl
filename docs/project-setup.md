@@ -25,27 +25,56 @@
 A monorepo structure (using a tool like Nx, Turborepo, or simple npm/yarn workspaces) is recommended to manage the frontend and backend code together, but separate directories within a single Git repository also work.
 
 ```
-krawl-app/
+krawl/                             # ✅ ACTUAL STRUCTURE
 ├── frontend/                      # Next.js PWA Frontend
-│   ├── public/                    # Static assets (images, icons, manifest.json)
-│   ├── src/
-│   │   ├── app/                   # Next.js App Router (pages, layouts, route handlers)
-│   │   ├── components/            # Reusable React components (UI elements)
-│   │   │   ├── common/            # General components (Buttons, Modals, Cards)
-│   │   │   ├── gems/              # Gem-specific components (GemCard, AddGemForm)
-│   │   │   ├── krawls/            # Krawl-specific components (KrawlCard, KrawlStep)
-│   │   │   └── map/               # Map-related components (MapWrapper, GemMarkers)
-│   │   ├── contexts/              # React Context providers (Auth, Map state)
-│   │   ├── hooks/                 # Custom React hooks
-│   │   ├── lib/                   # Utility functions, API client setup
-│   │   ├── services/              # PWA Service Worker logic
-│   │   ├── styles/                # Global styles, Tailwind config extensions
-│   │   └── types/                 # TypeScript type definitions
-│   ├── next.config.mjs            # Next.js configuration
-│   ├── tailwind.config.ts         # Tailwind CSS configuration
-│   ├── tsconfig.json              # TypeScript configuration
-│   ├── package.json               # Frontend dependencies & scripts
-│   └── ...
+│   ├── app/                       # ✅ Next.js App Router (pages, layouts)
+│   │   ├── add/                   # ✅ Add Gem page
+│   │   │   └── page.tsx
+│   │   ├── explore/               # ✅ Explore Gems page
+│   │   │   └── page.tsx
+│   │   ├── krawls/                # ✅ Krawls page
+│   │   │   └── page.tsx
+│   │   ├── profile/               # ✅ Profile page
+│   │   │   └── page.tsx
+│   │   ├── favicon.ico            # ✅ App icon
+│   │   ├── globals.css            # ✅ Complete design system (545 lines)
+│   │   ├── layout.tsx             # ✅ Root layout
+│   │   ├── page.tsx               # ✅ Home/Map page
+│   │   └── register-sw.tsx        # ✅ Service worker registration
+│   │
+│   ├── components/                # ✅ Reusable React components
+│   │   ├── AppLayout.tsx          # ✅ Main layout wrapper
+│   │   ├── BottomNav.tsx          # ✅ Mobile bottom navigation
+│   │   ├── Header.tsx             # ✅ Desktop header
+│   │   ├── MapArea.tsx            # ✅ Map display container
+│   │   └── Sidebar.tsx            # ✅ Desktop sidebar navigation
+│   │
+│   ├── lib/                       # ✅ Utility functions, API client
+│   │   └── api.ts                 # ✅ API client setup
+│   │
+│   ├── public/                    # ✅ Static assets
+│   │   ├── manifest.json          # ✅ PWA manifest
+│   │   ├── sw.js                  # ✅ Service worker
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── next.svg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   │
+│   ├── COLOR_PALETTE.md           # ✅ Color reference documentation
+│   ├── DESIGN_SYSTEM.md           # ✅ Complete design system guide (584 lines)
+│   ├── DESIGN_SYSTEM_CHANGELOG.md # ✅ Design system changes
+│   ├── DESIGN_SYSTEM_INDEX.md     # ✅ Documentation navigation
+│   ├── DESIGN_SYSTEM_README.md    # ✅ Design system overview
+│   ├── DESIGN_TOKENS.md           # ✅ Quick reference for developers
+│   ├── REFACTOR_SUMMARY.md        # ✅ Implementation summary
+│   ├── eslint.config.mjs          # ✅ ESLint configuration
+│   ├── next.config.ts             # ✅ Next.js configuration
+│   ├── next-env.d.ts              # ✅ Next.js TypeScript definitions
+│   ├── package.json               # ✅ Frontend dependencies
+│   ├── postcss.config.mjs         # ✅ PostCSS configuration
+│   ├── README.md                  # ✅ Frontend README
+│   └── tsconfig.json              # ✅ TypeScript configuration
 │
 ├── backend/                       # Spring Boot Backend API
 │   ├── src/
@@ -265,9 +294,14 @@ cd ../frontend
 
 ```bash
 npm install
-# or
-yarn install
 ```
+
+> **📦 Dependencies Installed:**
+> - Next.js 16.0.0
+> - React 19.2.0
+> - TypeScript ^5
+> - Tailwind CSS v4
+> - React Icons (Lucide) v5.5.0
 
 **Configure API Base URL:**
 
@@ -281,11 +315,17 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
 ✅ The frontend PWA should now be accessible at **http://localhost:3000**
+
+**What You'll See:**
+- ✅ Sidebar navigation (desktop) with collapsible menu
+- ✅ Bottom navigation (mobile) with 5 tabs
+- ✅ Complete design system with "Lokal Verde" colors
+- ✅ Responsive layout adapting to screen size
+- ✅ Pages: Map (home), Explore, Krawls, Add Gem, Profile
+- ✅ PWA features (service worker, manifest)
 
 ---
 
@@ -350,6 +390,7 @@ Please ensure you follow the naming conventions and project structure outlined i
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.0 | 2025-10-28 | Updated with actual frontend structure: App Router pages (add, explore, krawls, profile), components (Sidebar, BottomNav, AppLayout, Header, MapArea), design system files, PWA features, dependencies (Next.js 16, React 19, Tailwind v4, React Icons) | Development Team |
 | 1.0.0 | 2025-10-28 | Initial project setup guide | Development Team |
 
 ---
