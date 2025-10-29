@@ -67,11 +67,11 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
               alt="Krawl Logo"
               width={32}
               height={32}
-              className="w-8 h-8 absolute transition-opacity duration-200 group-hover:opacity-0"
+              className="w-8 h-8 absolute transition-all duration-300 ease-in-out transform group-hover:-rotate-90 group-hover:opacity-0 group-hover:scale-75"
               priority
             />
             {/* Expand icon - hidden by default, fades in on hover */}
-            <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute opacity-0 transition-all ease-in-out transform rotate-90 scale-75 group-hover:opacity-100 group-hover:rotate-0 group-hover:scale-100 duration-300">
               <LuChevronRight size={24} className="text-verde-600" />
             </div>
           </button>
