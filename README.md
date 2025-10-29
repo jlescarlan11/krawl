@@ -42,17 +42,20 @@ Discovering authentic, hyperlocal Filipino culture is difficult:
 - ✅ **Responsive PWA Layout**: Mobile-first design with desktop support
 - ✅ **Navigation System**: Bottom navigation (mobile) + Sidebar (desktop)
 - ✅ **Design System**: Complete "Lokal Verde" design system with 60+ tokens
-- ✅ **Offline Support**: Service worker for offline functionality
+- ✅ **3D Map Integration**: MapLibre GL JS with tilted view and 3D buildings
+- ✅ **Offline-First Architecture**: IndexedDB with sync queue for offline operations
+- ✅ **Offline Support**: Service worker (506 lines) for offline functionality
 - ✅ **Core Pages**: Map view, Explore, Krawls, Add Gem, Profile
-- ✅ **Database**: PostgreSQL with PostGIS for geospatial data
-- ✅ **Backend API**: Spring Boot REST API foundation
+- ✅ **Database**: PostgreSQL 15 with PostGIS 3.3 for geospatial data
+- ✅ **Backend API**: Spring Boot 3.5.7 REST API foundation
 
 ### Coming Soon
 
-- 🔜 User authentication & profiles
+- 🔜 User authentication & profiles (JWT)
 - 🔜 Gem pinning with location services
 - 🔜 Krawl creation and management
-- 🔜 Interactive map with Leaflet.js
+- 🔜 Map marker clustering
+- 🔜 Background sync for offline changes
 - 🔜 Vouching and rating system
 - 🔜 Business claim feature
 
@@ -124,8 +127,10 @@ Ensure you have the following installed:
 Krawl is built with a modern, mobile-first tech stack optimized for PWA performance:
 
 - **Frontend:** Next.js 16 with TypeScript, Tailwind CSS v4, React 19
-- **Backend:** Spring Boot REST API (Java/Kotlin) with Spring Data JPA
-- **Database:** PostgreSQL 15 with PostGIS 3.4 for geospatial queries
+- **Mapping:** MapLibre GL JS v5.10.0 with MapTiler vector tiles
+- **Offline Storage:** IndexedDB (idb v8.0.3) with 7 specialized stores
+- **Backend:** Spring Boot 3.5.7 REST API (Java 25) with Spring Data JPA
+- **Database:** PostgreSQL 15 with PostGIS 3.3 for geospatial queries
 - **Infrastructure:** Docker, Vercel (frontend), Render (backend)
 
 For detailed technology choices, architecture decisions, and rationale, see:
@@ -226,7 +231,7 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
 ## 🗄️ Database Setup
 
-The project uses **PostgreSQL 15 with PostGIS 3.4** for geospatial features. The database runs in a Docker container for consistent local development.
+The project uses **PostgreSQL 15 with PostGIS 3.3** for geospatial features. The database runs in a Docker container for consistent local development on port **5434**.
 
 For complete setup instructions, connection details, schema documentation, and testing procedures, see:
 - [docs/project-setup.md](docs/project-setup.md) - Initial setup and configuration steps
@@ -255,18 +260,20 @@ For questions or issues, please open a GitHub issue or join the discussion in ex
 **Current Phase**: MVP Development (Week 1-12)
 
 **Completed**:
-- ✅ Project setup and documentation
-- ✅ Frontend foundation (Next.js + Tailwind)
-- ✅ Backend foundation (Spring Boot)
-- ✅ Database setup (PostgreSQL + PostGIS)
-- ✅ Design system implementation
-- ✅ PWA infrastructure
-- ✅ Navigation components
+- ✅ Project setup and documentation (38 docs)
+- ✅ Frontend foundation (Next.js 16 + Tailwind v4)
+- ✅ Backend foundation (Spring Boot 3.5.7)
+- ✅ Database setup (PostgreSQL 15 + PostGIS 3.3)
+- ✅ Design system implementation (545 lines)
+- ✅ PWA infrastructure (service worker, manifest)
+- ✅ Navigation components (Sidebar, BottomNav, AppLayout)
+- ✅ 3D Map integration (MapLibre GL JS + MapTiler)
+- ✅ Offline database (IndexedDB with 7 stores)
 
 **In Progress**:
-- 🔄 User authentication system
+- 🔄 User authentication system (JWT)
 - 🔄 Gem pinning functionality
-- 🔄 Map integration with Leaflet.js
+- 🔄 Background sync implementation
 
 **Next Steps**:
 - 📋 Krawl creation and management
@@ -315,6 +322,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Last Updated**: October 28, 2025  
+**Last Updated**: October 29, 2025  
 **Version**: 0.1.0-MVP  
 **Maintainer**: Development Team

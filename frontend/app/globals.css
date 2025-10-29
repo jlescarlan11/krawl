@@ -545,40 +545,41 @@ input, button, textarea, select {
 }
 
 /* ============================================================================
-   6. LEAFLET MAP OVERRIDES
+   6. MAPLIBRE GL MAP OVERRIDES
    ============================================================================ */
 
-.leaflet-container {
+.maplibregl-map {
   font-family: var(--font-family-sans);
 }
 
-.leaflet-popup-content-wrapper {
+.maplibregl-popup-content {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
+  font-family: var(--font-family-sans);
+  padding: var(--spacing-3);
 }
 
-.leaflet-popup-tip {
-  background: var(--color-background-secondary);
+.maplibregl-popup-tip {
+  border-top-color: var(--color-background-secondary);
 }
 
-/* Custom marker cluster colors */
-.marker-cluster-small,
-.marker-cluster-medium,
-.marker-cluster-large {
-  background-color: rgba(45, 122, 62, 0.6) !important;
+/* Custom marker colors */
+.maplibregl-marker {
+  cursor: pointer;
 }
 
-.marker-cluster-small div,
-.marker-cluster-medium div,
-.marker-cluster-large div {
-  background-color: rgba(45, 122, 62, 0.12) !important;
-  color: white;
-  font-weight: 600;
+/* Control styling */
+.maplibregl-ctrl-group {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
 }
 
-/* Note: Green tint is now applied via overlay div in MapArea component
-   You can adjust the green intensity by changing the rgba opacity value:
-   - rgba(45, 122, 62, 0.05) = subtle green
-   - rgba(45, 122, 62, 0.08) = moderate green (current)
-   - rgba(45, 122, 62, 0.12) = stronger green
-*/
+.maplibregl-ctrl-group button {
+  font-family: var(--font-family-sans);
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: var(--font-size-xs);
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+}

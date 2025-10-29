@@ -2,8 +2,8 @@
 
 > **Purpose:** This guide outlines the repository structure, naming conventions, environment setup steps, and configuration needed to begin development on the Krawl PWA.
 
-**Version:** 1.1.0  
-**Last Updated:** 2025-10-28  
+**Version:** 1.2.0  
+**Last Updated:** 2025-10-29  
 **Status:** Active  
 **Owner:** Development Team
 
@@ -183,11 +183,11 @@ You should see the `krawl-postgres` container running.
 | Parameter | Value |
 |-----------|-------|
 | Host | `localhost` |
-| Port | `5432` |
+| Port | `5434` |
 | Database | `krawl` |
 | Username | `krawl_user` (from .env) |
 | Password | `krawl_dev_password_2025` (from .env) |
-| Connection String | `postgresql://krawl_user:krawl_dev_password_2025@localhost:5432/krawl` |
+| Connection String | `postgresql://krawl_user:krawl_dev_password_2025@localhost:5434/krawl` |
 
 **PostGIS Extension:**
 
@@ -212,9 +212,9 @@ Edit `src/main/resources/application.yml` (or `.properties`) with your local dat
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/krawl_db
-    username: your_username
-    password: your_password
+    url: jdbc:postgresql://localhost:5434/krawl
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 ```
 
 **Build the Project:**
@@ -258,7 +258,10 @@ npm install
 > - React 19.2.0
 > - TypeScript ^5
 > - Tailwind CSS v4
+> - MapLibre GL JS v5.10.0
 > - React Icons (Lucide) v5.5.0
+> - idb v8.0.3 (IndexedDB wrapper)
+> - Sonner v2.0.7 (Toast notifications)
 
 **Configure API Base URL:**
 
@@ -347,6 +350,7 @@ Please ensure you follow the naming conventions and project structure outlined i
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2.0 | 2025-10-29 | **Port Update:** Corrected Docker PostgreSQL port from 5432 to 5434 in connection details and application.yml; Updated backend datasource configuration to use environment variables (${DB_USER}, ${DB_PASSWORD}); Added MapLibre GL JS v5.10.0, idb v8.0.3, and Sonner v2.0.7 to dependencies list | Development Team |
 | 1.1.0 | 2025-10-28 | Updated with actual frontend structure: App Router pages (add, explore, krawls, profile), components (Sidebar, BottomNav, AppLayout, Header, MapArea), design system files, PWA features, dependencies (Next.js 16, React 19, Tailwind v4, React Icons) | Development Team |
 | 1.0.0 | 2025-10-28 | Initial project setup guide | Development Team |
 

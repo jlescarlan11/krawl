@@ -29,7 +29,7 @@ interface KrawlDB extends DBSchema {
     indexes: {
       'by-creator': string;
       'by-visibility': string;
-      'by-downloaded': boolean;
+      'by-downloaded': number;
     };
   };
   users: {
