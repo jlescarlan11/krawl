@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import { MAP_CONFIG } from '../config';
 import { CompassControl } from '../controls/CompassControl';
@@ -13,6 +13,16 @@ export interface UseMapInitializationOptions {
 
 export function useMapInitialization(options: UseMapInitializationOptions) {
   const { isOnline, onMapLoaded, onMapError } = options;
+  
+  // Stable callback references using useRef to avoid re-initialization
+  const onMapLoadedRef = useRef(onMapLoaded);
+  const onMapErrorRef = useRef(onMapError);
+  
+  // Update refs when callbacks change
+  useEffect(() => {
+    onMapLoadedRef.current = onMapLoaded;
+    onMapErrorRef.current = onMapError;
+  }, [onMapLoaded, onMapError]);
   
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -81,9 +91,19 @@ export function useMapInitialization(options: UseMapInitializationOptions) {
 
     // Error handling
     map.on('error', (e) => {
+      const errorMessage = e.error?.message || '';
+      
+      // Ignore non-critical sprite/image warnings
+      if (errorMessage.includes('could not be loaded') || 
+          errorMessage.includes('Image') ||
+          errorMessage.includes('sprite')) {
+        // These are just warnings about missing decorative images
+        // The map still works fine without them
+        return;
+      }
+      
       console.error('Map error:', e);
       
-      const errorMessage = e.error?.message || '';
       const isNetworkError = 
         errorMessage.includes('Failed to fetch') || 
         errorMessage.includes('AJAXError') ||
@@ -96,7 +116,7 @@ export function useMapInitialization(options: UseMapInitializationOptions) {
       } else if (isNetworkError) {
         const error = 'Unable to load map resources. Check your internet connection.';
         setMapError(error);
-        onMapError?.(error);
+        onMapErrorRef.current?.(error);
       }
     });
 
@@ -106,7 +126,7 @@ export function useMapInitialization(options: UseMapInitializationOptions) {
       setMapLoaded(true);
       setShowOfflineOverlay(false);
       setMapError(null);
-      onMapLoaded?.();
+      onMapLoadedRef.current?.();
       
       if (offlineTimeoutRef.current) {
         clearTimeout(offlineTimeoutRef.current);
@@ -157,7 +177,7 @@ export function useMapInitialization(options: UseMapInitializationOptions) {
         mapRef.current = null;
       }
     };
-  }, [isOnline, mapLoaded, onMapLoaded, onMapError]);
+  }, []); // Empty deps - only initialize once on mount
 
   return {
     mapContainerRef,

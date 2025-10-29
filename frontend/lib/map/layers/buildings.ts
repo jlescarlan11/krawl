@@ -4,17 +4,19 @@ import { MAP_CONFIG } from '../config';
 /**
  * Adds 3D building extrusion layer to the map
  * Uses verde-themed color gradient based on building height
+ * Gracefully handles different map styles that may not support 3D buildings
  */
 export function add3DBuildingsLayer(map: maplibregl.Map): void {
-  const layers = map.getStyle().layers;
-  const buildingLayer = layers?.find(layer => layer.id === 'building');
-  
-  if (!buildingLayer) {
-    console.warn('⚠️ Building layer not found in map style');
-    return;
-  }
-
   try {
+    const style = map.getStyle();
+    
+    // Check if we have the required source
+    if (!style.sources['openmaptiles']) {
+      console.log('ℹ️ 3D buildings not available in this map style (openmaptiles source not found)');
+      return;
+    }
+
+    // Try to add 3D buildings layer
     map.addLayer({
       'id': '3d-buildings',
       'source': 'openmaptiles',
@@ -22,24 +24,30 @@ export function add3DBuildingsLayer(map: maplibregl.Map): void {
       'type': 'fill-extrusion',
       'minzoom': 15,
       'paint': {
-        // Gradient from light to dark based on building height
-        'fill-extrusion-color': [
+        // Use solid verde color for compatibility
+        'fill-extrusion-color': MAP_CONFIG.BUILDING_COLORS.MEDIUM,
+        'fill-extrusion-height': [
           'interpolate',
           ['linear'],
-          ['get', 'render_height'],
-          0, MAP_CONFIG.BUILDING_COLORS.SHORT,      // Short buildings
-          30, MAP_CONFIG.BUILDING_COLORS.MEDIUM,    // Medium buildings
-          60, MAP_CONFIG.BUILDING_COLORS.TALL,      // Tall buildings
-          100, MAP_CONFIG.BUILDING_COLORS.VERY_TALL // Very tall buildings
+          ['zoom'],
+          15, 0,
+          15.05, ['get', 'height']
         ],
-        'fill-extrusion-height': ['get', 'render_height'],
-        'fill-extrusion-base': ['get', 'render_min_height'],
-        'fill-extrusion-opacity': 0.85
+        'fill-extrusion-base': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          15, 0,
+          15.05, ['get', 'min_height']
+        ],
+        'fill-extrusion-opacity': 0.6
       }
     });
-    console.log('✅ 3D buildings layer added');
+    
+    console.log('✅ 3D buildings layer added successfully');
   } catch (error) {
-    console.error('❌ Failed to add 3D buildings layer:', error);
+    // Fail silently - 3D buildings are a nice-to-have feature
+    console.log('ℹ️ 3D buildings not available in this map style');
   }
 }
 
