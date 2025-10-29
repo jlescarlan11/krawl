@@ -73,6 +73,7 @@ function MapArea() {
         button.className = 'maplibregl-ctrl-compass';
         button.type = 'button';
         button.setAttribute('aria-label', 'Toggle 3D view and reset bearing to north');
+        button.title = 'Toggle 3D View'
         
         // Add compass icon
         const icon = document.createElement('span');
@@ -194,6 +195,15 @@ function MapArea() {
 
     // Wait for map to load before adding markers and 3D buildings
     map.on('load', () => {
+        const zoomInButton = document.querySelector('.maplibregl-ctrl-zoom-in');
+        if (zoomInButton) {
+            zoomInButton.setAttribute('title', 'Zoom In');
+        }
+
+        const zoomOutButton = document.querySelector('.maplibregl-ctrl-zoom-out');
+        if (zoomOutButton) {
+            zoomOutButton.setAttribute('title', 'Zoom Out');
+        }
       // Enable 3D buildings if available in the style
       const layers = map.getStyle().layers;
       const buildingLayer = layers?.find(layer => layer.id === 'building');
@@ -374,6 +384,7 @@ function MapArea() {
               return (
                 <button
                   key={category.id}
+                    title={category.label}
                   className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/80 backdrop-blur-md border border-white/40 hover:bg-verde-100/80 hover:border-verde-400/60 hover:text-verde-700 transition-all text-sm font-medium text-neutral-700 shadow-lg"
                 >
                   <Icon size={16} />
@@ -388,6 +399,7 @@ function MapArea() {
             {/* Floating Action Button - Add Gem */}
       <Link
         href="/add"
+        title="Add new gem"
         className="fixed bottom-20 md:bottom-6 right-6 w-14 h-14 bg-verde-600 hover:bg-verde-700 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105 z-[1000]"
         aria-label="Add new gem"
       >
