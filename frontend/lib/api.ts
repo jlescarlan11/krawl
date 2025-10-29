@@ -13,6 +13,7 @@ import {
   type Krawl,
 } from './db';
 import { checkActualConnectivity } from './utils/network';
+import { offlineFirstFetch, createWithOfflineSupport } from './api/offline-first';
 
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
@@ -94,171 +95,74 @@ export async function apiFetch<T>(
   }
 }
 
-// Offline-first API methods with IndexedDB caching
+// Offline-first API methods - NOW SUPER SIMPLE! 🎉
 export const api = {
-  // Gems - Offline-first approach
-  getGems: async () => {
-    try {
-      // Try to load from cache first (instant, works offline)
-      const cached = await getAllGems();
-      
-      // If we have cached data, return it immediately
-      if (cached.length > 0) {
-        // Start background sync but don't wait for it
-        apiFetch<Gem[]>('/gems')
-          .then((fresh) => {
-            saveGems(fresh).catch(console.error);
-          })
-          .catch(() => {
-            // Silently fail background sync - we have cached data
-            console.log('📴 Using cached gems (offline mode)');
-          });
-        
-        return cached;
-      }
+  // Gems
+  getGems: () => offlineFirstFetch({
+    fetchFn: () => apiFetch<Gem[]>('/gems'),
+    getCachedFn: getAllGems,
+    saveCacheFn: saveGems,
+    resourceName: 'gems',
+  }),
 
-      // No cache, must fetch from API
-      const fresh = await apiFetch<Gem[]>('/gems');
-      await saveGems(fresh);
-      return fresh;
-    } catch (error) {
-      // Network error - try cache as fallback
-      const cached = await getAllGems();
-      if (cached.length > 0) {
-        toast.info('Using cached data (offline mode)');
-        return cached;
-      }
-      throw error;
-    }
-  },
+  getGemById: (id: string) => offlineFirstFetch({
+    fetchFn: () => apiFetch<Gem>(`/gems/${id}`),
+    getCachedFn: async () => {
+      const gem = await getGem(id);
+      return gem ?? null;
+    },
+    saveCacheFn: saveGem,
+    resourceName: `gem ${id}`,
+  }),
 
-  getGemById: async (id: string) => {
-    try {
-      // Check cache first
-      const cached = await getGem(id);
-      
-      if (cached) {
-        // Start background sync
-        apiFetch<Gem>(`/gems/${id}`)
-          .then((fresh) => {
-            saveGem(fresh).catch(console.error);
-          })
-          .catch(() => {
-            console.log(`📴 Using cached gem ${id} (offline mode)`);
-          });
-        
-        return cached;
-      }
+  // Krawls
+  getKrawls: () => offlineFirstFetch({
+    fetchFn: () => apiFetch<Krawl[]>('/krawls'),
+    getCachedFn: getAllKrawls,
+    saveCacheFn: saveKrawls,
+    resourceName: 'krawls',
+  }),
 
-      // Not in cache, fetch from API
-      const fresh = await apiFetch<Gem>(`/gems/${id}`);
-      await saveGem(fresh);
-      return fresh;
-    } catch (error) {
-      const cached = await getGem(id);
-      if (cached) {
-        toast.info('Using cached data (offline mode)');
-        return cached;
-      }
-      throw error;
-    }
-  },
+  getKrawlById: (id: string) => offlineFirstFetch({
+    fetchFn: () => apiFetch<Krawl>(`/krawls/${id}`),
+    getCachedFn: async () => {
+      const krawl = await getKrawl(id);
+      return krawl ?? null;
+    },
+    saveCacheFn: saveKrawl,
+    resourceName: `krawl ${id}`,
+  }),
 
-  // Krawls - Offline-first approach
-  getKrawls: async () => {
-    try {
-      const cached = await getAllKrawls();
-      
-      if (cached.length > 0) {
-        apiFetch<Krawl[]>('/krawls')
-          .then((fresh) => {
-            saveKrawls(fresh).catch(console.error);
-          })
-          .catch(() => {
-            console.log('📴 Using cached krawls (offline mode)');
-          });
-        
-        return cached;
-      }
+  // Create with offline support
+  createGem: (gemData: any) => createWithOfflineSupport({
+    createFn: () => apiFetch<Gem>('/gems', {
+      method: 'POST',
+      body: JSON.stringify(gemData),
+    }),
+    saveCacheFn: saveGem,
+    addToSyncQueueFn: (action, entity, entityId, data) => 
+      addToSyncQueue(action, entity as 'gem', entityId, data),
+    entity: 'gem',
+    createTempResult: (_, tempId) => ({
+      ...gemData,
+      gem_id: tempId,
+      _synced: false,
+    }),
+  }),
 
-      const fresh = await apiFetch<Krawl[]>('/krawls');
-      await saveKrawls(fresh);
-      return fresh;
-    } catch (error) {
-      const cached = await getAllKrawls();
-      if (cached.length > 0) {
-        toast.info('Using cached data (offline mode)');
-        return cached;
-      }
-      throw error;
-    }
-  },
-
-  getKrawlById: async (id: string) => {
-    try {
-      const cached = await getKrawl(id);
-      
-      if (cached) {
-        apiFetch<Krawl>(`/krawls/${id}`)
-          .then((fresh) => {
-            saveKrawl(fresh).catch(console.error);
-          })
-          .catch(() => {
-            console.log(`📴 Using cached krawl ${id} (offline mode)`);
-          });
-        
-        return cached;
-      }
-
-      const fresh = await apiFetch<Krawl>(`/krawls/${id}`);
-      await saveKrawl(fresh);
-      return fresh;
-    } catch (error) {
-      const cached = await getKrawl(id);
-      if (cached) {
-        toast.info('Using cached data (offline mode)');
-        return cached;
-      }
-      throw error;
-    }
-  },
-
-  // Create gem with offline support
-  createGem: async (gemData: any) => {
-    try {
-      const result = await apiFetch<Gem>('/gems', {
-        method: 'POST',
-        body: JSON.stringify(gemData),
-      });
-      await saveGem(result);
-      return result;
-    } catch (error) {
-      // If offline, queue for later sync
-      toast.info('Saved locally. Will sync when online.');
-      const tempId = `temp-${Date.now()}`;
-      const tempGem = { ...gemData, gem_id: tempId, _synced: false };
-      await saveGem(tempGem);
-      await addToSyncQueue('CREATE', 'gem', tempId, gemData);
-      return tempGem;
-    }
-  },
-
-  // Create krawl with offline support
-  createKrawl: async (krawlData: any) => {
-    try {
-      const result = await apiFetch<Krawl>('/krawls', {
-        method: 'POST',
-        body: JSON.stringify(krawlData),
-      });
-      await saveKrawl(result);
-      return result;
-    } catch (error) {
-      toast.info('Saved locally. Will sync when online.');
-      const tempId = `temp-${Date.now()}`;
-      const tempKrawl = { ...krawlData, krawl_id: tempId, _synced: false };
-      await saveKrawl(tempKrawl);
-      await addToSyncQueue('CREATE', 'krawl', tempId, krawlData);
-      return tempKrawl;
-    }
-  },
+  createKrawl: (krawlData: any) => createWithOfflineSupport({
+    createFn: () => apiFetch<Krawl>('/krawls', {
+      method: 'POST',
+      body: JSON.stringify(krawlData),
+    }),
+    saveCacheFn: saveKrawl,
+    addToSyncQueueFn: (action, entity, entityId, data) => 
+      addToSyncQueue(action, entity as 'krawl', entityId, data),
+    entity: 'krawl',
+    createTempResult: (_, tempId) => ({
+      ...krawlData,
+      krawl_id: tempId,
+      _synced: false,
+    }),
+  }),
 };

@@ -1,5 +1,7 @@
 package com.krawl.backend.controller;
 
+import com.krawl.backend.dto.ApiResponse;
+import com.krawl.backend.dto.ImageUploadResponse;
 import com.krawl.backend.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -42,7 +42,7 @@ public class StorageController {
                     description = "Image uploaded successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = Map.class),
+                            schema = @Schema(implementation = ImageUploadResponse.class),
                             examples = @ExampleObject(
                                     value = """
                                             {
@@ -58,18 +58,12 @@ public class StorageController {
                     description = "Bad request - validation error",
                     content = @Content(
                             mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "error": "File size exceeds 10MB limit"
-                                            }
-                                            """
-                            )
+                            schema = @Schema(implementation = com.krawl.backend.dto.ErrorResponse.class)
                     )
             )
     })
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, String>> uploadImage(
+    public ResponseEntity<ImageUploadResponse> uploadImage(
             @Parameter(
                     description = "Image file to upload (JPEG, PNG, WebP, HEIC)",
                     required = true,
@@ -83,21 +77,12 @@ public class StorageController {
             )
             @RequestParam(value = "gemId", required = false) String gemId
     ) {
-        try {
-            UUID id = gemId != null ? UUID.fromString(gemId) : UUID.randomUUID();
-            String imageUrl = storageService.uploadImage(file, id);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("url", imageUrl);
-            response.put("message", "Image uploaded successfully");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error uploading image", e);
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+        UUID id = gemId != null ? UUID.fromString(gemId) : UUID.randomUUID();
+        String imageUrl = storageService.uploadImage(file, id);
+        
+        return ResponseEntity.ok(
+            new ImageUploadResponse(imageUrl, "Image uploaded successfully")
+        );
     }
 
     @Operation(
@@ -110,13 +95,7 @@ public class StorageController {
                     description = "Image deleted successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "message": "Image deleted successfully"
-                                            }
-                                            """
-                            )
+                            schema = @Schema(implementation = com.krawl.backend.dto.ApiResponse.class)
                     )
             ),
             @ApiResponse(
@@ -124,18 +103,12 @@ public class StorageController {
                     description = "Bad request - invalid URL",
                     content = @Content(
                             mediaType = "application/json",
-                            examples = @ExampleObject(
-                                    value = """
-                                            {
-                                              "error": "Invalid Cloudinary URL"
-                                            }
-                                            """
-                            )
+                            schema = @Schema(implementation = com.krawl.backend.dto.ErrorResponse.class)
                     )
             )
     })
     @DeleteMapping("/delete")
-    public ResponseEntity<Map<String, String>> deleteImage(
+    public ResponseEntity<com.krawl.backend.dto.ApiResponse> deleteImage(
             @Parameter(
                     description = "Full Cloudinary URL of the image to delete",
                     required = true,
@@ -143,18 +116,9 @@ public class StorageController {
             )
             @RequestParam("url") String imageUrl
     ) {
-        try {
-            storageService.deleteImage(imageUrl);
-            
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Image deleted successfully");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error deleting image", e);
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+        storageService.deleteImage(imageUrl);
+        return ResponseEntity.ok(
+            new com.krawl.backend.dto.ApiResponse("Image deleted successfully")
+        );
     }
 }

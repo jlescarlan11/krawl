@@ -1,0 +1,118 @@
+# Krawl Backend - Environment Variables Example
+# Copy this file and configure for your environment
+# 
+# For local development:
+#   - Copy to .env and update values
+#   - Or export these in your shell
+#
+# For production/staging:
+#   - Set these in your deployment platform (Render, AWS, Heroku, etc.)
+#   - Never commit actual values to git!
+
+# ============================================
+# DATABASE CONFIGURATION (Required)
+# ============================================
+DB_USER=krawl_user
+DB_PASSWORD=krawl_dev_password_2025
+
+# ============================================
+# SERVER CONFIGURATION (Optional)
+# ============================================
+SERVER_PORT=8080
+
+# ============================================
+# CORS CONFIGURATION (Optional)
+# ============================================
+# Comma-separated list of allowed origins
+# 
+# Examples:
+#   Local Development:
+#     CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+#
+#   Staging:
+#     CORS_ALLOWED_ORIGINS=https://staging.krawl.com,https://test.krawl.com
+#
+#   Production:
+#     CORS_ALLOWED_ORIGINS=https://krawl.app,https://www.krawl.app
+#
+#   Vercel Preview (wildcard):
+#     CORS_ALLOWED_ORIGINS=https://*.vercel.app
+#
+# Default if not set: http://localhost:3000,http://localhost:3001
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+
+# ============================================
+# CLOUDINARY CONFIGURATION (Required)
+# ============================================
+# Get these from: https://cloudinary.com/console
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+CLOUDINARY_FOLDER=krawl-gems
+
+# ============================================
+# SPRING PROFILES (Optional)
+# ============================================
+# Active profile determines which application-{profile}.yaml to load
+# Options: dev, prod
+# 
+# Examples:
+#   Development:
+#     SPRING_PROFILES_ACTIVE=dev
+#
+#   Production:
+#     SPRING_PROFILES_ACTIVE=prod
+#
+# Default if not set: Uses application.yaml only
+# SPRING_PROFILES_ACTIVE=dev
+
+# ============================================
+# HOW TO USE
+# ============================================
+#
+# Option 1 - Export in shell (Linux/Mac):
+#   export DB_USER=krawl_user
+#   export DB_PASSWORD=krawl_dev_password_2025
+#   export CORS_ALLOWED_ORIGINS=http://localhost:3000
+#   ./mvnw spring-boot:run
+#
+# Option 2 - Export in PowerShell (Windows):
+#   $env:DB_USER="krawl_user"
+#   $env:DB_PASSWORD="krawl_dev_password_2025"
+#   $env:CORS_ALLOWED_ORIGINS="http://localhost:3000"
+#   ./mvnw spring-boot:run
+#
+# Option 3 - Create .env file (with docker-compose):
+#   Copy this file to .env and update values
+#   docker-compose up
+#
+# Option 4 - IDE Configuration:
+#   IntelliJ IDEA: Run > Edit Configurations > Environment Variables
+#   VS Code: .vscode/launch.json > "env" section
+#
+# Option 5 - Deployment Platforms:
+#   Render: Environment > Add Environment Variable
+#   Heroku: Settings > Config Vars
+#   AWS: ECS Task Definition > Environment Variables
+#   Vercel: Settings > Environment Variables
+
+# ============================================
+# DEPLOYMENT EXAMPLES
+# ============================================
+#
+# Local Development:
+#   CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+#   SPRING_PROFILES_ACTIVE=dev
+#
+# Staging Server:
+#   CORS_ALLOWED_ORIGINS=https://staging.krawl.com,https://test.krawl.com
+#   SPRING_PROFILES_ACTIVE=prod
+#
+# Production Server:
+#   CORS_ALLOWED_ORIGINS=https://krawl.app,https://www.krawl.app
+#   SPRING_PROFILES_ACTIVE=prod
+#
+# With Vercel Previews:
+#   CORS_ALLOWED_ORIGINS=https://krawl.vercel.app,https://*.vercel.app
+#   SPRING_PROFILES_ACTIVE=prod
+
