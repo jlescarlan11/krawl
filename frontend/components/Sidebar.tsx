@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { LuMapPin, LuSearch, LuRoute, LuUser, LuSettings, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
@@ -17,7 +18,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
   const pathname = usePathname();
-  
+
   return (
     <aside 
       className={`
@@ -31,10 +32,17 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
     >
       {/* Header Section with Toggle - Aligned with main header */}
       {isExpanded ? (
-        <div className="h-[60px] px-3 flex items-center justify-between">
+        <div className="h-[60px] px-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
-              <LuMapPin size={20} className="text-verder-100" />
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <Image
+                src="/krawl-icon-color.svg"
+                alt="Krawl Logo"
+                width={40}
+                height={40}
+                className="w-8 h-8"
+                priority
+              />
             </div>
             <span className="text-xl font-bold text-neutral-900 whitespace-nowrap">Krawl</span>
           </Link>
@@ -47,20 +55,32 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
           </button>
         </div>
       ) : (
-        <div className="h-[60px] px-2 flex items-center justify-center">
-          <button
+        <div className="h-[60px] px-2 flex flex-col items-center justify-center gap-1 group">
+          <button 
             onClick={onToggle}
-            className="p-2 hover:bg-neutral-100 rounded-md transition-colors flex items-center justify-center"
+            className="flex items-center justify-center relative w-10 h-10"
             aria-label="Expand sidebar"
           >
-            <LuChevronRight size={20} className="text-neutral-700" />
+            {/* Logo - shown by default, fades out on hover */}
+            <Image
+              src="/krawl-icon-color.svg"
+              alt="Krawl Logo"
+              width={32}
+              height={32}
+              className="w-8 h-8 absolute transition-opacity duration-200 group-hover:opacity-0"
+              priority
+            />
+            {/* Expand icon - hidden by default, fades in on hover */}
+            <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <LuChevronRight size={24} className="text-verde-600" />
+            </div>
           </button>
         </div>
       )}
         
       {/* Navigation Links */}
       <nav className="flex-1 overflow-y-auto py-4">
-        <div className={`${isExpanded ? 'px-2' : 'px-1'} space-y-1`}>
+        <div className={`${isExpanded ? 'px-4' : 'px-2'} space-y-1`}>
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -73,7 +93,7 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
                 className={`
                   flex items-center rounded-md
                   transition-colors duration-150
-                  ${isExpanded ? 'gap-3 px-3 py-2.5' : 'justify-center p-3'}
+                  ${isExpanded ? 'gap-3 px-2 py-2.5' : 'justify-center p-2.5'}
                   ${isActive 
                     ? 'bg-verde-100 text-verde-700 font-medium' 
                     : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900'
@@ -112,7 +132,7 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
       </nav>
         
       {/* Bottom Section - User Profile */}
-      <div className={`${isExpanded ? 'p-4' : 'p-2'}`}>
+      <div className={`${isExpanded ? 'px-4 py-4' : 'px-2 py-2'}`}>
         {isExpanded ? (
           <Link
             href="/profile"
@@ -131,7 +151,7 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
           <Link
             href="/profile"
             title="Profile"
-            className="flex items-center justify-center p-2 rounded-md hover:bg-neutral-100 transition-colors"
+            className="flex items-center justify-center rounded-md hover:bg-neutral-100 transition-colors"
           >
             <div className="w-10 h-10 bg-sand-300 rounded-full flex items-center justify-center">
               <LuUser size={20} className="text-sand-800" />
