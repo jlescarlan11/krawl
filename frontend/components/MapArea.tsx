@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef, memo, useState } from 'react';
-import { LuSearch, LuUtensils, LuMapPin, LuLandmark, LuCamera, LuPlus } from 'react-icons/lu';
+import { LuSearch, LuUtensils, LuMapPin, LuLandmark, LuCamera, LuPlus, LuWifiOff } from 'react-icons/lu';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import Link from 'next/link';
+import { useNetworkStatus } from '@/lib/hooks/useNetworkStatus';
 
 const categories = [
   { id: 'food', label: 'Food & Drink', icon: LuUtensils },
@@ -19,15 +20,23 @@ function MapArea() {
   const markersRef = useRef<maplibregl.Marker[]>([]);
   const [is3DView, setIs3DView] = useState(true);
   const is3DViewRef = useRef(true); // Ref to track 3D state in event listeners
+  const { isOnline } = useNetworkStatus(); // Track network status
+  const [mapError, setMapError] = useState<string | null>(null); // Track map errors
+  const [mapLoaded, setMapLoaded] = useState(false); // Track if map successfully loaded
+  const [showOfflineOverlay, setShowOfflineOverlay] = useState(false); // Only show if map fails to load offline
+  const offlineTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Timeout for showing offline overlay
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
     // TODO: Replace 'YOUR_MAPTILER_API_KEY' with your actual MapTiler API key
     // Get free key at: https://cloud.maptiler.com/account/keys/
-    const MAPTILER_API_KEY = 'QxmZZCrqIdaSfkUbwVmn';
+    const MAPTILER_API_KEY = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
+    
+    console.log(`🗺️ Initializing map - ${isOnline ? 'online' : 'offline (will use cache if available)'} mode`);
     
     // Initialize MapLibre GL map centered on Manila, Philippines
+    // Even when offline, try to initialize - service worker will serve cached resources
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
       // Using MapTiler Streets V4 style (latest version - vector tiles - super smooth!)
@@ -117,6 +126,72 @@ function MapArea() {
       'bottom-left'
     );
 
+    // When offline, give service worker time to serve cached resources before showing overlay
+    if (!isOnline) {
+      console.log('⏳ Offline mode - waiting for cached resources (5s timeout)...');
+      offlineTimeoutRef.current = setTimeout(() => {
+        if (!mapLoaded) {
+          console.warn('⚠️ Map failed to load offline within timeout - no cached resources available');
+          setShowOfflineOverlay(true);
+        }
+      }, 5000); // Give 5 seconds for cache to load
+    }
+
+    // Handle map errors (e.g., failed to fetch style or tiles when offline)
+    map.on('error', (e) => {
+      console.error('Map error:', e);
+      
+      // Check if it's a network-related error
+      const errorMessage = e.error?.message || '';
+      const isNetworkError = 
+        errorMessage.includes('Failed to fetch') || 
+        errorMessage.includes('AJAXError') ||
+        errorMessage.includes('NetworkError') ||
+        e.error?.status === 0 ||
+        !navigator.onLine;
+      
+      if (isNetworkError && !isOnline) {
+        // Offline - but don't show overlay immediately, timeout will handle it
+        console.warn('⚠️ Network error while offline (expected if no cache):', errorMessage);
+      } else if (isNetworkError) {
+        setMapError('Unable to load map resources. Check your internet connection.');
+      } else if (e.error) {
+        // Log other errors but don't show to user unless critical
+        console.warn('Non-critical map error:', errorMessage);
+      }
+    });
+
+    // Track when map successfully loads
+    map.on('load', () => {
+      console.log('✅ Map loaded successfully');
+      setMapLoaded(true);
+      setShowOfflineOverlay(false);
+      setMapError(null);
+      
+      // Clear offline timeout - map loaded successfully!
+      if (offlineTimeoutRef.current) {
+        clearTimeout(offlineTimeoutRef.current);
+        offlineTimeoutRef.current = null;
+      }
+    });
+
+    // Clear error when tiles successfully load
+    map.on('sourcedata', (e) => {
+      if (e.isSourceLoaded) {
+        setMapError(null);
+        if (!mapLoaded) {
+          setMapLoaded(true);
+          setShowOfflineOverlay(false);
+          
+          // Clear offline timeout - tiles loaded!
+          if (offlineTimeoutRef.current) {
+            clearTimeout(offlineTimeoutRef.current);
+            offlineTimeoutRef.current = null;
+          }
+        }
+      }
+    });
+
     // Wait for map to load before adding markers and 3D buildings
     map.on('load', () => {
       // Enable 3D buildings if available in the style
@@ -178,6 +253,12 @@ function MapArea() {
 
     // Cleanup
     return () => {
+      // Clear offline timeout
+      if (offlineTimeoutRef.current) {
+        clearTimeout(offlineTimeoutRef.current);
+        offlineTimeoutRef.current = null;
+      }
+      
       // Remove all markers
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
@@ -188,10 +269,90 @@ function MapArea() {
         mapRef.current = null;
       }
     };
-  }, []);
+  }, [isOnline]); // Re-run when online status changes
+
+  // Show online notification when connection is restored
+  useEffect(() => {
+    if (isOnline && mapRef.current === null) {
+      console.log('🟢 Connection restored - map will initialize');
+    }
+  }, [isOnline]);
 
   return (
     <div className="w-full h-full relative">
+      {/* Offline Overlay - Only show when offline AND map fails to load (no cached resources) */}
+      {showOfflineOverlay && (
+        <div className="absolute inset-0 z-[999] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+          <div className="max-w-md w-full mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center">
+            {/* Icon */}
+            <div className="mb-6">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                <LuWifiOff className="w-10 h-10 text-white" />
+              </div>
+            </div>
+
+            {/* Message */}
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+              Map Unavailable Offline
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Map tiles require an internet connection to load. Only areas you&apos;ve previously viewed while online will be cached.
+            </p>
+
+            {/* Info Box */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 text-left">
+              <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">
+                💡 To use maps offline:
+              </h3>
+              <ol className="text-sm text-blue-800 dark:text-blue-400 space-y-1 list-decimal list-inside">
+                <li>Connect to the internet</li>
+                <li>Navigate around your favorite areas on the map</li>
+                <li>Map tiles will be cached for 30 days</li>
+                <li>Those areas will work offline next time!</li>
+              </ol>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <Link
+                href="/krawls"
+                className="block w-full bg-gradient-to-r from-verde-500 to-verde-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-verde-600 hover:to-verde-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                View Saved Krawls
+              </Link>
+              <Link
+                href="/explore"
+                className="block w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold py-3 px-6 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200"
+              >
+                Browse Gems
+              </Link>
+            </div>
+
+            {/* Connection Status */}
+            <div className="mt-6 flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+              <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
+              Offline Mode
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Offline Indicator Badge - shown when offline but map is working from cache */}
+      {!isOnline && mapLoaded && !showOfflineOverlay && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[1001] bg-yellow-500/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-300">
+          <LuWifiOff size={16} />
+          <span className="text-sm font-medium">Offline Mode - Using Cached Map</span>
+        </div>
+      )}
+
+      {/* Map Error Banner (shown only when online but map fails) */}
+      {isOnline && mapError && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[1001] bg-red-500/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-300">
+          <LuWifiOff size={16} />
+          <span className="text-sm font-medium">{mapError}</span>
+        </div>
+      )}
+
       {/* Floating Header - positioned absolutely within map */}
       <header className="absolute top-0 left-0 right-0 z-[1000] h-[60px]">
         <div className="flex items-center gap-3 px-4 h-full">
