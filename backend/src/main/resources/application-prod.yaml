@@ -1,0 +1,25 @@
+# Production Environment Configuration
+# Activate with environment variable: SPRING_PROFILES_ACTIVE=prod
+# IMPORTANT: Override CORS_ALLOWED_ORIGINS with your production domains
+
+# CORS Configuration for Production
+# Override this in your deployment platform with actual production URLs
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://krawl.vercel.app}
+
+# Production Logging - Less verbose, focus on errors and warnings
+logging:
+  level:
+    com.krawl.backend: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+
+# Disable SQL logging in production for performance
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
