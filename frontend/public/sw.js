@@ -1,9 +1,10 @@
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v6'; // Fixed offline overlay timing - waits for cache before showing
 const CACHE_NAME = `krawl-${CACHE_VERSION}`;
 const STATIC_CACHE = `krawl-static-${CACHE_VERSION}`;
 const API_CACHE = `krawl-api-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `krawl-dynamic-${CACHE_VERSION}`;
 const IMAGE_CACHE = `krawl-images-${CACHE_VERSION}`;
+const TILE_CACHE = `krawl-tiles-${CACHE_VERSION}`;
 
 // Development mode check
 const IS_DEV = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
@@ -25,6 +26,10 @@ const CACHE_CONFIG = {
   images: {
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     maxItems: 100,
+  },
+  tiles: {
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    maxItems: 600, // Map tiles + style resources (style.json, sprites, fonts)
   }
 };
 
@@ -44,6 +49,19 @@ const urlsToCache = [
  * Determines cache strategy based on request URL
  */
 function getRequestType(url) {
+  // Check for map resources (MapTiler)
+  // Tiles: .pbf (vector tiles), .mvt
+  // Styles: style.json, sprites, fonts, glyphs
+  if (url.includes('api.maptiler.com')) {
+    // Cache style JSON, sprites, fonts, and tiles
+    if (url.includes('/tiles/') || url.match(/\.(pbf|mvt)$/)) {
+      return 'tile'; // Vector tiles
+    }
+    if (url.includes('/maps/') || url.includes('/fonts/') || url.includes('/sprites/') || url.match(/style\.json/)) {
+      return 'tile'; // Style resources - critical for offline
+    }
+  }
+  
   if (url.includes('/api/') || url.includes('localhost:8080') || url.includes('/backend/')) {
     return 'api';
   }
@@ -67,6 +85,7 @@ function getCacheName(type) {
     case 'static': return STATIC_CACHE;
     case 'api': return API_CACHE;
     case 'image': return IMAGE_CACHE;
+    case 'tile': return TILE_CACHE;
     case 'dynamic': return DYNAMIC_CACHE;
     default: return DYNAMIC_CACHE;
   }
@@ -331,7 +350,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('🚀 Service Worker activating...');
   
-  const currentCaches = [CACHE_NAME, STATIC_CACHE, API_CACHE, DYNAMIC_CACHE, IMAGE_CACHE];
+  const currentCaches = [CACHE_NAME, STATIC_CACHE, API_CACHE, DYNAMIC_CACHE, IMAGE_CACHE, TILE_CACHE];
   
   event.waitUntil(
     Promise.all([
@@ -352,6 +371,7 @@ self.addEventListener('activate', (event) => {
       cleanExpiredCache(STATIC_CACHE, CACHE_CONFIG.static.maxAge),
       cleanExpiredCache(DYNAMIC_CACHE, CACHE_CONFIG.dynamic.maxAge),
       cleanExpiredCache(IMAGE_CACHE, CACHE_CONFIG.images.maxAge),
+      cleanExpiredCache(TILE_CACHE, CACHE_CONFIG.tiles.maxAge),
     ])
     .then(() => {
       console.log('✅ Activation complete');
@@ -380,7 +400,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Skip map tiles and external CDN resources
+  // Skip some map tile providers and external CDN resources (but NOT MapTiler - we cache that)
   // Let them load directly without service worker interference
   if (
     url.includes('tile.openstreetmap.org') ||
@@ -408,21 +428,30 @@ self.addEventListener('fetch', (event) => {
     if (requestType === 'static' || requestType === 'image') {
       // Cache-first for static assets and images
       event.respondWith(cacheFirst(request, cacheName, config));
-  } else if (requestType === 'api') {
-    // Network-first for API calls
+    } else if (requestType === 'tile') {
+      // Cache-first for map resources (tiles, styles, fonts, sprites)
+      // These are essential for offline map functionality
+      const resourceType = url.includes('style.json') ? 'style' :
+                          url.includes('sprites') ? 'sprite' :
+                          url.includes('fonts') ? 'font' :
+                          url.includes('glyphs') ? 'glyph' : 'tile';
+      console.log(`🗺️ Caching map ${resourceType}:`, url.substring(url.lastIndexOf('/') + 1));
+      event.respondWith(cacheFirst(request, cacheName, config));
+    } else if (requestType === 'api') {
+      // Network-first for API calls
       event.respondWith(networkFirst(request, cacheName, config));
-  } else {
-    // Check if this is an HTML document request
-    const isHtmlRequest = request.headers.get('accept')?.includes('text/html');
-    
-    // In development, skip caching HTML to prevent hydration mismatches
-    if (IS_DEV && isHtmlRequest) {
-      console.log('🔧 DEV: Bypassing cache for HTML:', url);
-      event.respondWith(fetch(request));
     } else {
-      // Stale-while-revalidate for dynamic content
-      event.respondWith(staleWhileRevalidate(request, cacheName, config));
-    }
+      // Check if this is an HTML document request
+      const isHtmlRequest = request.headers.get('accept')?.includes('text/html');
+      
+      // In development, skip caching HTML to prevent hydration mismatches
+      if (IS_DEV && isHtmlRequest) {
+        console.log('🔧 DEV: Bypassing cache for HTML:', url);
+        event.respondWith(fetch(request));
+      } else {
+        // Stale-while-revalidate for dynamic content
+        event.respondWith(staleWhileRevalidate(request, cacheName, config));
+      }
     }
   } catch (error) {
     console.error('❌ Fetch handler error:', error);
@@ -470,13 +499,15 @@ self.addEventListener('message', (event) => {
           caches.open(API_CACHE).then(c => c.keys()),
           caches.open(DYNAMIC_CACHE).then(c => c.keys()),
           caches.open(IMAGE_CACHE).then(c => c.keys()),
-        ]).then(([static_, api, dynamic, images]) => {
+          caches.open(TILE_CACHE).then(c => c.keys()),
+        ]).then(([static_, api, dynamic, images, tiles]) => {
           event.ports[0].postMessage({
             static: static_.length,
             api: api.length,
             dynamic: dynamic.length,
             images: images.length,
-            total: static_.length + api.length + dynamic.length + images.length
+            tiles: tiles.length,
+            total: static_.length + api.length + dynamic.length + images.length + tiles.length
           });
         })
       );
@@ -498,6 +529,7 @@ self.addEventListener('periodicsync', (event) => {
         cleanExpiredCache(STATIC_CACHE, CACHE_CONFIG.static.maxAge),
         cleanExpiredCache(DYNAMIC_CACHE, CACHE_CONFIG.dynamic.maxAge),
         cleanExpiredCache(IMAGE_CACHE, CACHE_CONFIG.images.maxAge),
+        cleanExpiredCache(TILE_CACHE, CACHE_CONFIG.tiles.maxAge),
       ])
     );
   }
