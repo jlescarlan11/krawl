@@ -162,7 +162,24 @@ Create a `.env` file in the project root with the following content:
 # Database Configuration for Local Development
 DB_USER=krawl_user
 DB_PASSWORD=krawl_dev_password_2025
+
+# Server Configuration
+SERVER_PORT=8080
+
+# Cloudinary Configuration
+# Get these credentials from https://cloudinary.com/console
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+CLOUDINARY_FOLDER=krawl-gems
 ```
+
+> **📸 Setting up Cloudinary:**
+> 1. Create a free account at [cloudinary.com](https://cloudinary.com)
+> 2. Go to Dashboard → Account Details
+> 3. Copy your Cloud Name, API Key, and API Secret
+> 4. Replace the placeholder values in `.env` with your actual credentials
+> 5. The folder name (`krawl-gems`) will be created automatically on first upload
 
 **Start the PostgreSQL + PostGIS Container:**
 
@@ -236,6 +253,53 @@ Flyway/Liquibase migrations are typically integrated into the build or run comma
 ```
 
 ✅ The backend API should now be running at **http://localhost:8080**
+
+---
+
+#### 📸 Storage Service Configuration
+
+**Service:** Cloudinary  
+**Purpose:** Host user-uploaded Gem photos with automatic optimization
+
+**Storage Details:**
+
+| Configuration | Value |
+|--------------|-------|
+| **Service Provider** | Cloudinary |
+| **Folder** | `krawl-gems` (configurable via `CLOUDINARY_FOLDER`) |
+| **CDN URL** | `https://res.cloudinary.com/{your-cloud-name}/` |
+| **Max File Size** | 10MB |
+| **Supported Formats** | JPEG, PNG, WebP, HEIC |
+| **Auto Optimization** | ✅ WebP conversion, quality: auto:good |
+| **Max Image Size** | 1200x1200 (preserves aspect ratio) |
+| **Thumbnails** | Auto-generated: 400x400 and 800x800 |
+
+**Features:**
+- ✅ Automatic image optimization (WebP format, quality auto-tuning)
+- ✅ Smart resizing (max 1200x1200, only if larger)
+- ✅ Thumbnail generation (400x400 and 800x800)
+- ✅ CDN delivery for fast global access
+- ✅ Secure HTTPS URLs
+- ✅ File type validation
+- ✅ File size validation (10MB limit)
+
+**API Endpoints:**
+- `POST /api/storage/upload` - Upload image with optional gemId
+- `DELETE /api/storage/delete?url={imageUrl}` - Delete image by URL
+
+**Test Upload (using cURL):**
+```bash
+# Upload a test image
+curl -X POST http://localhost:8080/api/storage/upload \
+  -F "file=@path/to/image.jpg" \
+  -F "gemId=123e4567-e89b-12d3-a456-426614174000"
+
+# Response example:
+# {
+#   "url": "https://res.cloudinary.com/your-cloud/image/upload/v123/krawl-gems/...",
+#   "message": "Image uploaded successfully"
+# }
+```
 
 ---
 
@@ -350,6 +414,7 @@ Please ensure you follow the naming conventions and project structure outlined i
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3.0 | 2025-10-29 | **Storage Service:** Added Cloudinary configuration section with setup instructions, API endpoints, storage details, and testing commands; Added Cloudinary credentials to .env configuration; Added dedicated storage service documentation section | Development Team |
 | 1.2.0 | 2025-10-29 | **Port Update:** Corrected Docker PostgreSQL port from 5432 to 5434 in connection details and application.yml; Updated backend datasource configuration to use environment variables (${DB_USER}, ${DB_PASSWORD}); Added MapLibre GL JS v5.10.0, idb v8.0.3, and Sonner v2.0.7 to dependencies list | Development Team |
 | 1.1.0 | 2025-10-28 | Updated with actual frontend structure: App Router pages (add, explore, krawls, profile), components (Sidebar, BottomNav, AppLayout, Header, MapArea), design system files, PWA features, dependencies (Next.js 16, React 19, Tailwind v4, React Icons) | Development Team |
 | 1.0.0 | 2025-10-28 | Initial project setup guide | Development Team |

@@ -2,8 +2,8 @@
 
 > **Purpose:** Complete REST API reference for the Krawl MVP backend, covering authentication, endpoints, data formats, and error handling for developers integrating with the platform.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 1.1.0  
+**Last Updated:** 2025-10-29  
 **Status:** Active  
 **Owner:** Backend Team  
 **Tech Stack:** Spring Boot, JWT, PostgreSQL/PostGIS  
@@ -23,6 +23,7 @@
   - [Krawls](#3-krawls-krawls)
   - [Community Interactions](#4-community-interactions)
   - [User Profiles & Saved Krawls](#5-user-profiles--saved-krawls)
+  - [Storage](#6-storage-storage)
 - [Additional Notes](#additional-notes)
 - [Changelog](#-changelog)
 - [Related Documents](#-related-documents)
@@ -710,6 +711,111 @@ Removes a Krawl from the authenticated user's saved list.
 
 ---
 
+## 6. Storage (`/storage`)
+
+### Upload Image
+
+**`POST /storage/upload`**
+
+Uploads an image to Cloudinary with automatic optimization and thumbnail generation.
+
+| Property | Value |
+|----------|-------|
+| **Authentication** | Public (for testing) |
+| **Content-Type** | `multipart/form-data` |
+| **Success Response** | `200 OK` |
+| **Error Codes** | `400` |
+
+#### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `file` | File | Yes | Image file (JPEG, PNG, WebP, HEIC, max 10MB) |
+| `gemId` | UUID | No | Gem ID to organize uploads (auto-generated if not provided) |
+
+#### Response (200 OK)
+
+```json
+{
+  "url": "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/krawl-gems/123e4567-e89b-12d3-a456-426614174000/uuid.webp",
+  "message": "Image uploaded successfully"
+}
+```
+
+#### Error Response (400 Bad Request)
+
+```json
+{
+  "error": "File size exceeds 10MB limit"
+}
+```
+
+**Possible Error Messages:**
+- `"File is empty"`
+- `"File size exceeds 10MB limit"`
+- `"File must be an image"`
+- `"Unsupported image format. Allowed: JPEG, PNG, WebP, HEIC"`
+
+#### Image Processing
+
+The uploaded image is automatically:
+- ✅ Converted to WebP format for optimal compression
+- ✅ Resized to max 1200x1200 (only if larger, preserves aspect ratio)
+- ✅ Quality optimized (auto:good)
+- ✅ Thumbnails generated (400x400 and 800x800)
+
+#### cURL Example
+
+```bash
+curl -X POST http://localhost:8080/api/storage/upload \
+  -F "file=@image.jpg" \
+  -F "gemId=123e4567-e89b-12d3-a456-426614174000"
+```
+
+---
+
+### Delete Image
+
+**`DELETE /storage/delete`**
+
+Deletes an image from Cloudinary.
+
+| Property | Value |
+|----------|-------|
+| **Authentication** | Public (for testing) |
+| **Success Response** | `200 OK` |
+| **Error Codes** | `400` |
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `url` | String | Yes | Full Cloudinary image URL to delete |
+
+#### Response (200 OK)
+
+```json
+{
+  "message": "Image deleted successfully"
+}
+```
+
+#### Error Response (400 Bad Request)
+
+```json
+{
+  "error": "Invalid Cloudinary URL"
+}
+```
+
+#### cURL Example
+
+```bash
+curl -X DELETE "http://localhost:8080/api/storage/delete?url=https://res.cloudinary.com/your-cloud/image/upload/v1234567890/krawl-gems/123e4567-e89b-12d3-a456-426614174000/uuid.webp"
+```
+
+---
+
 ## Additional Notes
 
 This documentation covers the core endpoints anticipated for the **Krawl MVP** based on the defined features and data flow. Additional endpoints for the following may be added in future iterations:
@@ -727,6 +833,7 @@ This documentation covers the core endpoints anticipated for the **Krawl MVP** b
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.0 | 2025-10-29 | Added Storage endpoints for image upload and delete with Cloudinary integration | Backend Team |
 | 1.0.0 | 2025-10-28 | Initial API documentation for MVP | Backend Team |
 
 ---
@@ -738,8 +845,9 @@ This documentation covers the core endpoints anticipated for the **Krawl MVP** b
 - [Security Plan](./security-plan.md)
 - [Testing Plan](./testing-plan.md)
 - [Project Setup](./project-setup.md)
+- [Storage Testing Guide](./storage-testing-guide.md)
 
 ---
 
-*API documentation maintained by Backend Team • Last reviewed: 2025-10-28*
+*API documentation maintained by Backend Team • Last reviewed: 2025-10-29*
 
