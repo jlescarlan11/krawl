@@ -2,8 +2,8 @@
 
 > **Purpose:** This document provides comprehensive system design documentation for Krawl, including architecture overview, component interactions, data flow diagrams, and technical design patterns for all major features.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 1.1.0  
+**Last Updated:** 2025-10-29  
 **Status:** Active  
 **Owner:** Development Team
 
@@ -25,7 +25,7 @@
 ```mermaid
 graph TB
     subgraph "Client Layer"
-        FE[🌐 Frontend<br/>Next.js PWA<br/>Leaflet Maps]
+        FE[🌐 Frontend<br/>Next.js PWA<br/>MapLibre GL Maps]
         SW[⚙️ Service Worker<br/>Offline Cache]
     end
     
@@ -60,15 +60,18 @@ graph TB
 
 **Responsibilities:**
 - 🖼️ UI rendering and user interactions
-- 🗺️ Map display using Leaflet.js
+- 🗺️ 3D map display using MapLibre GL JS
 - 📡 API communication with backend
-- 💾 Local data caching (IndexedDB)
-- 📍 GPS location tracking
+- 💾 Local data caching (IndexedDB with 7 stores)
+- 📍 GPS location tracking with high accuracy
 - 🔄 Offline functionality via Service Worker
+- 🔄 Sync queue management for offline operations
 
 **Key Libraries:**
-- React / Next.js
-- Leaflet.js (maps)
+- React 19.2.0 / Next.js 16.0.0
+- MapLibre GL JS v5.10.0 (3D maps)
+- idb v8.0.3 (IndexedDB wrapper)
+- MapTiler (vector tiles)
 - PWA assets & manifest
 
 ---

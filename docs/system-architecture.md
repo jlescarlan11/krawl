@@ -2,11 +2,11 @@
 
 > **Purpose:** Provides a comprehensive view of the Krawl application's system architecture, component interactions, data flows, and technical stack for the MVP phase.
 
-**Version:** 1.2.0  
-**Last Updated:** 2025-10-28  
+**Version:** 1.3.0  
+**Last Updated:** 2025-10-29  
 **Status:** Active  
 **Owner:** Engineering Team  
-**Tech Stack:** Next.js, Spring Boot, PostgreSQL + PostGIS, Cloudinary, OpenStreetMap
+**Tech Stack:** Next.js 16, Spring Boot 3.5.7, PostgreSQL 15 + PostGIS 3.3, MapLibre GL JS, MapTiler, IndexedDB (idb)
 
 ---
 
@@ -48,16 +48,18 @@
              │
 ┌────────────▼─────────────┐          ┌─────────────────────┐
 │   🎨 Frontend Layer      │          │  🗺️  Map Tiles      │
-│   (PWA - Next.js)        │◄─────────┤  OpenStreetMap      │
-│                          │          │  (Tile Server)      │
+│   (PWA - Next.js)        │◄─────────┤  MapTiler           │
+│                          │          │  (Vector Tiles)     │
 │  • UI Rendering          │          └─────────────────────┘
 │  • Client State          │
-│  • Leaflet.js Maps       │
+│  • MapLibre GL JS Maps   │
+│  • 3D Map Visualization  │
 │  • JWT Auth              │
 │  • Service Workers       │
 │  • Offline Caching       │
 │  • GPS Integration       │
 │  • IndexedDB Storage     │
+│  • Sync Queue Manager    │
 └────────────┬─────────────┘
              │
              │ RESTful API
@@ -122,12 +124,14 @@
 **Technology Stack**:
 | Component | Technology |
 |-----------|------------|
-| Framework | Next.js (React) |
+| Framework | Next.js 16.0.0 (React 19.2.0) |
 | Styling | Tailwind CSS v4 |
-| Maps | Leaflet.js with plugins |
+| Maps | MapLibre GL JS v5.10.0 |
+| Map Provider | MapTiler (Vector Tiles) |
 | State Management | React Hooks/Context |
-| Offline Support | Service Workers |
-| Local Storage | IndexedDB, Cache API, LocalStorage |
+| Offline Support | Service Workers (506 lines) |
+| Local Storage | IndexedDB (idb v8.0.3), Cache API, LocalStorage |
+| Offline Database | KrawlDB v2 (7 object stores) |
 | Hosting | Vercel (Primary) / Netlify |
 | Version Control | Git + GitHub |
 
@@ -138,9 +142,13 @@
 - ✅ **State Management**: Application state handling
 - ✅ **GPS Integration**: Device location tracking
 - ✅ **Map Features**: 
-  - Interactive map display
-  - Marker clustering
-  - Custom markers
+  - Interactive 3D map display with WebGL rendering
+  - Tilted view (60° pitch) with custom camera controls
+  - 3D building extrusion with verde-themed colors
+  - Custom compass/3D toggle control
+  - Marker clustering (in progress)
+  - Custom verde-colored markers
+  - Geolocation with high accuracy
 - ✅ **API Communication**: RESTful HTTP requests with JSON
 - ✅ **Authentication**: JWT token storage and header management
 - ✅ **PWA Features**: 
@@ -148,9 +156,16 @@
   - Map tile caching
   - Service worker implementation
 - ✅ **Offline Storage**:
-  - IndexedDB (~50 MB) - Krawl metadata, stop details
-  - Cache API (~100 MB) - Map tiles, static images
-  - LocalStorage (~5 MB) - Auth tokens, user settings
+  - **IndexedDB (~50 MB)** - KrawlDB v2 with 7 object stores:
+    - `gems` - Gem data with geospatial indexes
+    - `krawls` - Krawl trails and itineraries
+    - `users` - User profiles and creator info
+    - `tags` - Tag taxonomy for categorization
+    - `photos` - Gem photo metadata
+    - `syncQueue` - Offline-first sync queue
+    - `settings` - App configuration and preferences
+  - **Cache API (~100 MB)** - Map tiles (MapTiler), static images, assets
+  - **LocalStorage (~5 MB)** - Auth tokens (JWT), user settings, preferences
 - ✅ **Responsive Design**: Tailwind CSS v4 styling
 
 ---
@@ -247,12 +262,23 @@
 4. Frontend loads optimized images directly from Cloudinary CDN URLs
 
 #### 🗺️ Map Tiles/APIs
-**Primary Provider**: OpenStreetMap (OSM)
+**Primary Provider**: MapTiler
+
+**Why MapTiler?**
+- Vector tiles for smooth rendering and smaller file sizes
+- Generous free tier (100,000 tile loads/month)
+- Built-in CDN for fast global delivery
+- Multiple style options (streets-v4, outdoor, satellite, hybrid)
+- WebGL-optimized for modern browsers
+- Excellent performance on mobile devices
 
 **Interaction**:
-- Frontend (Leaflet.js) fetches map tiles for display
+- Frontend (MapLibre GL JS) fetches vector tiles for display
 - Offline map tile caching via Service Worker
+- 3D building data included in tiles
 - Future integration possibilities: Geocoding/Directions APIs
+
+**OpenStreetMap**: Data source (via MapTiler processing)
 
 ---
 
@@ -297,8 +323,8 @@
 └──────────────────────────────────────────────────────────────────┘
 
 Map Tile Loading:
-  PWA ──────► OpenStreetMap Tile Server ──────► Map Display
-             (Direct HTTP requests for tiles)
+  PWA ──────► MapTiler Tile Server (Vector) ──────► 3D Map Display
+             (Direct HTTPS requests for tiles)        (MapLibre GL JS)
              └──────► Service Worker Cache (Offline)
 
 Image Upload/Display:
@@ -342,7 +368,7 @@ Geospatial Queries:
 5. Backend → Frontend
    JSON response with gem data
 
-6. Frontend renders markers on map using Leaflet
+6. Frontend renders markers on 3D map using MapLibre GL JS
 ```
 
 ### Example: Creating a New Gem
@@ -413,16 +439,16 @@ For complete deployment strategy, CI/CD workflow, database migration, cost break
 ├────────────────────┬───────────────────────────────────────┤
 │ Layer              │ Technologies                          │
 ├────────────────────┼───────────────────────────────────────┤
-│ Frontend           │ Next.js, React, TypeScript, Tailwind v4│
-│ Mapping            │ Leaflet.js with plugins               │
-│ Backend            │ Spring Boot, Java/Kotlin              │
-│ Database           │ PostgreSQL 14+ with PostGIS 3.0+      │
+│ Frontend           │ Next.js 16, React 19, TypeScript, Tailwind v4│
+│ Mapping            │ MapLibre GL JS v5.10.0                │
+│ Map Provider       │ MapTiler (Vector Tiles)               │
+│ Offline Storage    │ IndexedDB (idb v8.0.3) - KrawlDB v2   │
+│ Backend            │ Spring Boot 3.5.7, Java 25            │
+│ Database           │ PostgreSQL 15 with PostGIS 3.3        │
 │ Authentication     │ JWT, bcrypt (cost factor 12)          │
 │ Image Storage      │ Cloudinary (Primary)                  │
-│ Map Tiles          │ OpenStreetMap (Primary)               │
 │ API Protocol       │ REST (JSON over HTTP/HTTPS)           │
 │ PWA Features       │ Service Workers, Web App Manifest     │
-│ Offline Storage    │ IndexedDB, Cache API, LocalStorage    │
 │ Build Tools        │ npm/pnpm (Frontend), Maven/Gradle (BE)│
 │ Migration Tool     │ Flyway / Liquibase                    │
 │ Version Control    │ Git + GitHub                          │
@@ -468,22 +494,34 @@ For complete deployment strategy, CI/CD workflow, database migration, cost break
    - Rate limiting: 100 req/min per IP/user
    - Comprehensive endpoint structure under `/api/*`
 
-7. **Leaflet.js + OpenStreetMap**: Open-source flexibility with tile provider choice
-   - No API key costs for basic usage
-   - Extensive plugin ecosystem (marker clustering, etc.)
+7. **MapLibre GL JS + MapTiler**: Modern WebGL mapping with vector tiles
+   - Superior performance with WebGL rendering
+   - Native 3D building support with custom styling
+   - Vector tiles for smaller file sizes and smooth zooming
+   - Generous free tier (100,000 tile loads/month)
    - Offline map tile caching capability
+   - Better mobile performance than raster tiles
+   - Open-source library with no vendor lock-in
 
-8. **Free/Low-Cost Hosting**: Enables MVP launch with minimal costs
+8. **IndexedDB (idb library)**: Structured offline-first data storage
+   - KrawlDB v2 with 7 specialized object stores
+   - ~50MB storage for gems, krawls, and metadata
+   - Fast indexed queries (by-creator, by-status, by-synced)
+   - Sync queue for offline operations
+   - Better than localStorage for complex data structures
+   - Asynchronous API prevents UI blocking
+
+9. **Free/Low-Cost Hosting**: Enables MVP launch with minimal costs
    - Start with free tiers (Vercel, Render, Supabase/Render DB)
    - Pay-as-you-grow model
    - Easy upgrade paths without architecture changes
 
-9. **Database Migration Management**: Version-controlled schema changes
-   - Flyway/Liquibase for controlled migrations
-   - Prevents manual schema drift
-   - Automated deployment integration
+10. **Database Migration Management**: Version-controlled schema changes
+    - Flyway/Liquibase for controlled migrations
+    - Prevents manual schema drift
+    - Automated deployment integration
 
-10. **Git-Based CI/CD**: Automated deployments from version control
+11. **Git-Based CI/CD**: Automated deployments from version control
     - GitHub as central repository
     - Auto-deploy on push to main branch
     - Automated testing before production deploy
@@ -543,6 +581,7 @@ Connection String: postgresql://krawl_user:password@localhost:5432/krawl
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3.0 | 2025-10-29 | **Major Update:** Replaced Leaflet.js with MapLibre GL JS v5.10.0; Changed map provider from OpenStreetMap to MapTiler (vector tiles); Added comprehensive IndexedDB section (KrawlDB v2 with 7 object stores); Updated offline storage architecture with idb v8.0.3 library; Added 3D map visualization features (60° pitch, custom camera controls, 3D buildings with verde colors); Updated technology matrix with current versions (Next.js 16, React 19, Spring Boot 3.5.7, PostgreSQL 15, PostGIS 3.3); Expanded architectural decisions to include IndexedDB rationale | Engineering Team |
 | 1.1.0 | 2025-10-28 | Updated with comprehensive details from all docs: specific hosting recommendations (Vercel, Render, Cloudinary, Supabase), offline storage breakdown, cost structure, development environment, expanded architectural decisions, security details | Engineering Team |
 | 1.0.0 | 2025-10-28 | Initial system architecture documentation | Engineering Team |
 

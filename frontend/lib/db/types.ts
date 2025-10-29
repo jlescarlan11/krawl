@@ -45,7 +45,7 @@ export interface Krawl {
   created_at: string;
   updated_at: string;
   // Offline fields
-  _downloaded?: boolean;
+  _downloaded?: number; // 0 = not downloaded, 1 = downloaded
   _lastDownloaded?: string;
   _synced?: number; // 0 = not synced, 1 = synced
 }

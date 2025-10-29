@@ -2,8 +2,8 @@
 
 > **Purpose:** This document outlines the core technologies, frameworks, libraries, and deployment strategies chosen for building the Krawl Progressive Web App MVP, with rationale for each decision.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 1.3.0  
+**Last Updated:** 2025-10-29  
 **Status:** Active  
 **Owner:** Development Team
 
@@ -13,11 +13,13 @@
 
 | Layer | Technology | Version/Type |
 |-------|-----------|--------------|
-| **Frontend Framework** | Next.js | React Framework |
-| **Backend Framework** | Spring Boot | Java/Kotlin |
-| **Database** | PostgreSQL | with PostGIS Extension |
+| **Frontend Framework** | Next.js | 16.0.0 |
+| **Backend Framework** | Spring Boot | 3.5.7 (Java 25) |
+| **Database** | PostgreSQL | 15 + PostGIS 3.3 |
 | **Styling** | Tailwind CSS | v4 |
-| **Mapping Library** | Leaflet.js | with plugins |
+| **Mapping Library** | MapLibre GL JS | v5.10.0 |
+| **Offline Storage** | IndexedDB (idb) | v8.0.3 |
+| **Map Provider** | MapTiler | Vector Tiles |
 
 ---
 
@@ -219,17 +221,38 @@ import { LuMapPin, LuSearch, LuPlus } from 'react-icons/lu';
 
 ## 🗺️ Mapping Library
 
-### **Leaflet.js**
+### **MapLibre GL JS**
 
-**With Potential Plugins:**
-- `Leaflet.markercluster` - For handling Gem density visualization
+**Version:** 5.10.0  
+**Map Provider:** MapTiler (with API key)
 
 **Rationale:**
-- Lightweight, flexible, open-source JavaScript library for interactive maps
-- Well-suited for PWA implementation
-- Excellent plugin ecosystem for extended functionality
-- Mobile-friendly and performant
-- Active community and comprehensive documentation
+- Modern vector-based map rendering with WebGL for smooth performance
+- Native 3D building support with customizable extrusion
+- Excellent mobile performance and touch gestures
+- Full offline capability with map tile caching
+- No vendor lock-in - open-source and community-driven
+- Superior to raster tile libraries for modern PWAs
+- Built-in camera controls (pitch, bearing, rotation)
+- Smaller bundle size compared to alternatives
+
+**Key Dependencies:**
+- `maplibre-gl`: ^5.10.0
+- `leaflet`: ^1.9.4 (legacy, to be replaced)
+- `leaflet.markercluster`: ^1.5.3 (legacy, to be replaced)
+
+**Implementation:**
+- 3D tilted map view (60° pitch)
+- Custom compass/3D toggle control
+- Verde-themed 3D building colors
+- Geolocation integration
+- Marker clustering (planned migration from Leaflet)
+
+**Map Tile Provider:**
+- **MapTiler** - Provides high-quality vector tiles with streets-v4 style
+- Generous free tier (100,000 tile loads/month)
+- Built-in CDN for fast global delivery
+- Multiple style options (streets, outdoor, satellite, hybrid)
 
 ---
 
@@ -279,20 +302,58 @@ This technology stack balances several key requirements for the MVP phase:
 
 ---
 
+## 💾 Offline Storage & Data Persistence
+
+### **IndexedDB** (via idb library)
+
+**Version:** 8.0.3  
+**Library:** `idb` - Promise-based IndexedDB wrapper
+
+**Rationale:**
+- Large storage capacity (~50MB+) for offline Krawl data
+- Structured database with indexes for fast queries
+- Asynchronous API prevents UI blocking
+- Full CRUD operations with transaction support
+- Better than localStorage for complex data structures
+
+**Implementation:**
+- Database name: `KrawlDB` (version 2)
+- Object stores: gems, krawls, users, tags, photos, syncQueue, settings
+- Indexes for efficient filtering (by-creator, by-status, by-synced, etc.)
+- Sync queue for offline-first operations
+- TypeScript interfaces for type safety
+
+**Key Files:**
+- `frontend/lib/db/indexedDB.ts` - Core database initialization (257 lines)
+- `frontend/lib/db/types.ts` - TypeScript interfaces (94 lines)
+- `frontend/lib/db/gemStore.ts` - Gem operations
+- `frontend/lib/db/krawlStore.ts` - Krawl operations (137 lines)
+- `frontend/lib/db/userStore.ts` - User data operations
+- `frontend/lib/db/syncQueue.ts` - Sync queue management
+- `frontend/lib/db/syncManager.ts` - Background sync logic
+
+**Storage Breakdown:**
+- **IndexedDB** (~50 MB): Gems, Krawls, user data, metadata
+- **Cache API** (~100 MB): Map tiles, images, static assets
+- **LocalStorage** (~5 MB): Auth tokens, app settings
+
+---
+
 ## 📱 PWA Features
 
 ### Service Worker
 **Status:** ✅ Implemented
 
 **Files:**
-- `frontend/public/sw.js` - Service worker script
-- `frontend/app/register-sw.tsx` - Registration component
+- `frontend/public/sw.js` - Service worker script (506 lines)
+- `frontend/app/register-sw.tsx` - Registration component (169 lines)
 - `frontend/public/manifest.json` - Web app manifest
 
 **Capabilities:**
 - Offline caching strategy
 - Asset precaching for faster loads
 - Network-first with cache fallback
+- Map tile caching for offline maps
 - Background sync (future enhancement)
 
 **Rationale:**
@@ -300,6 +361,7 @@ This technology stack balances several key requirements for the MVP phase:
 - Provides app-like experience on mobile devices
 - Improves performance through intelligent caching
 - Installable on home screen
+- Works seamlessly with IndexedDB for data persistence
 
 ---
 
@@ -313,20 +375,25 @@ This technology stack balances several key requirements for the MVP phase:
 - **Linting:** ESLint (Frontend) ✅ Active
 
 ### Implemented Features
-- ✅ **Design System:** Complete CSS custom properties + Tailwind integration
-- ✅ **Component Library:** Navigation components (Sidebar, BottomNav, AppLayout)
-- ✅ **PWA Foundation:** Service worker, manifest, offline support
+- ✅ **Design System:** Complete CSS custom properties + Tailwind v4 integration (545 lines)
+- ✅ **Component Library:** Navigation (Sidebar, BottomNav, AppLayout, Header, MapArea)
+- ✅ **PWA Foundation:** Service worker (506 lines), manifest, offline support
 - ✅ **TypeScript:** Full type safety across frontend
-- ✅ **Icon System:** Lucide React icons library
+- ✅ **Icon System:** Lucide React icons library (react-icons/lu)
 - ✅ **Responsive Design:** Mobile-first approach with Tailwind
+- ✅ **Map Integration:** MapLibre GL JS with 3D buildings and MapTiler
+- ✅ **Offline Database:** IndexedDB with idb library (7 stores, full CRUD)
+- ✅ **Sync Architecture:** Offline-first with sync queue
+- ✅ **Database Schema:** PostgreSQL + PostGIS with Flyway migrations
 
 ### Future Enhancements
-- **Authentication:** Consider Auth0, Firebase Auth, or Spring Security
+- **Authentication:** JWT-based auth with Spring Security
 - **Analytics:** Google Analytics 4 or Plausible
 - **Monitoring:** Sentry for error tracking
 - **CI/CD:** GitHub Actions or GitLab CI
-- **Leaflet.js:** Map integration (prepared infrastructure)
-- **API Integration:** Connect frontend to Spring Boot backend
+- **Background Sync:** Automatic data synchronization when online
+- **API Integration:** Connect frontend IndexedDB to Spring Boot backend
+- **Real-time Updates:** WebSocket support for live data
 
 ---
 
@@ -334,6 +401,7 @@ This technology stack balances several key requirements for the MVP phase:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.3.0 | 2025-10-29 | **Major Update:** Replaced Leaflet.js with MapLibre GL JS v5.10.0 for modern WebGL rendering, 3D building support, and better performance; Added comprehensive IndexedDB section using idb v8.0.3 library with 7 object stores for offline-first architecture; Updated map provider from OpenStreetMap to MapTiler with vector tiles; Documented complete offline storage architecture (IndexedDB ~50MB, Cache API ~100MB, LocalStorage ~5MB); Added sync queue implementation details; Updated service worker documentation (506 lines); Updated implemented features list with map integration, offline database, and sync architecture | Development Team |
 | 1.2.0 | 2025-10-28 | **Major Update:** Documented complete CSS architecture and Tailwind v4 integration from `globals.css`: Added detailed CSS Architecture section explaining 5-layer system (Design Tokens, Tailwind Theme Extensions, Base Styles, Component Utilities, Typography System); documented 60+ CSS custom properties for colors, typography, spacing, shadows, z-index, and transitions; explained `@theme` directive usage for seamless Tailwind integration; documented Manrope font as primary typeface; added Benefits of This Architecture section highlighting scalability, maintainability, and performance advantages | Development Team |
 | 1.1.0 | 2025-10-28 | Updated with implemented features: Next.js 16.0.0, React 19.2.0, TypeScript, Tailwind CSS v4 with complete design system, React Icons (Lucide) v5.5.0, PWA features (service worker, manifest), component library status | Development Team |
 | 1.0.0 | 2025-10-28 | Initial tech stack document | Development Team |

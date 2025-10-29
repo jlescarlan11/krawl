@@ -21,17 +21,17 @@ docker ps
 ```
 
 **Expected Output:**
-You should see a container named `krawl-postgres` with status `Up`.
+You should see a container named `krawl-db` with status `Up`.
 
 ```
 CONTAINER ID   IMAGE                      COMMAND                  CREATED         STATUS                   PORTS                    NAMES
-xxxxxxxxxxxxx  postgis/postgis:15-3.4     "docker-entrypoint.s…"   X minutes ago   Up X minutes (healthy)   0.0.0.0:5432->5432/tcp   krawl-postgres
+xxxxxxxxxxxxx  postgis/postgis:15-3.3     "docker-entrypoint.s…"   X minutes ago   Up X minutes (healthy)   0.0.0.0:5434->5432/tcp   krawl-db
 ```
 
 **Check Container Logs:**
 
 ```bash
-docker logs krawl-postgres
+docker logs krawl-db
 ```
 
 Look for messages indicating successful initialization and PostGIS extension creation.
@@ -45,7 +45,7 @@ Look for messages indicating successful initialization and PostGIS extension cre
 Connect to the database using psql inside the container:
 
 ```bash
-docker exec -it krawl-postgres psql -U krawl_user -d krawl
+docker exec -it krawl-db psql -U krawl_user -d krawl
 ```
 
 Once connected, you should see the PostgreSQL prompt:
@@ -260,7 +260,7 @@ This confirms that PostGIS spatial calculations are working correctly.
 Check the container health status:
 
 ```bash
-docker inspect krawl-postgres --format='{{.State.Health.Status}}'
+docker inspect krawl-db --format='{{.State.Health.Status}}'
 ```
 
 **Expected Output:**
@@ -271,7 +271,7 @@ healthy
 **View Health Check Logs:**
 
 ```bash
-docker inspect krawl-postgres --format='{{json .State.Health}}' | python -m json.tool
+docker inspect krawl-db --format='{{json .State.Health}}' | python -m json.tool
 ```
 
 ---
@@ -282,7 +282,7 @@ docker inspect krawl-postgres --format='{{json .State.Health}}' | python -m json
 
 **Check logs:**
 ```bash
-docker logs krawl-postgres
+docker logs krawl-db
 ```
 
 **Common Issues:**
@@ -318,7 +318,7 @@ netstat -an | findstr 5432
 
 **Check environment variables:**
 ```bash
-docker exec krawl-postgres env | grep POSTGRES
+docker exec krawl-db env | grep POSTGRES
 ```
 
 ### PostGIS Extension Not Found
@@ -332,7 +332,7 @@ Should show `postgis/postgis:15-3.4`.
 
 **Check init scripts:**
 ```bash
-docker exec krawl-postgres ls /docker-entrypoint-initdb.d/
+docker exec krawl-db ls /docker-entrypoint-initdb.d/
 ```
 
 Should list your init scripts.
@@ -358,7 +358,7 @@ cat .env
 
 **Check what environment variables the container is using:**
 ```bash
-docker exec krawl-postgres printenv | grep DB
+docker exec krawl-db printenv | grep DB
 ```
 
 ---
@@ -369,7 +369,7 @@ Use this checklist to verify all aspects of the database setup:
 
 - [ ] Container starts successfully (`docker-compose up -d`)
 - [ ] Container shows as healthy (`docker ps`)
-- [ ] Can connect via psql from container (`docker exec -it krawl-postgres psql -U krawl_user -d krawl`)
+- [ ] Can connect via psql from container (`docker exec -it krawl-db psql -U krawl_user -d krawl`)
 - [ ] Can connect via psql from host (if PostgreSQL client installed)
 - [ ] Can connect via GUI client (DBeaver/pgAdmin/TablePlus)
 - [ ] PostGIS extension is installed (`SELECT PostGIS_version();`)
@@ -386,7 +386,7 @@ Use this checklist to verify all aspects of the database setup:
 Run this complete test in one command:
 
 ```bash
-docker exec -it krawl-postgres psql -U krawl_user -d krawl -c "
+docker exec -it krawl-db psql -U krawl_user -d krawl -c "
 SELECT 'Database: ' || current_database() as info
 UNION ALL
 SELECT 'User: ' || current_user

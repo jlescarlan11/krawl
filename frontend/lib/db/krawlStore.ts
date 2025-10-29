@@ -55,7 +55,7 @@ export async function getAllKrawls(): Promise<Krawl[]> {
  */
 export async function getDownloadedKrawls(): Promise<Krawl[]> {
   const db = await getDB();
-  return await db.getAllFromIndex('krawls', 'by-downloaded', true);
+  return await db.getAllFromIndex('krawls', 'by-downloaded', 1);
 }
 
 /**
@@ -71,7 +71,7 @@ export async function getKrawlsByCreator(creatorId: string): Promise<Krawl[]> {
  */
 export async function markKrawlAsDownloaded(krawlId: string): Promise<void> {
   await updateKrawl(krawlId, {
-    _downloaded: true,
+    _downloaded: 1,
     _lastDownloaded: new Date().toISOString(),
   });
 }
