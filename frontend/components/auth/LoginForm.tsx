@@ -33,7 +33,7 @@ export default function LoginForm() {
       name: 'emailOrUsername',
       label: 'Email or Username',
       type: 'text',
-      placeholder: 'juan@halina.com or juan',
+      placeholder: 'juan@krawl.com or juandelacruz',
       autoComplete: 'username',
     },
     {

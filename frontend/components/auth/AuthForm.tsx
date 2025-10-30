@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { LuMail, LuLock, LuEye, LuEyeOff } from 'react-icons/lu';
+import { LuMail, LuLock, LuEye, LuEyeOff, LuUser } from 'react-icons/lu';
 
 /**
  * Supported field input types for the generic AuthForm.
@@ -97,6 +97,7 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
   const renderIcon = (type: FieldType) => {
     if (type === 'email') return <LuMail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />;
     if (type === 'password') return <LuLock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />;
+    if (type === 'text') return <LuUser className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />;
     return null;
   };
 
@@ -151,7 +152,7 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
                         onBlur={() => setTouched((t) => ({ ...t, [f.name]: true }))}
                         aria-invalid={!!err}
                         aria-describedby={`${f.name}-error`}
-                        className={`w-full rounded-md border bg-white ${f.type !== 'text' ? 'px-10' : 'px-3'} py-2 text-base text-neutral-800 placeholder-neutral-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-verde-600 ${err ? 'border-error' : 'border-neutral-300'}`}
+                        className={`w-full rounded-md border bg-white px-10 py-2 text-base text-neutral-800 placeholder-neutral-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-verde-600 ${err ? 'border-error' : 'border-neutral-300'}`}
                         disabled={submitting}
                       />
                       {isPassword && f.showToggle ? (
