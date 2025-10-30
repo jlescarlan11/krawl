@@ -1,6 +1,5 @@
 package com.krawl.backend.controller;
 
-import com.krawl.backend.dto.ApiResponse;
 import com.krawl.backend.dto.ImageUploadResponse;
 import com.krawl.backend.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
