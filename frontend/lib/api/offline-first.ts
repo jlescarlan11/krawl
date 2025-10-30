@@ -115,6 +115,11 @@ export async function offlineFirstFetch<T>(
 
 export interface CreateWithOfflineOptions<TData, TResult> {
   /**
+   * Data to create the resource with
+   */
+  data: TData;
+  
+  /**
    * Function to create resource via API
    */
   createFn: (data: TData) => Promise<TResult>;
@@ -181,6 +186,7 @@ export async function createWithOfflineSupport<TData, TResult>(
   options: CreateWithOfflineOptions<TData, TResult>
 ): Promise<TResult> {
   const {
+    data,
     createFn,
     saveCacheFn,
     addToSyncQueueFn,
@@ -190,7 +196,7 @@ export async function createWithOfflineSupport<TData, TResult>(
   } = options;
 
   try {
-    const result = await createFn(undefined as any); // Data already bound in createFn
+    const result = await createFn(data);
     await saveCacheFn(result);
     console.log(`✅ Created ${entity} successfully`);
     return result;
@@ -200,10 +206,10 @@ export async function createWithOfflineSupport<TData, TResult>(
     toast.info('Saved locally. Will sync when online.');
     
     const tempId = generateTempId();
-    const tempResult = createTempResult(undefined as any, tempId); // Data bound in createTempResult
+    const tempResult = createTempResult(data, tempId);
     
     await saveCacheFn(tempResult);
-    await addToSyncQueueFn('CREATE', entity, tempId, undefined as any);
+    await addToSyncQueueFn('CREATE', entity, tempId, data);
     
     return tempResult;
   }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { checkActualConnectivity } from '../utils/network';
+import { config } from '../config/env';
 
 export interface NetworkStatus {
   isOnline: boolean;
@@ -10,9 +11,6 @@ export interface NetworkStatus {
   rtt?: number; // Round-trip time in ms
   saveData?: boolean;
 }
-
-// Get API base URL from environment
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 /**
  * Custom hook for detecting network status
@@ -34,9 +32,11 @@ export function useNetworkStatus(): NetworkStatus {
     try {
       console.log('🔍 Checking connectivity...');
       
+      const basePath = config.api.getBasePath();
+      
       // First try the backend health endpoint
-      console.log(`📡 Trying backend health check: ${API_BASE_URL}/health`);
-      actuallyOnline = await checkActualConnectivity(`${API_BASE_URL}/health`);
+      console.log(`📡 Trying backend health check: ${basePath}/health`);
+      actuallyOnline = await checkActualConnectivity(`${basePath}/health`);
       
       // If backend check failed, try a local resource as fallback
       if (!actuallyOnline) {
