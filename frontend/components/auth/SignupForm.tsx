@@ -12,6 +12,7 @@ type SignupValues = {
   email: string;
   password: string;
   confirmPassword: string;
+  termsAccepted: boolean;
 };
 
 // Validation logic for the signup form
@@ -56,8 +57,13 @@ function validate(values: SignupValues) {
     errors.confirmPassword = 'Passwords do not match';
   }
 
+  // Terms Accepted Validation
+  if (!values.termsAccepted) {
+    errors.termsAccepted = 'You must accept the terms and conditions to sign up';
+  }
+
   return errors;
-}
+  }
 
 export default function SignupForm() {
   const { signup } = useAuth(); // You will need to implement signup in your AuthContext
@@ -96,12 +102,28 @@ export default function SignupForm() {
       autoComplete: 'new-password',
       showToggle: true,
     },
+    {
+      name: 'termsAccepted',
+      label: (
+        <>
+          I agree to the{' '}
+          <Link href="/terms" target="_blank" className="text-verde-700 hover:underline">
+            Terms and Conditions
+          </Link>{' '}
+          and{' '}
+          <Link href="/privacy" target="_blank" className="text-verde-700 hover:underline">
+            Privacy Policy
+          </Link>
+        </>
+      ),
+      type: 'checkbox',
+    },
   ];
 
   return (
     <AuthForm<SignupValues>
-      title="Create an Account"
-      initialValues={{ username: '', email: '', password: '', confirmPassword: '' }}
+      // title="Create an Account"
+      initialValues={{ username: '', email: '', password: '', confirmPassword: '', termsAccepted: false }}
       fields={fields}
       validate={validate}
       submitLabel="Sign Up"
