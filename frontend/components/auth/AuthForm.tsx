@@ -20,7 +20,7 @@ type FieldType = 'text' | 'email' | 'password' | 'checkbox';
  */
 export type FieldConfig<TValues> = {
   name: keyof TValues & string;
-  label?: string;
+  label?: React.ReactNode;
   type: FieldType;
   placeholder?: string;
   autoComplete?: string;
