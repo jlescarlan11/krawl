@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { LuMail, LuLock, LuEye, LuEyeOff, LuUser } from 'react-icons/lu';
+import { LuMail, LuLock, LuEye, LuEyeOff, LuUser, LuCheck } from 'react-icons/lu';
 
 /**
  * Supported field input types for the generic AuthForm.
@@ -109,6 +109,7 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
         <form onSubmit={handleSubmit} noValidate>
           {fields.map((f) => {
             const err = touched[f.name] && errors[f.name];
+            const isValid = touched[f.name] && !errors[f.name];
             const isCheckbox = f.type === 'checkbox';
             const isPassword = f.type === 'password';
             const inputType = isPassword && show[f.name] ? 'text' : f.type;
@@ -153,9 +154,15 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
                         onBlur={() => setTouched((t) => ({ ...t, [f.name]: true }))}
                         aria-invalid={!!err}
                         aria-describedby={`${f.name}-error`}
-                        className={`w-full rounded-md border bg-white px-10 py-2 text-base text-neutral-800 placeholder-neutral-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-verde-600 ${err ? 'border-error' : 'border-neutral-300'}`}
+                        className={`w-full rounded-md border bg-white px-10 py-2 text-base text-neutral-800 placeholder-neutral-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-verde-600 ${err ? 'border-error' : isValid ? 'border-verde-600' : 'border-neutral-300'}`}
                         disabled={submitting}
                       />
+                      {isValid && !isPassword ? (
+                        <LuCheck
+                          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-verde-700"
+                          size={18}
+                        />
+                      ) : null}
                       {isPassword && f.showToggle ? (
                         <button
                           type="button"
