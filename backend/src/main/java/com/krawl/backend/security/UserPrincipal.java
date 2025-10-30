@@ -20,6 +20,7 @@ public class UserPrincipal implements UserDetails {
     private String username;
     private String password;
     private boolean enabled;
+    private String reputationTier;
     
     public static UserPrincipal create(User user) {
         return new UserPrincipal(
@@ -27,7 +28,8 @@ public class UserPrincipal implements UserDetails {
             user.getEmail(),
             user.getUsername(),
             user.getPasswordHash(),
-            user.getDeletedAt() == null
+            user.getDeletedAt() == null,
+            user.getReputationTier()
         );
     }
     
