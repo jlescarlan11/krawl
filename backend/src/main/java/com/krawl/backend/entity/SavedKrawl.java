@@ -35,7 +35,7 @@ public class SavedKrawl {
     @Column(name = "saved_at", nullable = false, updatable = false)
     private LocalDateTime savedAt;
     
-    @Column(name = "is_downloaded", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_downloaded", nullable = false)
     private Boolean isDownloaded = false;
     
     @Column(name = "last_downloaded_at")

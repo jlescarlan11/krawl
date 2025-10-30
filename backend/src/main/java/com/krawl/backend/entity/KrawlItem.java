@@ -2,7 +2,6 @@ package com.krawl.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
@@ -15,8 +14,7 @@ import java.util.UUID;
 public class KrawlItem {
     
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "krawl_item_id", updatable = false, nullable = false)
     private UUID krawlItemId;
     

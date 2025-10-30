@@ -4,6 +4,7 @@ import com.krawl.backend.dto.request.LoginRequest;
 import com.krawl.backend.dto.request.RegisterRequest;
 import com.krawl.backend.dto.response.AuthResponse;
 import com.krawl.backend.entity.User;
+import com.krawl.backend.exception.ConflictException;
 import com.krawl.backend.repository.UserRepository;
 import com.krawl.backend.security.JwtTokenProvider;
 import com.krawl.backend.security.UserPrincipal;
@@ -33,10 +34,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthResponse register(RegisterRequest request) {
         // Check if user already exists
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new ConflictException("Email already registered");
         }
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already taken");
+            throw new ConflictException("Username already taken");
         }
         
         // Create new user
