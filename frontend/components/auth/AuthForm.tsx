@@ -26,6 +26,7 @@ export type FieldConfig<TValues> = {
   autoComplete?: string;
   showToggle?: boolean; // for password visibility toggle
   rightAccessory?: React.ReactNode; // renders at right for checkbox rows
+  helperText?: React.ReactNode;
 };
 
 /**
@@ -173,6 +174,10 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
                 {err ? (
                   <p id={`${f.name}-error`} className="mt-2 text-xs text-error">
                     {errors[f.name]}
+                  </p>
+                ) : f.helperText ? (
+                  <p id={`${f.name}-helper`} className="mt-2 text-xs text-neutral-500">
+                    {f.helperText}
                   </p>
                 ) : null}
               </div>

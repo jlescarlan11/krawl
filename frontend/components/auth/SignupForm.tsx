@@ -18,22 +18,40 @@ type SignupValues = {
 function validate(values: SignupValues) {
   const errors: Partial<Record<keyof SignupValues, string>> = {};
 
+  // Username Validation
   if (!values.username.trim()) {
     errors.username = 'Username is required';
+  } else if (values.username.length < 3) {
+    errors.username = 'Username must be at least 3 characters';
+  } else if (values.username.length > 20) {
+    errors.username = 'Username cannot exceed 20 characters';
+  } else if (!/^[a-zA-Z0-9_]+$/.test(values.username)) {
+    errors.username = 'Can only contain letters, numbers, and underscores';
   }
 
+  // Email Validation
   if (!values.email.trim()) {
     errors.email = 'Email is required';
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    errors.email = 'Invalid email address';
+    errors.email = 'Please enter a valid email address';
   }
 
+  // Password Validation
   if (!values.password) {
     errors.password = 'Password is required';
   } else if (values.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters long';
+    errors.password = 'Password must be at least 8 characters';
+  } else if (!/[A-Z]/.test(values.password)) {
+    errors.password = 'Must contain at least one uppercase letter';
+  } else if (!/[a-z]/.test(values.password)) {
+    errors.password = 'Must contain at least one lowercase letter';
+  } else if (!/[0-9]/.test(values.password)) {
+    errors.password = 'Must contain at least one number';
+  } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(values.password)) {
+    errors.password = 'Must contain at least one special character';
   }
 
+  // Confirm Password Validation
   if (values.password !== values.confirmPassword) {
     errors.confirmPassword = 'Passwords do not match';
   }
@@ -65,13 +83,16 @@ export default function SignupForm() {
       name: 'password',
       label: 'Password',
       type: 'password',
+      placeholder: '••••••••',
       autoComplete: 'new-password', // Important for password managers
       showToggle: true,
+      helperText: 'Must be at least 8 characters and include an uppercase, lowercase, number, and special character.',
     },
     {
       name: 'confirmPassword',
       label: 'Confirm Password',
       type: 'password',
+      placeholder: '••••••••',
       autoComplete: 'new-password',
       showToggle: true,
     },
