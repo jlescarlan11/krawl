@@ -2,12 +2,13 @@
 
 > **Purpose:** Complete REST API reference for the Krawl MVP backend, covering authentication, endpoints, data formats, and error handling for developers integrating with the platform.
 
-**Version:** 1.1.0  
-**Last Updated:** 2025-10-29  
+**Version:** 1.2.0  
+**Last Updated:** 2025-10-30  
 **Status:** Active  
 **Owner:** Backend Team  
 **Tech Stack:** Spring Boot, JWT, PostgreSQL/PostGIS  
-**Base URL:** `/api` or `/api/v1`
+**Base URL:** `/api/v1` (primary)  
+**Legacy Base URL:** `/api` (deprecated - maintained for backward compatibility)
 
 ---
 
@@ -43,9 +44,11 @@ This document outlines the REST API endpoints, data formats, and authentication 
 
 ### Authentication Flow
 
-1. User **registers** via `POST /auth/register` → receives a JWT
-2. User **logs in** via `POST /auth/login` → receives a JWT
+1. User **registers** via `POST /api/v1/auth/register` → receives a JWT
+2. User **logs in** via `POST /api/v1/auth/login` → receives a JWT
 3. JWT must be included in the `Authorization` header for all protected endpoints
+
+**Note:** Legacy endpoints under `/api/auth` are still available but deprecated. Use `/api/v1/auth` for new integrations.
 
 **Header Format:**
 ```
@@ -93,7 +96,7 @@ All error responses follow a standard structure with appropriate HTTP status cod
   "status": 400,
   "error": "Bad Request",
   "message": "Validation failed: Gem name cannot be empty.",
-  "path": "/api/gems"
+  "path": "/api/v1/gems"
 }
 ```
 
@@ -103,11 +106,11 @@ All error responses follow a standard structure with appropriate HTTP status cod
 
 ---
 
-## 1. Authentication (`/auth`)
+## 1. Authentication (`/api/v1/auth`)
 
 ### Register User
 
-**`POST /auth/register`**
+**`POST /api/v1/auth/register`**
 
 Creates a new user account.
 
@@ -146,7 +149,7 @@ Creates a new user account.
 
 ### Login User
 
-**`POST /auth/login`**
+**`POST /api/v1/auth/login`**
 
 Authenticates a user and returns a JWT.
 
@@ -182,11 +185,11 @@ Authenticates a user and returns a JWT.
 
 ---
 
-## 2. Gems (`/gems`)
+## 2. Gems (`/api/v1/gems`)
 
 ### Create Gem
 
-**`POST /gems`**
+**`POST /api/v1/gems`**
 
 Creates a new Gem (pin). Handles duplicate checks automatically.
 
@@ -255,7 +258,7 @@ Creates a new Gem (pin). Handles duplicate checks automatically.
 
 ### List Gems (Map View)
 
-**`GET /gems`**
+**`GET /api/v1/gems`**
 
 Retrieves Gems within a given map viewport/boundary. Used for map display.
 
@@ -301,7 +304,7 @@ Retrieves Gems within a given map viewport/boundary. Used for map display.
 
 ### Get Gem Details
 
-**`GET /gems/{gemId}`**
+**`GET /api/v1/gems/{gemId}`**
 
 Retrieves detailed information for a specific Gem.
 
@@ -328,7 +331,7 @@ Similar to POST `/gems` success response, potentially includes photos, recent ra
 
 ### Upload Gem Photo
 
-**`POST /gems/{gemId}/photos`**
+**`POST /api/v1/gems/{gemId}/photos`**
 
 Uploads a photo for a Gem. Requires handling `multipart/form-data` for image upload.
 
@@ -344,11 +347,11 @@ Details of the uploaded photo (URL, ID).
 
 ---
 
-## 3. Krawls (`/krawls`)
+## 3. Krawls (`/api/v1/krawls`)
 
 ### Create Krawl
 
-**`POST /krawls`**
+**`POST /api/v1/krawls`**
 
 Creates a new, empty Krawl.
 
@@ -378,7 +381,7 @@ Details of the newly created Krawl.
 
 ### List Krawls (Discover)
 
-**`GET /krawls`**
+**`GET /api/v1/krawls`**
 
 Retrieves a list of Krawls (e.g., for Discover page). Supports filtering and pagination.
 
@@ -407,7 +410,7 @@ Array of Krawl summary objects (title, description snippet, creator, rating, fir
 
 ### Get Krawl Details
 
-**`GET /krawls/{krawlId}`**
+**`GET /api/v1/krawls/{krawlId}`**
 
 Retrieves detailed information for a specific Krawl, including its ordered Gems and notes.
 
@@ -429,7 +432,7 @@ Full Krawl details, including an ordered array of `krawl_items` with Gem info an
 
 ### Update Krawl
 
-**`PUT /krawls/{krawlId}`**
+**`PUT /api/v1/krawls/{krawlId}`**
 
 Updates a Krawl (title, description, visibility, adding/removing/reordering Gems, updating notes).
 
@@ -451,7 +454,7 @@ Updated Krawl details.
 
 ### Get Krawl for Offline Use
 
-**`GET /krawls/{krawlId}/offline`**
+**`GET /api/v1/krawls/{krawlId}/offline`**
 
 Retrieves all necessary data for a Krawl to be used offline.
 
@@ -474,7 +477,7 @@ A comprehensive JSON object containing:
 
 ### Delete Krawl
 
-**`DELETE /krawls/{krawlId}`**
+**`DELETE /api/v1/krawls/{krawlId}`**
 
 Deletes a Krawl. Only accessible by the Krawl creator.
 
@@ -490,7 +493,7 @@ Deletes a Krawl. Only accessible by the Krawl creator.
 
 ### Vouch for Gem
 
-**`POST /gems/{gemId}/vouch`**
+**`POST /api/v1/gems/{gemId}/vouch`**
 
 Adds a vouch from the authenticated user to the Gem.
 
@@ -512,7 +515,7 @@ Confirmation, potentially updated vouch count.
 
 ### Rate Gem
 
-**`POST /gems/{gemId}/ratings`**
+**`POST /api/v1/gems/{gemId}/ratings`**
 
 Submits a star rating (1-5) and optional comment for a Gem. Updates existing rating if user rated before.
 
@@ -539,7 +542,7 @@ Saved rating details, updated Gem average rating.
 
 ### Get Gem Ratings
 
-**`GET /gems/{gemId}/ratings`**
+**`GET /api/v1/gems/{gemId}/ratings`**
 
 Retrieves ratings/comments for a Gem (paginated).
 
@@ -567,7 +570,7 @@ Retrieves ratings/comments for a Gem (paginated).
 
 ### Rate Krawl
 
-**`POST /krawls/{krawlId}/ratings`**
+**`POST /api/v1/krawls/{krawlId}/ratings`**
 
 Submits a star rating (1-5), optional comment, and feedback flags for a Krawl experience.
 
@@ -595,7 +598,7 @@ Saved rating details, updated Krawl average rating.
 
 ### Report Gem
 
-**`POST /gems/{gemId}/reports`**
+**`POST /api/v1/gems/{gemId}/reports`**
 
 Submits a report about a Gem (e.g., closed, spam).
 
@@ -632,7 +635,7 @@ Report received and queued for review.
 
 ### Get User Profile
 
-**`GET /profile/{username}`**
+**`GET /api/v1/profile/{username}`**
 
 Retrieves public profile information for a user.
 
@@ -667,7 +670,7 @@ Retrieves public profile information for a user.
 
 ### Get Saved Krawls
 
-**`GET /my-krawls/saved`**
+**`GET /api/v1/my-krawls/saved`**
 
 Retrieves the list of Krawls saved/downloaded by the authenticated user.
 
@@ -685,7 +688,7 @@ Array of saved Krawl summary objects.
 
 ### Save Krawl
 
-**`POST /my-krawls/saved/{krawlId}`**
+**`POST /api/v1/my-krawls/saved/{krawlId}`**
 
 Saves a Krawl to the authenticated user's list.
 
@@ -699,7 +702,7 @@ Saves a Krawl to the authenticated user's list.
 
 ### Unsave Krawl
 
-**`DELETE /my-krawls/saved/{krawlId}`**
+**`DELETE /api/v1/my-krawls/saved/{krawlId}`**
 
 Removes a Krawl from the authenticated user's saved list.
 
@@ -711,11 +714,11 @@ Removes a Krawl from the authenticated user's saved list.
 
 ---
 
-## 6. Storage (`/storage`)
+## 6. Storage (`/api/v1/storage`)
 
 ### Upload Image
 
-**`POST /storage/upload`**
+**`POST /api/v1/storage/upload`**
 
 Uploads an image to Cloudinary with automatic optimization and thumbnail generation.
 
@@ -767,7 +770,7 @@ The uploaded image is automatically:
 #### cURL Example
 
 ```bash
-curl -X POST http://localhost:8080/api/storage/upload \
+curl -X POST http://localhost:8080/api/v1/storage/upload \
   -F "file=@image.jpg" \
   -F "gemId=123e4567-e89b-12d3-a456-426614174000"
 ```
@@ -776,7 +779,7 @@ curl -X POST http://localhost:8080/api/storage/upload \
 
 ### Delete Image
 
-**`DELETE /storage/delete`**
+**`DELETE /api/v1/storage/delete`**
 
 Deletes an image from Cloudinary.
 
@@ -811,7 +814,7 @@ Deletes an image from Cloudinary.
 #### cURL Example
 
 ```bash
-curl -X DELETE "http://localhost:8080/api/storage/delete?url=https://res.cloudinary.com/your-cloud/image/upload/v1234567890/krawl-gems/123e4567-e89b-12d3-a456-426614174000/uuid.webp"
+curl -X DELETE "http://localhost:8080/api/v1/storage/delete?url=https://res.cloudinary.com/your-cloud/image/upload/v1234567890/krawl-gems/123e4567-e89b-12d3-a456-426614174000/uuid.webp"
 ```
 
 ---
@@ -833,6 +836,7 @@ This documentation covers the core endpoints anticipated for the **Krawl MVP** b
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.2.0 | 2025-10-30 | Clarified `/api/v1` as primary base URL; updated all endpoint paths and cURL examples; marked `/api` as legacy/deprecated | Backend Team |
 | 1.1.0 | 2025-10-29 | Added Storage endpoints for image upload and delete with Cloudinary integration | Backend Team |
 | 1.0.0 | 2025-10-28 | Initial API documentation for MVP | Backend Team |
 
@@ -849,5 +853,5 @@ This documentation covers the core endpoints anticipated for the **Krawl MVP** b
 
 ---
 
-*API documentation maintained by Backend Team • Last reviewed: 2025-10-29*
+*API documentation maintained by Backend Team • Last reviewed: 2025-10-30*
 

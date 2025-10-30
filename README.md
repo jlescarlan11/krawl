@@ -1,6 +1,6 @@
-# 🗺️ Krawl
-
 <div align="center">
+
+<img src="design/logo/final/krawl-lockup-color.svg" alt="Krawl logo" width="240" />
 
 **Discover the Philippines, One Krawl at a Time**
 
@@ -240,7 +240,6 @@ For complete setup instructions, connection details, schema documentation, and t
 
 ---
 
-
 ## 🤝 Contributing
 
 We welcome contributions to Krawl! To get started:
@@ -316,7 +315,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 *Powered by Local Knowledge • Built for Community*
 
-[⬆ back to top](#-krawl)
+[⬆ back to top](#)
 
 </div>
 

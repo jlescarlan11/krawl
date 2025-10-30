@@ -211,29 +211,40 @@ Full API documentation is available in the docs:
 
 ### Available Endpoints
 
-1. **Authentication** (`/api/auth`)
-   - POST `/register` - Register new user
-   - POST `/login` - User login
+**Note:** This backend uses API versioning. All new endpoints are under `/api/v1/`. Legacy endpoints under `/api/` are maintained for backward compatibility but deprecated.
 
-2. **Gems** (`/api/gems`)
-   - GET `/` - List all gems
-   - POST `/` - Create new gem
-   - GET `/{id}` - Get gem details
-   - PUT `/{id}` - Update gem
-   - DELETE `/{id}` - Delete gem
+#### ✅ Implemented Endpoints
 
-3. **Krawls** (`/api/krawls`)
-   - GET `/` - List all krawls
-   - POST `/` - Create new krawl
-   - GET `/{id}` - Get krawl details
+1. **Authentication** (`/api/v1/auth` or `/api/auth` - legacy)
+   - ✅ POST `/api/v1/auth/register` - Register new user
+   - ✅ POST `/api/v1/auth/login` - User login
 
-4. **Community** (`/api/community`)
-   - POST `/gems/{id}/vouch` - Vouch for a gem
-   - POST `/gems/{id}/flag` - Flag a gem
+2. **Storage** (`/api/v1/storage` or `/api/storage` - legacy)
+   - ✅ POST `/api/v1/storage/upload` - Upload image
+   - ✅ DELETE `/api/v1/storage/delete` - Delete image
 
-5. **Storage** (`/api/storage`)
-   - POST `/upload` - Upload image
-   - DELETE `/delete` - Delete image
+#### 🚧 Planned Endpoints (Documented but not yet implemented)
+
+3. **Gems** (`/api/v1/gems`)
+   - 🚧 GET `/api/v1/gems` - List all gems
+   - 🚧 POST `/api/v1/gems` - Create new gem
+   - 🚧 GET `/api/v1/gems/{id}` - Get gem details
+   - 🚧 PUT `/api/v1/gems/{id}` - Update gem
+   - 🚧 DELETE `/api/v1/gems/{id}` - Delete gem
+
+4. **Krawls** (`/api/v1/krawls`)
+   - 🚧 GET `/api/v1/krawls` - List all krawls
+   - 🚧 POST `/api/v1/krawls` - Create new krawl
+   - 🚧 GET `/api/v1/krawls/{id}` - Get krawl details
+   - 🚧 PUT `/api/v1/krawls/{id}` - Update krawl
+   - 🚧 DELETE `/api/v1/krawls/{id}` - Delete krawl
+
+5. **Community** (`/api/v1/gems/{id}/...`)
+   - 🚧 POST `/api/v1/gems/{id}/vouch` - Vouch for a gem
+   - 🚧 POST `/api/v1/gems/{id}/ratings` - Rate a gem
+   - 🚧 POST `/api/v1/gems/{id}/reports` - Report a gem
+
+For complete API documentation, see [API Documentation](../docs/api-documentation.md).
 
 ---
 
@@ -275,11 +286,11 @@ init-scripts/01-init-postgis.sql
 
 ```bash
 # Test upload
-curl -X POST http://localhost:8080/api/storage/upload \
+curl -X POST http://localhost:8080/api/v1/storage/upload \
   -F "file=@test-image.jpg"
 
 # Test delete
-curl -X DELETE "http://localhost:8080/api/storage/delete?url=<image-url>"
+curl -X DELETE "http://localhost:8080/api/v1/storage/delete?url=<image-url>"
 ```
 
 See [Storage Testing Guide](../docs/storage-testing-guide.md) for comprehensive testing instructions.

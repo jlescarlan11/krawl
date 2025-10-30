@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 368 128">
+  <defs>
+    <style>
+      .verde{fill:#2D7A3E}
+      .text{fill:#2B2B2B}
+    </style>
+  </defs>
+  <!-- Icon -->
+  <g>
+    <circle class="verde" cx="44" cy="84" r="12"/>
+    <circle class="verde" cx="76" cy="52" r="12"/>
+    <circle class="verde" cx="108" cy="76" r="12"/>
+    <circle class="verde" cx="132" cy="36" r="12"/>
+  </g>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Path/Trail: breadcrumb into soft chevron (mono-first) -->
+  
+</svg>
+
+
+
+
+  <!-- Wordmark (Manrope implied) -->
+  <g class="text">
+    <text x="164" y="90" font-family="Manrope, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-weight="700" font-size="64" letter-spacing="0.01em">Krawl</text>
+  </g>
+</svg>
+
