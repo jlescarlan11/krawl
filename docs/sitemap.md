@@ -2,8 +2,8 @@
 
 > **Purpose:** This sitemap outlines the primary pages/views, navigational structure, and user flows of the Krawl Progressive Web App, defining the information architecture and access patterns.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 1.0.1  
+**Last Updated:** 2025-10-30  
 **Status:** Active  
 **Owner:** Product Team
 
@@ -36,14 +36,14 @@ Krawl PWA
 
 **Core Experience**
 
-*Interactive map (Leaflet) showing Gems (clustered/filtered by zoom)*
+*Interactive map (MapLibre GL JS) showing Gems (clustered/filtered by zoom)*
 
 </div>
 
 ### 🎯 Primary Features
 ```
 Map Display
-├─ Interactive Leaflet map
+├─ Interactive MapLibre GL JS map
 ├─ Gem markers (clustered)
 ├─ Zoom-based filtering
 ├─ User GPS location

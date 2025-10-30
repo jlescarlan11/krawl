@@ -2,8 +2,8 @@
 
 > **Purpose:** This document contains the comprehensive task breakdown for the Krawl MVP development, organized by epics covering project setup, frontend features, backend API development, and deployment.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 1.0.1  
+**Last Updated:** 2025-10-30  
 **Status:** Active  
 **Owner:** Project Lead
 
@@ -158,7 +158,7 @@
 **Acceptance Criteria:**
 - ✅ `tailwind.config.ts` created and configured with "Lokal Verde" theme tokens
 - ✅ Global CSS includes Tailwind directives
-- ✅ Leaflet and Leaflet.markercluster libraries installed
+- ✅ MapLibre GL JS mapping library installed
 - ✅ Basic map component created and renders correctly**
 - ✅ Frontend is configured to send API requests to `http://localhost:8080/api`
 - ✅ Environment variable handling configured (.env.local)
@@ -531,7 +531,7 @@
 
 ### Task FE-GEM-1: Implement Map Interaction & Pin Placement UI
 
-**Description:** Enable users to select a location on the Leaflet map and trigger the "Add Gem" process, passing the coordinates.
+**Description:** Enable users to select a location on the MapLibre GL JS map and trigger the "Add Gem" process, passing the coordinates.
 
 **Status:** `To Do`
 
@@ -634,14 +634,14 @@
 
 ### Task FE-GEM-6: Display Gems on Map
 
-**Description:** Fetch Gem data from the `/api/gems` endpoint based on the current map view bounds and display them on the Leaflet map using markers, including clustering.
+**Description:** Fetch Gem data from the `/api/gems` endpoint based on the current map view bounds and display them on the MapLibre GL JS map using markers, including clustering.
 
 **Status:** `To Do`
 
 **Acceptance Criteria:**
 - ✅ Map component fetches Gems from `/api/gems`, passing current map viewport coordinates (latitude/longitude bounds) as query parameters
-- ✅ Fetched Gems are rendered as markers on the Leaflet map
-- ✅ `Leaflet.markercluster` plugin is implemented and correctly groups nearby markers at lower zoom levels
+- ✅ Fetched Gems are rendered as markers on the MapLibre GL JS map
+- ✅ Marker clustering is implemented and correctly groups nearby markers at lower zoom levels
 - ✅ Map updates displayed Gems when the user pans or zooms (refetching based on new bounds)
 
 **Assignee:** [Frontend Dev]
@@ -650,7 +650,7 @@
 
 ### Task FE-GEM-7: Differentiate Gem Markers by Status
 
-**Description:** Style the Leaflet markers differently based on the Gem's `lifecycleStatus` (always 'open' for visible ones in MVP) and `vouchCount` to indicate pending vs. verified status.
+**Description:** Style the MapLibre GL JS markers differently based on the Gem's `lifecycleStatus` (always 'open' for visible ones in MVP) and `vouchCount` to indicate pending vs. verified status.
 
 **Status:** `To Do`
 
@@ -1494,14 +1494,14 @@
 
 ### Task FE-OFF-2: Implement Offline Map Tile Caching
 
-**Description:** Configure the Service Worker to intercept requests for map tiles (from Leaflet) for the geographic area covered by downloaded Krawls and cache them for offline use.
+**Description:** Configure the Service Worker to intercept requests for map tiles (from MapTiler) for the geographic area covered by downloaded Krawls and cache them for offline use.
 
 **Status:** `To Do`
 
 **Acceptance Criteria:**
 - ✅ Service worker correctly intercepts map tile requests
 - ✅ Tiles corresponding to the bounding box of downloaded Krawls are stored in the Cache API
-- ✅ When offline, Leaflet map successfully loads tiles from the cache for the downloaded areas
+- ✅ When offline, MapLibre GL JS map successfully loads tiles from the cache for the downloaded areas
 
 **Assignee:** [Frontend Dev]
 
@@ -1737,6 +1737,7 @@
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.0.0 | 2025-10-28 | Initial Kanban task board | Project Lead |
+| 1.0.1 | 2025-10-30 | Updated task board format | Project Lead |
 
 ---
 
@@ -1750,5 +1751,5 @@
 
 ---
 
-*Document maintained by Project Lead • Last reviewed: 2025-10-28*
+*Document maintained by Project Lead • Last reviewed: 2025-10-30*
 
