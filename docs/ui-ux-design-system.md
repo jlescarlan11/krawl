@@ -791,7 +791,7 @@ bg-white
 
 ---
 
-### 3.4. 📍 Map Markers (Leaflet)
+### 3.4. 📍 Map Markers (MapLibre GL JS)
 
 Use custom markers via `L.DivIcon` or custom icon classes styled with CSS/Tailwind.
 
@@ -1467,7 +1467,7 @@ When creating new components, ensure:
 
 **Features:**
 - Map display container
-- Prepared for Leaflet.js integration
+- Prepared for MapLibre GL JS integration
 - Sand pattern background
 
 ### PWA Features

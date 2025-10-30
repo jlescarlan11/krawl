@@ -41,7 +41,7 @@ This document outlines the visual and interactive design progression for key scr
 - Styling: `p-2`, `m-2`, `bg-white`, `shadow-sm`
 
 #### Map Area
-- Large container holding the Leaflet map
+- Large container holding the MapLibre GL JS map
 - Map uses **grayscale tiles**
 - **Clustered gem markers** shown as simple circles with numbers
 - **Individual gems** as simple dots

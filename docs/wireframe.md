@@ -15,7 +15,7 @@
 ║                                                   ║
 ║                  ┌───────────────────┐            ║
 ║                  │   Map Area        │            ║
-║                  │   (Leaflet)       │            ║
+║                  │   (MapLibre GL JS)       │            ║
 ║                  │ Showing Clustered │            ║
 ║                  │     Gems          │            ║
 ║                  │                   │            ║
@@ -50,7 +50,7 @@
 ║                                                   ║
 ║                  ┌───────────────────┐            ║
 ║                  │   Map Area        │            ║
-║                  │   (Leaflet)       │            ║
+║                  │   (MapLibre GL JS)       │            ║
 ║                  │ Showing Clustered │            ║
 ║                  │     Gems          │            ║
 ║                  │                   │            ║
@@ -318,7 +318,7 @@
 ║                                                   ║
 ║                  ┌───────────────────┐            ║
 ║                  │   Map Area        │            ║
-║                  │   (Leaflet)       │            ║
+║                  │   (MapLibre GL JS)       │            ║
 ║                  │                   │            ║
 ║              •   │  ╔═══╗            │            ║
 ║              │   │  ║ 3 ║ ← Current  │            ║
@@ -1909,7 +1909,7 @@ All main screens include a bottom navigation bar with 5 tabs:
 - [ ] Apply complete "Lokal Verde" color palette to all screens
 - [ ] Use actual Inter font with proper weights
 - [ ] Add realistic content and imagery
-- [ ] Include actual map screenshots (Leaflet)
+- [ ] Include actual map screenshots (MapLibre GL JS)
 - [ ] Design custom icons for Krawl-specific features
 
 ### Interaction Design

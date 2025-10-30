@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <style>
+      .verde{fill:#2D7A3E}
+      .text{fill:#2B2B2B}
+    </style>
+  </defs>
+  <g>
+    <circle class="verde" cx="64" cy="156" r="12"/>
+    <circle class="verde" cx="96" cy="124" r="12"/>
+    <circle class="verde" cx="128" cy="148" r="12"/>
+    <circle class="verde" cx="152" cy="108" r="12"/>
+  </g>
+  <g class="text">
+    <text x="32" y="216" font-family="Manrope, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-weight="700" font-size="64" letter-spacing="0.01em">Krawl</text>
+  </g>
+</svg>
+

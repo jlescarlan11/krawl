@@ -596,7 +596,7 @@ Gem Detail View
 ```
 Primary Components
 ├─ 🔘 Buttons (Primary, Secondary, Accent)
-├─ 🗺️  Map Interface (Leaflet-based)
+├─ 🗺️  Map Interface (MapLibre GL JS-based)
 ├─ 💎 Gem Cards (Info display)
 ├─ 🚶 Krawl Cards (Trail preview)
 └─ 📝 Forms (Input fields, validation)

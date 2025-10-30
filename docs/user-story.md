@@ -52,7 +52,7 @@
 **So that** I can start exploring local Gems right away.
 
 #### ✅ Acceptance Criteria:
-- [ ] The root URL (/) loads the Leaflet map view as the primary interface
+- [ ] The root URL (/) loads the MapLibre GL JS map view as the primary interface
 - [ ] The map displays Gems relevant to the user's current location or default view
 - [ ] Map interactions (pan, zoom) are smooth
 - [ ] Core navigation elements (Search, Filters, Bottom Nav) are present
