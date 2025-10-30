@@ -2,6 +2,7 @@ package com.krawl.backend.config;
 
 import com.krawl.backend.security.JwtAuthenticationFilter;
 import com.krawl.backend.security.JwtAuthEntryPoint;
+import com.krawl.backend.security.RestAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
+    private final RestAccessDeniedHandler restAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -61,6 +63,7 @@ public class SecurityConfig {
             // Set authentication entry point for unauthorized access
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint(jwtAuthEntryPoint)
+                .accessDeniedHandler(restAccessDeniedHandler)
             );
 
         return http.build();

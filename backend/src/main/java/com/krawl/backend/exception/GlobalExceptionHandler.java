@@ -200,4 +200,49 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+
+    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(
+            org.springframework.security.authentication.BadCredentialsException ex,
+            WebRequest request) {
+        
+        ErrorResponse error = new ErrorResponse(
+            "AUTH_INVALID_CREDENTIALS",
+            "Invalid email or password",
+            HttpStatus.UNAUTHORIZED.value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(
+            org.springframework.security.core.AuthenticationException ex,
+            WebRequest request) {
+        
+        ErrorResponse error = new ErrorResponse(
+            "UNAUTHORIZED",
+            "Authentication failed",
+            HttpStatus.UNAUTHORIZED.value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException ex,
+            WebRequest request) {
+        
+        ErrorResponse error = new ErrorResponse(
+            "ACCESS_DENIED",
+            "Access denied",
+            HttpStatus.FORBIDDEN.value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
 }
