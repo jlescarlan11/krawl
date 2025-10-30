@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signupFn = async (username: string, email: string, password: string) => {
-    const res = await auth.register({ name: username, email, password });
+    const res = await auth.register({ username, email, password });
     setSession(res.token, res.user); // Log the user in immediately after signup
   };
 

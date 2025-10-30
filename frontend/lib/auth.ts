@@ -13,10 +13,14 @@ export async function login(data: { email: string; password: string }) {
   });
 }
 
-export async function register(data: { name: string; email: string; password: string }) {
+export async function register(data: { username: string; email: string; password: string }) {
   return apiFetch<AuthResponse>('/auth/register', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    }),
   });
 }
 
