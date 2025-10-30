@@ -1,7 +1,14 @@
 package com.krawl.backend.exception;
 
-public class ImageValidationException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ImageValidationException extends KrawlException {
     public ImageValidationException(String message) {
-        super(message);
+        super("VALIDATION_ERROR", message);
+    }
+    
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.BAD_REQUEST;
     }
 }

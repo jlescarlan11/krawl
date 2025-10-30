@@ -1,11 +1,18 @@
 package com.krawl.backend.exception;
 
-public class StorageException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class StorageException extends KrawlException {
     public StorageException(String message) {
-        super(message);
+        super("STORAGE_ERROR", message);
     }
 
     public StorageException(String message, Throwable cause) {
-        super(message, cause);
+        super("STORAGE_ERROR", message, cause);
+    }
+    
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 }

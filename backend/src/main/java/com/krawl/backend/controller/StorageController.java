@@ -1,6 +1,6 @@
 package com.krawl.backend.controller;
 
-import com.krawl.backend.dto.ImageUploadResponse;
+import com.krawl.backend.dto.response.ImageUploadResponse;
 import com.krawl.backend.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -107,7 +107,7 @@ public class StorageController {
             )
     })
     @DeleteMapping("/delete")
-    public ResponseEntity<com.krawl.backend.dto.ApiResponse> deleteImage(
+    public ResponseEntity<com.krawl.backend.dto.ApiResponse<String>> deleteImage(
             @Parameter(
                     description = "Full Cloudinary URL of the image to delete",
                     required = true,
@@ -117,7 +117,7 @@ public class StorageController {
     ) {
         storageService.deleteImage(imageUrl);
         return ResponseEntity.ok(
-            new com.krawl.backend.dto.ApiResponse("Image deleted successfully")
+            com.krawl.backend.dto.ApiResponse.success("Image deleted successfully")
         );
     }
 }
