@@ -635,7 +635,7 @@ Report received and queued for review.
 
 ### Get User Profile
 
-**`GET /api/v1/profile/{username}`**
+**`GET /api/v1/users/{username}`**
 
 Retrieves public profile information for a user.
 
@@ -649,20 +649,11 @@ Retrieves public profile information for a user.
 
 ```json
 {
-  "userId": "uuid-user-123",
   "username": "juandelacruz",
   "bio": "Food enthusiast and street food explorer!",
   "joinDate": "2025-01-15T10:30:00.123Z",
-  "creatorScore": 250,
-  "creatorTier": "Explorer",
-  "publicKrawls": [
-    {
-      "krawlId": "uuid-krawl-789",
-      "title": "Manila Street Food Tour",
-      "averageRating": 4.5,
-      "completionCount": 32
-    }
-  ]
+  "score": 250,
+  "tier": "Explorer"
 }
 ```
 

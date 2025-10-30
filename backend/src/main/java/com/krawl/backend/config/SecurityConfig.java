@@ -53,6 +53,7 @@ public class SecurityConfig {
                 // Permit public GET endpoints (both v1 and legacy)
                 .requestMatchers(HttpMethod.GET, "/api/gems/**", "/api/v1/gems/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/krawls/**", "/api/v1/krawls/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
                 
                 // Require authentication for all other endpoints
                 .anyRequest().authenticated()
