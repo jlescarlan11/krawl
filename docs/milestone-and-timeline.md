@@ -2,8 +2,8 @@
 
 > **Purpose:** This document outlines the 12-week development timeline for the Krawl MVP, breaking down deliverables, milestones, and success criteria for each phase.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Project Lead
 

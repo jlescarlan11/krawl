@@ -10,9 +10,9 @@
 
 ## 📋 Executive Summary
 
-### Overall Alignment Status: ✅ **GOOD FOUNDATION** (Development in Progress)
+### Overall Alignment Status: ✅ **ALIGNED** (MVP foundation complete)
 
-The codebase shows **strong alignment** in foundational areas (database schema, tech stack, architecture). Missing controllers are **expected during active development** and do not indicate misalignment. One **minor path configuration issue** exists but won't block development.
+The codebase aligns with the docs across versions, architecture, and endpoints. Core v1 controllers (Auth, Storage, Gems, Krawls) are implemented, docs use `/api/v1`, and legacy dependencies have been removed/archived.
 
 ### Key Findings
 
@@ -20,8 +20,8 @@ The codebase shows **strong alignment** in foundational areas (database schema, 
 |----------|--------|--------------|
 | **Database Schema** | ✅ **ALIGNED** | Perfect match with documentation |
 | **Tech Stack** | ✅ **ALIGNED** | Versions match documentation |
-| **Backend API Controllers** | 🚧 **IN DEVELOPMENT** | Gem & Krawl controllers planned (not yet implemented) |
-| **Frontend API Paths** | ⚠️ **MINOR ISSUE** | Using `/gems` instead of `/api/v1/gems` (easy fix when implementing controllers) |
+| **Backend API Controllers** | ✅ **ALIGNED** | Auth, Storage, Gems, Krawls implemented |
+| **Frontend API Paths** | ✅ **ALIGNED** | Using `/api/v1/*` via config base path |
 | **Authentication** | ✅ **ALIGNED** | Implemented correctly |
 | **Storage** | ✅ **ALIGNED** | Implemented correctly |
 | **Offline Architecture** | ✅ **ALIGNED** | IndexedDB and sync queue implemented |
@@ -140,11 +140,11 @@ All versions match documentation in `docs/tech-stack.md`:
 
 ---
 
-## 🚧 DEVELOPMENT IN PROGRESS (Expected During Development)
+## ✅ IMPLEMENTED SINCE LAST REPORT
 
 ### 1. Gem REST API Controllers
 
-**Status:** 🚧 **PLANNED BUT NOT YET IMPLEMENTED** (Normal for active development)
+**Status:** ✅ **IMPLEMENTED**
 
 **Documentation Requirements** (`docs/api-documentation.md`):
 - `POST /api/gems` - Create Gem
@@ -157,23 +157,17 @@ All versions match documentation in `docs/tech-stack.md`:
 - `POST /api/gems/{gemId}/reports` - Report Gem
 
 **Current Status:**
-- ❌ No `GemController` or `GemControllerV1` exists
-- ✅ `GemService` exists (service layer implemented)
-- ✅ `Gem` entity exists (database layer implemented)
-- ✅ `GemRepository` exists (data access layer implemented)
+- ✅ `GemControllerV1` exists
+- ✅ `GemService`, `Gem` entity, `GemRepository` implemented
 
-**Expected Location:**
+**Location:**
 - `backend/src/main/java/com/krawl/backend/controller/v1/GemControllerV1.java`
-
-**Impact:** 
-- Frontend cannot communicate with backend for Gem operations yet
-- Will work once controllers are implemented (expected next step)
 
 ---
 
 ### 2. Krawl REST API Controllers
 
-**Status:** 🚧 **PLANNED BUT NOT YET IMPLEMENTED** (Normal for active development)
+**Status:** ✅ **IMPLEMENTED**
 
 **Documentation Requirements** (`docs/api-documentation.md`):
 - `POST /api/krawls` - Create Krawl
@@ -185,17 +179,11 @@ All versions match documentation in `docs/tech-stack.md`:
 - `POST /api/krawls/{krawlId}/ratings` - Rate Krawl
 
 **Current Status:**
-- ❌ No `KrawlController` or `KrawlControllerV1` exists
-- ✅ `KrawlService` exists (service layer implemented)
-- ✅ `Krawl` entity exists (database layer implemented)
-- ✅ `KrawlRepository` exists (data access layer implemented)
+- ✅ `KrawlControllerV1` exists
+- ✅ `KrawlService`, `Krawl` entity, `KrawlRepository` implemented
 
-**Expected Location:**
+**Location:**
 - `backend/src/main/java/com/krawl/backend/controller/v1/KrawlControllerV1.java`
-
-**Impact:**
-- Frontend cannot communicate with backend for Krawl operations yet
-- Will work once controllers are implemented (expected next step)
 
 ---
 
@@ -222,85 +210,7 @@ All versions match documentation in `docs/tech-stack.md`:
 
 ## ⚠️ MISALIGNMENTS
 
-### 1. Frontend API Path Configuration
-
-**Status:** ⚠️ **PATH MISMATCH**
-
-**Issue:** Frontend API calls use incorrect base paths.
-
-**Current Implementation** (`frontend/lib/api.ts`):
-```typescript
-// ❌ WRONG: Missing /api/v1 prefix
-api.getGems: () => apiFetch<Gem[]>('/gems')
-api.getGemById: (id) => apiFetch<Gem>(`/gems/${id}`)
-api.createGem: (data) => apiFetch<Gem>('/gems', { method: 'POST' })
-api.getKrawls: () => apiFetch<Krawl[]>('/krawls')
-api.getKrawlById: (id) => apiFetch<Krawl>(`/krawls/${id}`)
-api.createKrawl: (data) => apiFetch<Krawl>('/krawls', { method: 'POST' })
-```
-
-**Configuration** (`frontend/lib/config/env.ts`):
-```typescript
-// ✅ Config is correct
-getBasePath: () => `${config.api.baseURL}/api/${config.api.version}`
-// Results in: http://localhost:8080/api/v1
-```
-
-**Expected According to Documentation:**
-- Base path should be `/api/v1` (as per `API_VERSIONING.md`)
-- Endpoints should be `/api/v1/gems`, `/api/v1/krawls`, etc.
-
-**Problem:**
-- Frontend calls `/gems` but should call `/api/v1/gems`
-- The `apiFetch` function doesn't prepend the base path correctly
-
-**Fix Required:**
-```typescript
-// ✅ CORRECT: Should prepend base path
-api.getGems: () => apiFetch<Gem[]>('/api/v1/gems')
-// OR: Modify apiFetch to automatically prepend basePath
-```
-
-**Location:** `frontend/lib/api.ts` lines 98-170
-
----
-
-### 2. API Documentation Base Path Ambiguity
-
-**Status:** ⚠️ **DOCUMENTATION CLARITY ISSUE**
-
-**Issue:** Documentation mentions both `/api` and `/api/v1` base paths.
-
-**Documentation State:**
-- `docs/api-documentation.md` says: "Base URL: `/api` or `/api/v1`"
-- `backend/API_VERSIONING.md` says: "Use `/api/v1/` endpoints for new integrations"
-
-**Recommendation:**
-- Update `docs/api-documentation.md` to clearly state that `/api/v1` is the primary base path
-- Mark `/api` endpoints as "Legacy" or "Deprecated" in documentation
-- Update all endpoint examples to use `/api/v1` prefix
-
----
-
-### 3. Map Provider Documentation
-
-**Status:** ⚠️ **DOCUMENTATION UPDATE NEEDED**
-
-**Issue:** Some documentation still references Leaflet/OpenStreetMap.
-
-**Documentation References:**
-- `docs/system-design.md` line 838: "Map Tiles: Using OpenStreetMap tiles with proper attribution"
-- `docs/system-design.md` line 296: "PWA (Next.js/Leaflet)"
-
-**Reality:**
-- ✅ MapLibre GL JS v5.10.0 is implemented (matches `docs/tech-stack.md`)
-- ✅ MapTiler is configured (matches `docs/tech-stack.md`)
-- ✅ Leaflet is still in dependencies but should be removed (legacy)
-
-**Recommendation:**
-- Update `docs/system-design.md` to reflect MapLibre GL JS + MapTiler
-- Remove Leaflet references from documentation
-- Consider removing Leaflet from `package.json` if not used
+None at this time. Docs reflect MapLibre GL JS + MapTiler and `/api/v1` base path. Frontend deps updated to remove legacy Leaflet.
 
 ---
 
@@ -394,8 +304,8 @@ api.getGems: () => apiFetch<Gem[]>('/api/v1/gems')
 | Metric | Count | Status |
 |--------|-------|--------|
 | **Documented Endpoints** | ~25 endpoints | Docs complete (planning phase) |
-| **Implemented Endpoints** | 4 endpoints | Auth & Storage ✅ |
-| **Planned Controllers** | 3 controllers | Gem, Krawl, User (in development queue) |
+| **Implemented Endpoints** | 10+ endpoints | Auth, Storage, Gems, Krawls ✅ |
+| **Planned Controllers** | 1 controller | User (profile/saved) |
 | **Database Tables** | 12 tables | ✅ 100% aligned |
 | **Tech Stack Items** | 10 components | ✅ 100% aligned |
 | **Frontend API Methods** | 6 methods | Ready for backend implementation |
@@ -411,15 +321,15 @@ api.getGems: () => apiFetch<Gem[]>('/api/v1/gems')
 - [x] Tech stack versions match documentation
 - [x] Authentication endpoints implemented
 - [x] Storage endpoints implemented
-- [ ] Gem endpoints implemented *(planned - in development)*
-- [ ] Krawl endpoints implemented *(planned - in development)*
+- [x] Gem endpoints implemented
+- [x] Krawl endpoints implemented
 - [ ] User/Profile endpoints implemented *(planned - in development)*
 
 ### Frontend Verification
 - [x] API client configured correctly
 - [x] Offline-first architecture implemented
 - [x] IndexedDB database structure matches docs
-- [ ] API paths use correct base path (`/api/v1`)
+- [x] API paths use correct base path (`/api/v1`)
 - [x] Service worker implemented
 - [x] Map integration (MapLibre GL JS) implemented
 
@@ -427,8 +337,8 @@ api.getGems: () => apiFetch<Gem[]>('/api/v1/gems')
 - [x] Database schema documented accurately
 - [x] Tech stack documented accurately
 - [x] API documentation reflects planned implementation *(docs are aspirational during development)*
-- [ ] Backend README matches actual endpoints *(minor - can add status indicators)*
-- [ ] System design reflects current map implementation *(minor - update Leaflet references)*
+- [x] Backend README matches actual endpoints
+- [x] System design reflects current map implementation
 
 ---
 

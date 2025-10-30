@@ -2,8 +2,8 @@
 
 > **Purpose:** Provides a comprehensive view of the Krawl application's system architecture, component interactions, data flows, and technical stack for the MVP phase.
 
-**Version:** 1.3.0  
-**Last Updated:** 2025-10-29  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Engineering Team  
 **Tech Stack:** Next.js 16, Spring Boot 3.5.7, PostgreSQL 15 + PostGIS 3.3, MapLibre GL JS, MapTiler, IndexedDB (idb)
@@ -351,7 +351,7 @@ Geospatial Queries:
    └─► Frontend gets GPS coordinates
 
 2. Frontend → Backend
-   GET /api/gems/nearby?lat=40.7128&lng=-74.0060&radius=5000
+   GET /api/v1/gems/nearby?lat=40.7128&lng=-74.0060&radius=5000
    Headers: Authorization: Bearer <JWT>
 
 3. Backend → Database
@@ -377,7 +377,7 @@ Geospatial Queries:
 1. User fills form and adds photo
    
 2. Frontend → Backend
-   POST /api/gems
+   POST /api/v1/gems
    Body: { name, description, location, categoryId, tagIds }
    Headers: Authorization: Bearer <JWT>
 
@@ -386,7 +386,7 @@ Geospatial Queries:
    Returns new gem_id
 
 4. Frontend → Backend
-   POST /api/gems/{gemId}/photos
+   POST /api/v1/gems/{gemId}/photos
    Body: multipart/form-data with image
 
 5. Backend → Image Storage (Cloudinary)

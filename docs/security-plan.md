@@ -2,8 +2,8 @@
 
 > **Purpose:** This document outlines comprehensive security measures and practices for the Krawl MVP PWA to protect user data, maintain application integrity, prevent vulnerabilities, and ensure service availability.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Security Team
 
@@ -178,11 +178,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/gems/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/krawls/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/gems/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/api/krawls/**").authenticated()
+                .antMatchers("/api/v1/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/gems/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/krawls/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/gems/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/v1/krawls/**").authenticated()
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/moderation/**").hasAnyRole("MODERATOR", "ADMIN")
                 .anyRequest().authenticated()
@@ -490,7 +490,7 @@ graph LR
 
 ```java
 @RestController
-@RequestMapping("/api/gems")
+@RequestMapping("/api/v1/gems")
 @Validated
 public class GemController {
     
@@ -690,11 +690,11 @@ graph TB
 
 | User Right | Implementation | API Endpoint |
 |------------|----------------|--------------|
-| **Right to Access** | Export all user data | `GET /api/users/me/export` |
-| **Right to Rectification** | Edit profile/content | `PUT /api/users/me` |
-| **Right to Erasure** | Delete account & data | `DELETE /api/users/me` |
-| **Right to Portability** | JSON export | `GET /api/users/me/export` |
-| **Right to Object** | Opt-out of analytics | `PUT /api/users/me/preferences` |
+| **Right to Access** | Export all user data | `GET /api/v1/users/me/export` |
+| **Right to Rectification** | Edit profile/content | `PUT /api/v1/users/me` |
+| **Right to Erasure** | Delete account & data | `DELETE /api/v1/users/me` |
+| **Right to Portability** | JSON export | `GET /api/v1/users/me/export` |
+| **Right to Object** | Opt-out of analytics | `PUT /api/v1/users/me/preferences` |
 
 **Data Retention Policy:**
 

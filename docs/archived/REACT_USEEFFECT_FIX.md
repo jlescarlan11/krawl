@@ -1,6 +1,17 @@
+# 🗄️ Archived: React useEffect Dependency Array Error - FIXED
+
+> **Purpose:** Archived engineering note; superseded by current implementation and docs.
+
+**Version:** 0.0.0  
+**Last Updated:** 2025-10-31  
+**Status:** Archived  
+**Owner:** Development Team
+
+---
+
 # ✅ React useEffect Dependency Array Error - FIXED!
 
-**Error:** "The final argument passed to useEffect changed size between renders"
+**Error:** "The final argument passed to useEffect changed size between renders"  
 **Date:** October 30, 2025
 **Status:** ✅ **RESOLVED**
 

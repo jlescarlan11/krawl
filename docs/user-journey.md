@@ -2,8 +2,8 @@
 
 > **Purpose:** This document illustrates typical paths users might take through the Krawl PWA to achieve their goals, based on the defined personas, showing touchpoints, thoughts, feelings, and opportunities for improvement.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Product Team
 

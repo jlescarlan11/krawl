@@ -2,8 +2,8 @@
 
 > **Purpose:** This document defines the Git branching model, naming conventions, workflow practices, and commit standards for the Krawl project to ensure code consistency and effective collaboration.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Development Team
 

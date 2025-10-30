@@ -2,8 +2,8 @@
 
 > **Purpose:** Complete REST API reference for the Krawl MVP backend, covering authentication, endpoints, data formats, and error handling for developers integrating with the platform.
 
-**Version:** 1.2.0  
-**Last Updated:** 2025-10-30  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Backend Team  
 **Tech Stack:** Spring Boot, JWT, PostgreSQL/PostGIS  
@@ -48,7 +48,7 @@ This document outlines the REST API endpoints, data formats, and authentication 
 2. User **logs in** via `POST /api/v1/auth/login` → receives a JWT
 3. JWT must be included in the `Authorization` header for all protected endpoints
 
-**Note:** Legacy endpoints under `/api/auth` are still available but deprecated. Use `/api/v1/auth` for new integrations.
+**Note:** Legacy endpoints under `/api/v1/auth` are still available but deprecated. Use `/api/v1/auth` for new integrations.
 
 **Header Format:**
 ```

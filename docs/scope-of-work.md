@@ -2,8 +2,8 @@
 
 > **Purpose:** This document defines the complete scope of work for the Krawl MVP, detailing all in-scope and out-of-scope features, pages, integrations, and development phases.
 
-**Version:** 1.0.1  
-**Last Updated:** 2025-10-30  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Project Lead
 

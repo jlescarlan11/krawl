@@ -2,8 +2,8 @@
 
 > **Purpose:** This document outlines the comprehensive testing strategy for the Krawl MVP, covering unit testing, integration testing, and user acceptance testing (UAT) to ensure application quality, functionality, and user satisfaction.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** QA Team
 

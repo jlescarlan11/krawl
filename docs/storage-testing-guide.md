@@ -2,8 +2,8 @@
 
 > **Purpose:** This guide provides instructions for testing the Cloudinary storage integration, including upload and delete operations.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-29  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Backend Team
 
@@ -38,14 +38,14 @@ Before testing, ensure you have:
 
 ```bash
 # Navigate to a directory with a test image
-curl -X POST http://localhost:8080/api/storage/upload \
+curl -X POST http://localhost:8080/api/v1/storage/upload \
   -F "file=@test-image.jpg"
 ```
 
 #### Upload with Gem ID
 
 ```bash
-curl -X POST http://localhost:8080/api/storage/upload \
+curl -X POST http://localhost:8080/api/v1/storage/upload \
   -F "file=@test-image.jpg" \
   -F "gemId=123e4567-e89b-12d3-a456-426614174000"
 ```
@@ -86,7 +86,7 @@ curl -X POST http://localhost:8080/api/storage/upload \
 
 1. **Create New Request:**
    - Method: `POST`
-   - URL: `http://localhost:8080/api/storage/upload`
+   - URL: `http://localhost:8080/api/v1/storage/upload`
 
 2. **Configure Body:**
    - Select `form-data`
@@ -107,7 +107,7 @@ $form = @{
 }
 
 # Send request
-Invoke-RestMethod -Uri "http://localhost:8080/api/storage/upload" `
+Invoke-RestMethod -Uri "http://localhost:8080/api/v1/storage/upload" `
     -Method Post -Form $form
 ```
 
@@ -119,7 +119,7 @@ Invoke-RestMethod -Uri "http://localhost:8080/api/storage/upload" `
 
 ```bash
 # Replace with actual image URL from upload response
-curl -X DELETE "http://localhost:8080/api/storage/delete?url=https://res.cloudinary.com/your-cloud/image/upload/v1234567890/krawl-gems/123e4567-e89b-12d3-a456-426614174000/uuid.webp"
+curl -X DELETE "http://localhost:8080/api/v1/storage/delete?url=https://res.cloudinary.com/your-cloud/image/upload/v1234567890/krawl-gems/123e4567-e89b-12d3-a456-426614174000/uuid.webp"
 ```
 
 ### Expected Success Response
@@ -134,7 +134,7 @@ curl -X DELETE "http://localhost:8080/api/storage/delete?url=https://res.cloudin
 
 1. **Create New Request:**
    - Method: `DELETE`
-   - URL: `http://localhost:8080/api/storage/delete`
+   - URL: `http://localhost:8080/api/v1/storage/delete`
 
 2. **Add Query Parameter:**
    - Key: `url`
@@ -151,7 +151,7 @@ $imageUrl = "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/kraw
 $encodedUrl = [System.Web.HttpUtility]::UrlEncode($imageUrl)
 
 # Send delete request
-Invoke-RestMethod -Uri "http://localhost:8080/api/storage/delete?url=$encodedUrl" `
+Invoke-RestMethod -Uri "http://localhost:8080/api/v1/storage/delete?url=$encodedUrl" `
     -Method Delete
 ```
 
@@ -252,7 +252,7 @@ cd backend
 ```bash
 # 1. Upload a test image
 echo "Testing upload..."
-UPLOAD_RESPONSE=$(curl -X POST http://localhost:8080/api/storage/upload \
+UPLOAD_RESPONSE=$(curl -X POST http://localhost:8080/api/v1/storage/upload \
   -F "file=@test-image.jpg" \
   -F "gemId=123e4567-e89b-12d3-a456-426614174000")
 
@@ -268,7 +268,7 @@ curl -I "$IMAGE_URL"
 
 # 4. Delete the image
 echo "Testing delete..."
-DELETE_RESPONSE=$(curl -X DELETE "http://localhost:8080/api/storage/delete?url=$IMAGE_URL")
+DELETE_RESPONSE=$(curl -X DELETE "http://localhost:8080/api/v1/storage/delete?url=$IMAGE_URL")
 echo "Delete Response: $DELETE_RESPONSE"
 
 # 5. Verify image is deleted (should return 404)
@@ -298,39 +298,39 @@ HTTP/2 404
 
 ```bash
 # Test JPEG
-curl -X POST http://localhost:8080/api/storage/upload -F "file=@test.jpg"
+curl -X POST http://localhost:8080/api/v1/storage/upload -F "file=@test.jpg"
 
 # Test PNG
-curl -X POST http://localhost:8080/api/storage/upload -F "file=@test.png"
+curl -X POST http://localhost:8080/api/v1/storage/upload -F "file=@test.png"
 
 # Test WebP
-curl -X POST http://localhost:8080/api/storage/upload -F "file=@test.webp"
+curl -X POST http://localhost:8080/api/v1/storage/upload -F "file=@test.webp"
 
 # Test HEIC (if available)
-curl -X POST http://localhost:8080/api/storage/upload -F "file=@test.heic"
+curl -X POST http://localhost:8080/api/v1/storage/upload -F "file=@test.heic"
 ```
 
 ### Test File Size Limits
 
 ```bash
 # Test small file (should succeed)
-curl -X POST http://localhost:8080/api/storage/upload -F "file=@small-image.jpg"
+curl -X POST http://localhost:8080/api/v1/storage/upload -F "file=@small-image.jpg"
 
 # Test large file (should fail if > 10MB)
-curl -X POST http://localhost:8080/api/storage/upload -F "file=@large-image.jpg"
+curl -X POST http://localhost:8080/api/v1/storage/upload -F "file=@large-image.jpg"
 ```
 
 ### Test Invalid Inputs
 
 ```bash
 # Test with no file (should fail)
-curl -X POST http://localhost:8080/api/storage/upload
+curl -X POST http://localhost:8080/api/v1/storage/upload
 
 # Test with invalid file type (should fail)
-curl -X POST http://localhost:8080/api/storage/upload -F "file=@document.pdf"
+curl -X POST http://localhost:8080/api/v1/storage/upload -F "file=@document.pdf"
 
 # Test with invalid UUID (should fail)
-curl -X POST http://localhost:8080/api/storage/upload \
+curl -X POST http://localhost:8080/api/v1/storage/upload \
   -F "file=@test.jpg" \
   -F "gemId=invalid-uuid"
 ```
@@ -345,7 +345,7 @@ curl -X POST http://localhost:8080/api/storage/upload \
 # Upload multiple images
 for i in {1..5}; do
   echo "Uploading image $i..."
-  curl -X POST http://localhost:8080/api/storage/upload \
+  curl -X POST http://localhost:8080/api/v1/storage/upload \
     -F "file=@test-image-$i.jpg"
   echo ""
 done
@@ -355,7 +355,7 @@ done
 
 ```bash
 # Time the upload
-time curl -X POST http://localhost:8080/api/storage/upload \
+time curl -X POST http://localhost:8080/api/v1/storage/upload \
   -F "file=@test-image.jpg"
 ```
 

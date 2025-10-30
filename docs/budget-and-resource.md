@@ -2,8 +2,8 @@
 
 > **Purpose:** This document provides a comprehensive budget breakdown for the Krawl MVP, comparing sweat equity and freelance hiring scenarios for the 3-month development phase.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Project Lead
 
