@@ -122,7 +122,7 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
                   </label>
                 ) : null}
 
-                <div className={`relative ${!isCheckbox ? 'mt-2' : ''}`}>
+                <div className={`relative ${!isCheckbox ? 'mt-3' : ''}`}>
                   {isCheckbox ? (
                     <div className="flex items-center justify-between">
                       <label className="inline-flex cursor-pointer items-center gap-2">
@@ -195,9 +195,9 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
 
           <button
             type="submit"
-            disabled={hasErrors || submitting}
+            disabled={submitting}
             aria-busy={submitting}
-            className="w-full rounded-md bg-verde-700 px-4 py-3 text-center text-white shadow-md transition-colors hover:bg-verde-800 focus:outline-none focus:ring-2 focus:ring-verde-600 disabled:cursor-not-allowed disabled:bg-neutral-300"
+            className="w-full rounded-md bg-verde-700 px-4 py-3 text-center text-white shadow-md transition-colors hover:bg-verde-800 focus:outline-none focus:ring-2 focus:ring-verde-600 disabled:opacity-75"
           >
             {submitting ? (submittingLabel ?? `${submitLabel}...`) : submitLabel}
           </button>
