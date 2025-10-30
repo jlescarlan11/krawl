@@ -14,31 +14,27 @@ import {
 } from './db';
 import { checkActualConnectivity } from './utils/network';
 import { offlineFirstFetch, createWithOfflineSupport } from './api/offline-first';
-
-// API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
-
-export const apiConfig = {
-  baseURL: API_BASE_URL,
-};
+import { config } from './config/env';
+import { API_CONSTANTS } from './constants';
+import { ApiError } from './errors/api-error';
 
 // Connectivity check caching to avoid checking on every request
 let lastConnectivityCheck = 0;
 let lastConnectivityResult = true;
-const CONNECTIVITY_CACHE_MS = 5000; // Cache for 5 seconds
 
 // Generic fetch wrapper with error handling
 export async function apiFetch<T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<T> {
-  const url = `${apiConfig.baseURL}${endpoint}`;
+  const basePath = config.api.getBasePath();
+  const url = `${basePath}${endpoint}`;
   
   // Check actual connectivity (with caching to avoid checking every request)
   const now = Date.now();
-  if (now - lastConnectivityCheck > CONNECTIVITY_CACHE_MS) {
+  if (now - lastConnectivityCheck > API_CONSTANTS.CONNECTIVITY_CACHE_MS) {
     try {
-      lastConnectivityResult = await checkActualConnectivity(`${apiConfig.baseURL}/health`)
+      lastConnectivityResult = await checkActualConnectivity(`${basePath}/health`)
         .catch(() => checkActualConnectivity('/manifest.json'));
       lastConnectivityCheck = now;
     } catch {
@@ -48,7 +44,7 @@ export async function apiFetch<T>(
 
   if (!lastConnectivityResult) {
     console.log('📴 Offline - server unreachable');
-    throw new Error('OFFLINE');
+    throw ApiError.fromNetworkError(new Error('OFFLINE'));
   }
 
   const defaultHeaders = {
@@ -65,33 +61,34 @@ export async function apiFetch<T>(
     });
 
     if (!response.ok) {
-      const errorMessage = `API Error: ${response.status} ${response.statusText}`;
-      toast.error(errorMessage);
-      throw new Error(errorMessage);
+      const apiError = await ApiError.fromResponse(response);
+      toast.error(apiError.message);
+      throw apiError;
     }
 
     return await response.json();
   } catch (error) {
     console.error('API Fetch Error:', error);
     
-    if (error instanceof Error && error.message === 'OFFLINE') {
-      // Don't show redundant offline messages
+    // If it's already an ApiError, rethrow it
+    if (error instanceof ApiError) {
       throw error;
     }
     
-    // Check if it's a network error (fetch failed)
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      console.log('📴 Network error - likely offline or server unreachable');
-      throw new Error('NETWORK_ERROR');
+    // Convert network errors to ApiError
+    const apiError = ApiError.fromNetworkError(error);
+    
+    // Don't show redundant offline messages
+    if (apiError.message === 'OFFLINE' || apiError.message === 'NETWORK_ERROR') {
+      throw apiError;
     }
     
-    if (error instanceof Error) {
-      // Only show toast if we haven't already shown one
-      if (!error.message.includes('API Error:')) {
-        toast.error('Network error. Please check your connection.');
-      }
+    // Show toast for other errors
+    if (!apiError.message.includes('API Error:')) {
+      toast.error(apiError.message);
     }
-    throw error;
+    
+    throw apiError;
   }
 }
 
@@ -134,35 +131,41 @@ export const api = {
   }),
 
   // Create with offline support
-  createGem: (gemData: any) => createWithOfflineSupport({
-    createFn: () => apiFetch<Gem>('/gems', {
+  createGem: (gemData: Omit<Gem, 'gem_id' | 'created_at' | 'updated_at'>) => createWithOfflineSupport({
+    data: gemData,
+    createFn: (data) => apiFetch<Gem>('/gems', {
       method: 'POST',
-      body: JSON.stringify(gemData),
+      body: JSON.stringify(data),
     }),
     saveCacheFn: saveGem,
     addToSyncQueueFn: (action, entity, entityId, data) => 
       addToSyncQueue(action, entity as 'gem', entityId, data),
     entity: 'gem',
-    createTempResult: (_, tempId) => ({
-      ...gemData,
+    createTempResult: (data, tempId) => ({
+      ...data,
       gem_id: tempId,
-      _synced: false,
-    }),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      _synced: 0,
+    } as Gem),
   }),
 
-  createKrawl: (krawlData: any) => createWithOfflineSupport({
-    createFn: () => apiFetch<Krawl>('/krawls', {
+  createKrawl: (krawlData: Omit<Krawl, 'krawl_id' | 'created_at' | 'updated_at'>) => createWithOfflineSupport({
+    data: krawlData,
+    createFn: (data) => apiFetch<Krawl>('/krawls', {
       method: 'POST',
-      body: JSON.stringify(krawlData),
+      body: JSON.stringify(data),
     }),
     saveCacheFn: saveKrawl,
     addToSyncQueueFn: (action, entity, entityId, data) => 
       addToSyncQueue(action, entity as 'krawl', entityId, data),
     entity: 'krawl',
-    createTempResult: (_, tempId) => ({
-      ...krawlData,
+    createTempResult: (data, tempId) => ({
+      ...data,
       krawl_id: tempId,
-      _synced: false,
-    }),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      _synced: 0,
+    } as Krawl),
   }),
 };

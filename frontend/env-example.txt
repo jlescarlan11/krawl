@@ -1,0 +1,23 @@
+# Environment Variables Template
+
+Copy this file to `.env.local` and fill in the required values.
+
+## Required Variables
+
+# API Configuration
+# Base URL for the backend API (without /api/v1 path)
+# Example: http://localhost:8080
+NEXT_PUBLIC_API_URL=http://localhost:8080
+
+# Map Configuration
+# MapTiler API key for map rendering
+# Get your key from: https://www.maptiler.com/cloud/
+NEXT_PUBLIC_MAPTILER_API_KEY=your_maptiler_api_key_here
+
+## Notes
+
+- All variables prefixed with `NEXT_PUBLIC_` are exposed to the browser
+- Never commit `.env.local` to version control
+- Use `.env.local` for local development
+- Use `.env.production` for production builds (if needed)
+
