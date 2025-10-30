@@ -21,4 +21,12 @@ public class ErrorResponse {
         this.status = status;
         this.timestamp = LocalDateTime.now();
     }
+
+    public ErrorResponse(String error, String message, int status, String path) {
+        this.error = error;
+        this.message = message;
+        this.status = status;
+        this.timestamp = LocalDateTime.now();
+        this.path = path;
+    }
 }

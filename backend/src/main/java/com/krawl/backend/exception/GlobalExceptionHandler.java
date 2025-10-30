@@ -26,7 +26,6 @@ public class GlobalExceptionHandler {
             "VALIDATION_ERROR",
             ex.getMessage(),
             HttpStatus.BAD_REQUEST.value(),
-            null,
             request.getDescription(false).replace("uri=", "")
         );
         
@@ -44,7 +43,6 @@ public class GlobalExceptionHandler {
             "STORAGE_ERROR",
             "Failed to process image: " + ex.getMessage(),
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            null,
             request.getDescription(false).replace("uri=", "")
         );
         
@@ -62,7 +60,6 @@ public class GlobalExceptionHandler {
             "FILE_TOO_LARGE",
             "File size exceeds maximum allowed size of 10MB",
             HttpStatus.PAYLOAD_TOO_LARGE.value(),
-            null,
             request.getDescription(false).replace("uri=", "")
         );
         
@@ -80,7 +77,6 @@ public class GlobalExceptionHandler {
             "IO_ERROR",
             "An error occurred while processing your request",
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            null,
             request.getDescription(false).replace("uri=", "")
         );
         
@@ -98,7 +94,6 @@ public class GlobalExceptionHandler {
             "INVALID_ARGUMENT",
             ex.getMessage(),
             HttpStatus.BAD_REQUEST.value(),
-            null,
             request.getDescription(false).replace("uri=", "")
         );
         
@@ -116,7 +111,6 @@ public class GlobalExceptionHandler {
             "INTERNAL_ERROR",
             "An unexpected error occurred. Please try again later.",
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            null,
             request.getDescription(false).replace("uri=", "")
         );
         
