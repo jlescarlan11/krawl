@@ -102,36 +102,30 @@
 
 ---
 
-### 🟡 AU-3: Implement Frontend Registration UI
+### ✅ AU-3: Implement Frontend Registration UI
 
 **Acceptance Criteria:**
-- ✅ Registration form with validation
+- ✅ Registration form with validation (React Hook Form + Zod)
 - ✅ Password strength indicator
-- 🟡 Error message display
-- ⚪ Success redirect to map view
+- ✅ Error message display (inline + API toasts for 400/409)
+- ✅ Success redirect to map view
 
-#### How to Implement
-- Context: Client-side registration flow consistent with API and security.
-- Prerequisites:
-  - API `/auth/register` live; `NEXT_PUBLIC_API_URL` set
-- Steps:
-  1) Create `/register` page with React Hook Form + Zod schema.
-  2) Validate fields (email format, password length/complexity).
-  3) POST to `/api/v1/auth/register`; handle 201/400/409.
-  4) On success, save JWT (localStorage) and redirect `/`.
-  5) Show inline errors and disable submit while loading.
-- References:
-  - Reference: `docs/reference/api-endpoints.md#authentication`
-  - How-to: `docs/how-to/implement-security.md` (token storage)
-  - Components: `docs/reference/design-components.md` (inputs/buttons)
-- Acceptance Criteria (verify):
-  - Redirect to map on success; error banners for 400/409
-- Test/Verification:
-  - Manual UI flow; component tests for validator
-- Artifacts:
-  - PR: "auth: add registration UI with validation and redirects"
+#### Implementation Summary
+- Built `/signup` page using React Hook Form + Zod (`signupSchema`).
+- Client validation mirrors backend policy (min 8, upper/lower/number; confirm match; username regex; terms required).
+- Added `PasswordStrength` component (lightweight score + bar + label).
+- API integration via `lib/auth.register` → `POST /api/v1/auth/register` using `apiFetch`.
+- Error handling: inline field errors + toast via `apiFetch` on 400/409.
+- On success: persist JWT and user to localStorage (`AuthContext.setSession(..., true)`) and redirect to `/` (map).
 
-**Status:** In Progress  
+#### Verification
+- Manual happy path: account created → token stored → redirected to `/` map view.
+- Manual failure paths: invalid input shows inline errors; duplicate email emits error toast.
+
+#### Artifacts
+- PR title: `feat(auth): add registration UI with validation and redirects`
+
+**Status:** Done  
 **Assignee:** Frontend Dev
 
 ---

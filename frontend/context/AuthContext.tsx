@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signupFn = async (username: string, email: string, password: string) => {
     const res = await auth.register({ username, email, password });
-    setSession(res.token, res.user); // Log the user in immediately after signup
+    setSession(res.token, res.user, true); // Persist to localStorage on signup per acceptance criteria
   };
 
   const logoutFn = async () => {

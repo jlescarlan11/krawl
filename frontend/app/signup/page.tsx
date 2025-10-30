@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import SignupForm from '@/components/auth/SignupForm';
+import SignupFormRHF from '@/components/auth/SignupFormRHF';
 
 export const metadata: Metadata = {
   title: 'Sign Up | Krawl',
@@ -24,7 +24,7 @@ export default function SignupPage() {
 
         {/* Right form card */}
         <div className="flex items-center justify-center">
-          <SignupForm />
+          <SignupFormRHF />
         </div>
       </div>
     </div>
