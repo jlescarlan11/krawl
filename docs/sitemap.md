@@ -2,8 +2,8 @@
 
 > **Purpose:** This sitemap outlines the primary pages/views, navigational structure, and user flows of the Krawl Progressive Web App, defining the information architecture and access patterns.
 
-**Version:** 1.0.1  
-**Last Updated:** 2025-10-30  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Product Team
 

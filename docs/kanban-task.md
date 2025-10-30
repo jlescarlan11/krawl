@@ -2,8 +2,8 @@
 
 > **Purpose:** This document contains the comprehensive task breakdown for the Krawl MVP development, organized by epics covering project setup, frontend features, backend API development, and deployment.
 
-**Version:** 1.0.1  
-**Last Updated:** 2025-10-30  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Project Lead
 
@@ -308,7 +308,7 @@
 **Status:** `To Do`
 
 **Acceptance Criteria:**
-- ✅ `onSubmit` handlers in forms call the correct backend endpoints (`/api/auth/register`, `/api/auth/login`)
+- ✅ `onSubmit` handlers in forms call the correct backend endpoints (`/api/v1/auth/register`, `/api/v1/auth/login`)
 - ✅ Loading state is shown during API calls
 - ✅ Successful login stores the received JWT and updates the global auth state (e.g., `isAuthenticated = true`, user object)
 - ✅ Successful registration logs the user in automatically (stores JWT, updates state)
@@ -342,7 +342,7 @@
 **Status:** `To Do`
 
 **Acceptance Criteria:**
-- ✅ Profile page component exists and fetches data from `/api/users/{username}` based on route param
+- ✅ Profile page component exists and fetches data from `/api/v1/users/{username}` based on route param
 - ✅ Displays Username, Bio (if available), Join Date
 - ✅ Displays Creator Score (e.g., "4.2 Stars")
 - ✅ Displays Reputation Tier Badge (e.g., "🥇 Kanto Guide") based on score/tier data from backend
@@ -361,7 +361,7 @@
 
 **Acceptance Criteria:**
 - ✅ `/my-krawls` page exists and is accessible from bottom navigation or profile menu
-- ✅ Fetches user's Krawls from `/api/users/me/krawls` endpoint
+- ✅ Fetches user's Krawls from `/api/v1/users/me/krawls` endpoint
 - ✅ Displays Krawls as cards/list items showing title, description, rating, stop count
 - ✅ Each Krawl card has "Edit", "View", and "Delete" (optional for MVP) buttons
 - ✅ Shows "Create New Krawl" prominent call-to-action button
@@ -385,7 +385,7 @@
 - ✅ "Edit Profile" button visible on own profile page
 - ✅ Edit form/modal includes fields for Bio, Display Name (optional)
 - ✅ Form validation implemented
-- ✅ Calls PATCH `/api/users/me` endpoint with updates
+- ✅ Calls PATCH `/api/v1/users/me` endpoint with updates
 - ✅ Success/error feedback provided
 - ✅ Profile view updates after successful save
 
@@ -403,7 +403,7 @@
 
 **Acceptance Criteria:**
 - ✅ Spring Security dependencies added
-- ✅ Security configuration class exists, defining public (`/api/auth/**`) and protected endpoints
+- ✅ Security configuration class exists, defining public (`/api/v1/auth/**`) and protected endpoints
 - ✅ JWT filter correctly intercepts requests, validates tokens, and sets authentication context
 - ✅ `UserDetailsService` implementation correctly loads user data by username/email
 - ✅ Unauthorized requests to protected endpoints return 401/403 errors
@@ -415,7 +415,7 @@
 
 ### Task BE-AUTH-1: Implement User Registration Endpoint
 
-**Description:** Create the `POST /api/auth/register` endpoint in Spring Boot to handle new user sign-ups, validate input, hash passwords, and save the user to the database.
+**Description:** Create the `POST /api/v1/auth/register` endpoint in Spring Boot to handle new user sign-ups, validate input, hash passwords, and save the user to the database.
 
 **Status:** `To Do`
 
@@ -433,7 +433,7 @@
 
 ### Task BE-AUTH-2: Implement User Login Endpoint
 
-**Description:** Create the `POST /api/auth/login` endpoint to authenticate users based on email and password, and generate a JWT upon success.
+**Description:** Create the `POST /api/v1/auth/login` endpoint to authenticate users based on email and password, and generate a JWT upon success.
 
 **Status:** `To Do`
 
@@ -450,7 +450,7 @@
 
 ### Task BE-AUTH-4: Implement User Profile Endpoint
 
-**Description:** Create the `GET /api/users/{username}` endpoint to retrieve public profile information for a given user.
+**Description:** Create the `GET /api/v1/users/{username}` endpoint to retrieve public profile information for a given user.
 
 **Status:** `To Do`
 
@@ -467,7 +467,7 @@
 
 ### Task BE-AUTH-5: Implement User Krawls Endpoint
 
-**Description:** Create the `GET /api/users/me/krawls` endpoint to retrieve all Krawls created by the authenticated user.
+**Description:** Create the `GET /api/v1/users/me/krawls` endpoint to retrieve all Krawls created by the authenticated user.
 
 **Status:** `To Do`
 
@@ -487,7 +487,7 @@
 
 ### Task BE-AUTH-6: Implement Update Profile Endpoint
 
-**Description:** Create the `PATCH /api/users/me` endpoint to allow users to update their own profile information.
+**Description:** Create the `PATCH /api/v1/users/me` endpoint to allow users to update their own profile information.
 
 **Status:** `To Do`
 
@@ -584,13 +584,13 @@
 
 ### Task FE-GEM-3: Handle "Add Gem" Form Submission & API Call
 
-**Description:** Implement the logic within the "Add Gem" form to gather data, send the POST request to `/api/gems`, and handle success or error responses (excluding duplicate check initially).
+**Description:** Implement the logic within the "Add Gem" form to gather data, send the POST request to `/api/v1/gems`, and handle success or error responses (excluding duplicate check initially).
 
 **Status:** `To Do`
 
 **Acceptance Criteria:**
 - ✅ Form submission bundles name, description, tags, and coordinates
-- ✅ POST request is sent to `/api/gems` with the correct payload and auth token
+- ✅ POST request is sent to `/api/v1/gems` with the correct payload and auth token
 - ✅ Loading state is visually indicated during the API call
 - ✅ Successful response (201) closes the modal and shows a success notification
 - ✅ Error responses (e.g., 400, 500) display an appropriate error message to the user without closing the modal
@@ -623,7 +623,7 @@
 **Status:** `To Do`
 
 **Acceptance Criteria:**
-- ✅ If the `/api/gems` POST returns a duplicate response (e.g., 409 with duplicate data), the `DuplicateWarning` component is displayed instead of the Add Gem form
+- ✅ If the `/api/v1/gems` POST returns a duplicate response (e.g., 409 with duplicate data), the `DuplicateWarning` component is displayed instead of the Add Gem form
 - ✅ Clicking "Cancel" in the warning dismisses it and returns to the Add Gem form (or closes)
 - ✅ Clicking "This is Different" might trigger a resubmission to the backend with a flag indicating override (requires BE modification) or simply closes the warning allowing user to try again
 - ✅ "Add to This Gem" functionality is noted as future work for now
@@ -634,12 +634,12 @@
 
 ### Task FE-GEM-6: Display Gems on Map
 
-**Description:** Fetch Gem data from the `/api/gems` endpoint based on the current map view bounds and display them on the MapLibre GL JS map using markers, including clustering.
+**Description:** Fetch Gem data from the `/api/v1/gems` endpoint based on the current map view bounds and display them on the MapLibre GL JS map using markers, including clustering.
 
 **Status:** `To Do`
 
 **Acceptance Criteria:**
-- ✅ Map component fetches Gems from `/api/gems`, passing current map viewport coordinates (latitude/longitude bounds) as query parameters
+- ✅ Map component fetches Gems from `/api/v1/gems`, passing current map viewport coordinates (latitude/longitude bounds) as query parameters
 - ✅ Fetched Gems are rendered as markers on the MapLibre GL JS map
 - ✅ Marker clustering is implemented and correctly groups nearby markers at lower zoom levels
 - ✅ Map updates displayed Gems when the user pans or zooms (refetching based on new bounds)
@@ -672,9 +672,9 @@
 
 **Acceptance Criteria:**
 - ✅ Tapping a Gem marker (verified or pending) opens a modal or bottom drawer
-- ✅ Component (`GemDetailDisplay.tsx` or similar) fetches full Gem details from `/api/gems/{gemId}` or uses data already fetched
+- ✅ Component (`GemDetailDisplay.tsx` or similar) fetches full Gem details from `/api/v1/gems/{gemId}` or uses data already fetched
 - ✅ Displays Name, Description, Tags, Founder Username, Vouch Count, Average Rating (stars), and Status Badges (Stale, Closed, Warning - if implemented)
-- ✅ Includes a section/carousel to display photos fetched from `/api/gems/{gemId}/photos`
+- ✅ Includes a section/carousel to display photos fetched from `/api/v1/gems/{gemId}/photos`
 - ✅ Includes action buttons (Vouch, Rate, Add Photo, Report - functionality implemented in Epic 6)
 - ✅ Styled according to the Design System
 
@@ -691,7 +691,7 @@
 **Acceptance Criteria:**
 - ✅ "Add Photo" button exists in the Gem Detail view for logged-in users
 - ✅ Clicking the button opens the device's file selector
-- ✅ Selected image file is uploaded via a POST request to `/api/gems/{gemId}/photos`
+- ✅ Selected image file is uploaded via a POST request to `/api/v1/gems/{gemId}/photos`
 - ✅ Loading state is shown during upload
 - ✅ Success response refreshes the photo gallery in the Gem Detail view
 - ✅ Error handling is implemented for upload failures
@@ -702,7 +702,7 @@
 
 ### Task BE-GEM-1: Implement Fetch Gems Endpoint
 
-**Description:** Create the `GET /api/gems` endpoint to return Gems based on geographic bounding box and potentially status filters.
+**Description:** Create the `GET /api/v1/gems` endpoint to return Gems based on geographic bounding box and potentially status filters.
 
 **Status:** `To Do`
 
@@ -719,7 +719,7 @@
 
 ### Task BE-GEM-2: Implement Add Gem Endpoint
 
-**Description:** Refine the `POST /api/gems` endpoint ensuring it requires authentication.
+**Description:** Refine the `POST /api/v1/gems` endpoint ensuring it requires authentication.
 
 **Status:** `To Do`
 
@@ -778,7 +778,7 @@
 
 ### Task BE-GEM-5: Implement Fetch Single Gem Endpoint
 
-**Description:** Create the `GET /api/gems/{gemId}` endpoint to retrieve detailed information for a specific Gem.
+**Description:** Create the `GET /api/v1/gems/{gemId}` endpoint to retrieve detailed information for a specific Gem.
 
 **Status:** `To Do`
 
@@ -795,7 +795,7 @@
 
 ### Task BE-GEM-6: Implement Add Photo Endpoint
 
-**Description:** Create the `POST /api/gems/{gemId}/photos` endpoint to handle image uploads, store the image (e.g., to S3/Cloudinary), and save the photo metadata to the database.
+**Description:** Create the `POST /api/v1/gems/{gemId}/photos` endpoint to handle image uploads, store the image (e.g., to S3/Cloudinary), and save the photo metadata to the database.
 
 **Status:** `To Do`
 
@@ -814,7 +814,7 @@
 
 ### Task BE-GEM-7: Implement Fetch Gem Photos Endpoint
 
-**Description:** Create the `GET /api/gems/{gemId}/photos` endpoint to retrieve a list of photo URLs associated with a specific Gem.
+**Description:** Create the `GET /api/v1/gems/{gemId}/photos` endpoint to retrieve a list of photo URLs associated with a specific Gem.
 
 **Status:** `To Do`
 
@@ -923,7 +923,7 @@
 **Status:** `To Do`
 
 **Acceptance Criteria:**
-- ✅ Saving triggers API calls to `POST /api/krawls` (for new) or `PUT /api/krawls/{id}` (for update) and `PUT /api/krawls/{krawlId}/items`
+- ✅ Saving triggers API calls to `POST /api/v1/krawls` (for new) or `PUT /api/v1/krawls/{id}` (for update) and `PUT /api/v1/krawls/{krawlId}/items`
 - ✅ The payload for `/items` includes the array of `{ gemId, stepOrder, creatorNote, lokalSecret }`
 - ✅ Loading state shown during save
 - ✅ Success/error handling implemented with user feedback
@@ -939,7 +939,7 @@
 **Status:** `To Do`
 
 **Acceptance Criteria:**
-- ✅ Page exists and fetches data from `/api/krawls/{krawlId}`
+- ✅ Page exists and fetches data from `/api/v1/krawls/{krawlId}`
 - ✅ Displays Krawl Title, Description, Creator Username & Reputation Badge
 - ✅ Displays Average Krawl Rating (stars)
 - ✅ Includes a Map Overview component showing all Gem pins and the route path
@@ -953,7 +953,7 @@
 
 ### Task BE-KRAWL-1: Implement Create Krawl Endpoint
 
-**Description:** Create the `POST /api/krawls` endpoint to save a new Krawl's basic details (title, description, visibility) associated with the authenticated user.
+**Description:** Create the `POST /api/v1/krawls` endpoint to save a new Krawl's basic details (title, description, visibility) associated with the authenticated user.
 
 **Status:** `To Do`
 
@@ -970,7 +970,7 @@
 
 ### Task BE-KRAWL-4: Implement Update Krawl Metadata Endpoint
 
-**Description:** Create the `PUT /api/krawls/{krawlId}` endpoint to update Krawl basic information (title, description, visibility).
+**Description:** Create the `PUT /api/v1/krawls/{krawlId}` endpoint to update Krawl basic information (title, description, visibility).
 
 **Status:** `To Do`
 
@@ -992,7 +992,7 @@
 
 ### Task BE-KRAWL-2: Implement Add/Update Krawl Items Endpoint
 
-**Description:** Create the `PUT /api/krawls/{krawlId}/items` endpoint to receive the full ordered list of Gems and notes for a Krawl, replacing the existing items.
+**Description:** Create the `PUT /api/v1/krawls/{krawlId}/items` endpoint to receive the full ordered list of Gems and notes for a Krawl, replacing the existing items.
 
 **Status:** `To Do`
 
@@ -1011,7 +1011,7 @@
 
 ### Task BE-KRAWL-3: Implement Fetch Krawl Details Endpoint
 
-**Description:** Create the `GET /api/krawls/{krawlId}` endpoint to retrieve all details for a Krawl, including its ordered items with Gem info and creator notes.
+**Description:** Create the `GET /api/v1/krawls/{krawlId}` endpoint to retrieve all details for a Krawl, including its ordered items with Gem info and creator notes.
 
 **Status:** `To Do`
 
@@ -1134,7 +1134,7 @@
 
 ### Task BE-DISC-1: Enhance Fetch Gems Endpoint for Search/Filter
 
-**Description:** Modify the `GET /api/gems` endpoint to accept query parameters for text search (name/description), tags, min rating, status, etc., in addition to map bounds.
+**Description:** Modify the `GET /api/v1/gems` endpoint to accept query parameters for text search (name/description), tags, min rating, status, etc., in addition to map bounds.
 
 **Status:** `To Do`
 
@@ -1154,7 +1154,7 @@
 
 ### Task BE-DISC-2: Implement Fetch Krawls Endpoint with Search/Filter
 
-**Description:** Create/Modify the `GET /api/krawls` endpoint to accept query parameters for text search (title/description), location context (nearby Gems within), tags (derived from Gems within), creator reputation, etc.
+**Description:** Create/Modify the `GET /api/v1/krawls` endpoint to accept query parameters for text search (title/description), location context (nearby Gems within), tags (derived from Gems within), creator reputation, etc.
 
 **Status:** `To Do`
 
@@ -1205,7 +1205,7 @@
 
 ### Task BE-QUAL-7: Implement User Interaction Status Endpoint
 
-**Description:** Create the `GET /api/gems/{gemId}/user-status` endpoint to check if the current authenticated user has already vouched for or rated a specific Gem.
+**Description:** Create the `GET /api/v1/gems/{gemId}/user-status` endpoint to check if the current authenticated user has already vouched for or rated a specific Gem.
 
 **Status:** `To Do`
 
@@ -1232,7 +1232,7 @@
 **Acceptance Criteria:**
 - ✅ Vouch button ([Check Icon] Vouch) is displayed in Gem Detail view for logged-in users
 - ✅ Button displays current `vouch_count`
-- ✅ Clicking the button sends a POST request to `/api/gems/{gemId}/vouch`
+- ✅ Clicking the button sends a POST request to `/api/v1/gems/{gemId}/vouch`
 - ✅ Button provides visual feedback on success (e.g., increments count, changes state to 'Vouched')
 - ✅ Button is disabled or visually distinct if the user has already vouched
 - ✅ Error handling is implemented
@@ -1249,7 +1249,7 @@
 
 **Acceptance Criteria:**
 - ✅ Star rating input (1-5 stars) and optional comment textarea exist in Gem Detail view for logged-in users
-- ✅ Submit button triggers a POST request to `/api/gems/{gemId}/ratings` with rating and comment
+- ✅ Submit button triggers a POST request to `/api/v1/gems/{gemId}/ratings` with rating and comment
 - ✅ Existing rating (if any) by the current user might pre-fill the form
 - ✅ Success response updates the Gem's displayed average rating and potentially shows the new comment
 - ✅ Error handling is implemented
@@ -1267,7 +1267,7 @@
 **Acceptance Criteria:**
 - ✅ Report button ([Flag Icon] Report) exists in Gem Detail view for logged-in users
 - ✅ Clicking opens a modal with report reasons (e.g., 'Permanently Closed', 'Wrong Location', 'Spam/Offensive')
-- ✅ Submitting the report sends a POST request to `/api/gems/{gemId}/reports` with the selected reason and optional comment
+- ✅ Submitting the report sends a POST request to `/api/v1/gems/{gemId}/reports` with the selected reason and optional comment
 - ✅ Success feedback is shown to the user (e.g., "Report submitted")
 - ✅ Error handling is implemented
 
@@ -1284,7 +1284,7 @@
 **Acceptance Criteria:**
 - ✅ Rating prompt (modal or dedicated screen) appears after completing the last step in Krawl Mode
 - ✅ Includes star rating input, optional comment field, and checkboxes for specific issues (Outdated, Bad Route, Low Quality Gems, Spam)
-- ✅ Submitting sends a POST request to `/api/krawls/{krawlId}/ratings`
+- ✅ Submitting sends a POST request to `/api/v1/krawls/{krawlId}/ratings`
 - ✅ Success feedback is shown
 - ✅ Error handling is implemented
 
@@ -1301,7 +1301,7 @@
 **Acceptance Criteria:**
 - ✅ Profile page (`/profile/[username]`) displays the user's average Krawl rating score
 - ✅ Profile page displays the corresponding Reputation Tier Badge (e.g., using icons/colors defined in Design System)
-- ✅ Data is fetched from the `/api/users/{username}` endpoint
+- ✅ Data is fetched from the `/api/v1/users/{username}` endpoint
 
 **Assignee:** [Frontend Dev]
 
@@ -1324,7 +1324,7 @@
 
 ### Task BE-QUAL-1: Implement Vouch Gem Endpoint
 
-**Description:** Create the `POST /api/gems/{gemId}/vouch` endpoint to handle user vouches, update the count, and potentially trigger the status change to 'verified'.
+**Description:** Create the `POST /api/v1/gems/{gemId}/vouch` endpoint to handle user vouches, update the count, and potentially trigger the status change to 'verified'.
 
 **Status:** `To Do`
 
@@ -1342,7 +1342,7 @@
 
 ### Task BE-QUAL-2: Implement Rate Gem Endpoint
 
-**Description:** Create the `POST /api/gems/{gemId}/ratings` endpoint to save a user's rating and comment for a Gem, and update the Gem's average rating.
+**Description:** Create the `POST /api/v1/gems/{gemId}/ratings` endpoint to save a user's rating and comment for a Gem, and update the Gem's average rating.
 
 **Status:** `To Do`
 
@@ -1359,7 +1359,7 @@
 
 ### Task BE-QUAL-3: Implement Report Gem Endpoint
 
-**Description:** Create the `POST /api/gems/{gemId}/reports` endpoint to save user reports about Gems and potentially trigger automatic flagging based on report count/type.
+**Description:** Create the `POST /api/v1/gems/{gemId}/reports` endpoint to save user reports about Gems and potentially trigger automatic flagging based on report count/type.
 
 **Status:** `To Do`
 
@@ -1377,7 +1377,7 @@
 
 ### Task BE-QUAL-4: Implement Rate Krawl Endpoint
 
-**Description:** Create the `POST /api/krawls/{krawlId}/ratings` endpoint to save a user's rating and feedback for a Krawl experience, updating the Krawl's average rating.
+**Description:** Create the `POST /api/v1/krawls/{krawlId}/ratings` endpoint to save a user's rating and feedback for a Krawl experience, updating the Krawl's average rating.
 
 **Status:** `To Do`
 
@@ -1410,7 +1410,7 @@
 
 ### Task BE-QUAL-6: Implement Gem Status Logic
 
-**Description:** Implement backend logic (e.g., scheduled job or within `GET /api/gems` endpoints) to determine and potentially flag Gems as 'Stale' or having a 'Community Warning'.
+**Description:** Implement backend logic (e.g., scheduled job or within `GET /api/v1/gems` endpoints) to determine and potentially flag Gems as 'Stale' or having a 'Community Warning'.
 
 **Status:** `To Do`
 

@@ -11,8 +11,8 @@
 
 > **Purpose:** [One sentence describing what this document covers and who it's for]
 
-**Version:** X.Y.Z  
-**Last Updated:** [YYYY-MM-DD]  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** [Draft | Active | Archived]  
 **Owner:** [Team/Person responsible]
 
@@ -105,8 +105,8 @@
 
 > **Purpose:** [Planning document purpose]
 
-**Version:** X.Y.Z  
-**Last Updated:** YYYY-MM-DD  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active
 
 ---
@@ -142,8 +142,8 @@
 
 > **Purpose:** [Technical specification purpose]
 
-**Version:** X.Y.Z  
-**Last Updated:** YYYY-MM-DD  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Tech Stack:** [Relevant technologies]
 
@@ -203,8 +203,8 @@
 
 > **Purpose:** [Process/guide purpose]
 
-**Version:** X.Y.Z  
-**Last Updated:** YYYY-MM-DD  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active
 
 ---
@@ -246,8 +246,8 @@
 
 > **Purpose:** [Design documentation purpose]
 
-**Version:** X.Y.Z  
-**Last Updated:** YYYY-MM-DD  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active
 
 ---

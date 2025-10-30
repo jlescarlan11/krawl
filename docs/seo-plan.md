@@ -2,8 +2,8 @@
 
 > **Purpose:** This document outlines the comprehensive Search Engine Optimization (SEO) strategy for the Krawl Progressive Web App, focusing on attracting organic traffic from users seeking genuine local Filipino experiences, hidden gems, and community-driven recommendations.
 
-**Version:** 1.1.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Marketing Team
 

@@ -2,8 +2,8 @@
 
 > **Purpose:** This document defines the complete PostgreSQL database schema for Krawl, including all tables, relationships, indexes, and geospatial configurations using PostGIS.
 
-**Version:** 1.1.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Backend Team  
 **Tech Stack:** PostgreSQL 14+, PostGIS 3.0+

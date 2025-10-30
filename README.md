@@ -6,8 +6,8 @@
 
 *A community-driven Progressive Web App for mapping authentic, hyperlocal Filipino culture*
 
-[![Version](https://img.shields.io/badge/version-0.1.0--MVP-green.svg)](https://github.com/yourusername/krawl)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-MVP-green.svg)](./CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Tech Stack](#-tech-stack) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
@@ -321,6 +321,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Last Updated**: October 29, 2025  
+**Last Updated**: 2025-10-31  
 **Version**: 0.1.0-MVP  
 **Maintainer**: Development Team
