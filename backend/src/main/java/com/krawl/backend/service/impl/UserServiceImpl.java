@@ -1,6 +1,6 @@
 package com.krawl.backend.service.impl;
 
-import com.krawl.backend.dto.request.UserUpdateRequest;
+import com.krawl.backend.dto.request.UpdateProfileRequest;
 import com.krawl.backend.dto.response.UserResponse;
 import com.krawl.backend.entity.User;
 import com.krawl.backend.mapper.UserMapper;
@@ -50,13 +50,44 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public UserResponse updateUser(UUID userId, UserUpdateRequest request) {
+	public UserResponse updateUser(UUID userId, UpdateProfileRequest request) {
 		User user = userRepository.findById(userId).orElse(null);
 		if (user == null) {
+			throw new IllegalArgumentException("User not found");
+		}
+
+		if (request.getUsername() != null) {
+			String username = sanitizeUsername(request.getUsername());
+			if (username.length() < 3) {
+				throw new IllegalArgumentException("Username must be at least 3 characters");
+			}
+			if (userRepository.existsByUsernameAndUserIdNot(username, userId)) {
+				throw new IllegalArgumentException("Username is already taken");
+			}
+			user.setUsername(username);
+		}
+
+		if (request.getBio() != null) {
+			String bio = sanitizeText(request.getBio(), 1000);
+			user.setBio(bio);
+		}
+
+		return userMapper.toResponse(userRepository.save(user));
+	}
+
+	private String sanitizeUsername(String value) {
+		if (value == null) {
 			return null;
 		}
-		// TODO: Apply request fields when update contract is defined
-		return userMapper.toResponse(userRepository.save(user));
+		return value.trim().replaceAll("\\s+", " ").replaceAll("<[^>]*>", "");
+	}
+
+	private String sanitizeText(String value, int max) {
+		if (value == null) {
+			return null;
+		}
+		String v = value.trim().replaceAll("<[^>]*>", "");
+		return v.length() > max ? v.substring(0, max) : v;
 	}
 
 	@Override
