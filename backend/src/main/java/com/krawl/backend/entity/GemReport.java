@@ -2,7 +2,6 @@ package com.krawl.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -16,8 +15,7 @@ import java.util.UUID;
 public class GemReport {
     
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "report_id", updatable = false, nullable = false)
     private UUID reportId;
     
@@ -35,7 +33,7 @@ public class GemReport {
     @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
     
-    @Column(name = "status", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'pending'")
+    @Column(name = "status", length = 50, nullable = false)
     private String status = "pending";
     
     @Column(name = "reviewed_at")

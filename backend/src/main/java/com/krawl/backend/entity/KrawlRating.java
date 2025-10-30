@@ -2,7 +2,6 @@ package com.krawl.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -18,8 +17,7 @@ import java.util.UUID;
 public class KrawlRating {
     
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "rating_id", updatable = false, nullable = false)
     private UUID ratingId;
     
@@ -39,16 +37,16 @@ public class KrawlRating {
     @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
     
-    @Column(name = "flag_outdated", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "flag_outdated", nullable = false)
     private Boolean flagOutdated = false;
     
-    @Column(name = "flag_bad_route", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "flag_bad_route", nullable = false)
     private Boolean flagBadRoute = false;
     
-    @Column(name = "flag_low_quality_gems", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "flag_low_quality_gems", nullable = false)
     private Boolean flagLowQualityGems = false;
     
-    @Column(name = "flag_spam_misleading", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "flag_spam_misleading", nullable = false)
     private Boolean flagSpamMisleading = false;
     
     @CreatedDate
