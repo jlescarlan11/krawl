@@ -2,8 +2,8 @@
 
 > **Purpose:** This document provides comprehensive system design documentation for Krawl, including architecture overview, component interactions, data flow diagrams, and technical design patterns for all major features.
 
-**Version:** 1.1.0  
-**Last Updated:** 2025-10-29  
+**Version:** 1.1.1  
+**Last Updated:** 2025-10-30  
 **Status:** Active  
 **Owner:** Development Team
 
@@ -131,7 +131,7 @@ sequenceDiagram
     BE->>DB: PostGIS: SELECT gems<br/>WHERE ST_Within(location, viewport)
     DB-->>BE: Return Gem list
     BE-->>FE: JSON: { gems: [...], auth: {...} }
-    FE->>FE: Render Leaflet map
+    FE->>FE: Render MapLibre GL JS map
     FE->>FE: Display Gem markers (clustered)
     FE->>User: Show interactive map
     
@@ -147,7 +147,7 @@ sequenceDiagram
 | 3 | BE | Queries PostGIS for spatial data | `ST_Within()` query |
 | 4 | DB | Returns matching Gems | `[{id, name, lat, lng, status}]` |
 | 5 | BE | Sends Gem data + auth status | `{gems: [...], isAuthenticated: bool}` |
-| 6 | FE | Renders map with markers | Leaflet.js clustering |
+| 6 | FE | Renders map with markers | MapLibre GL JS clustering |
 
 ---
 
@@ -504,7 +504,7 @@ sequenceDiagram
         FE->>FE: Calculate bounding box<br/>for all stops
         FE->>SW: Request tile caching
         SW->>SW: Download tiles for zoom levels 13-18
-        Note over SW: Leaflet tiles cached via<br/>service worker
+        Note over SW: MapTiler tiles cached via<br/>service worker
     and Cache Media
         FE->>BE: GET photo URLs from Krawl
         BE-->>FE: Return photo URLs
@@ -835,7 +835,7 @@ GET    /api/users/:id/completed # Get completed krawls
 - **PostGIS Queries:** All spatial queries use geography type for accurate distance calculations in meters.
 - **JWT Expiration:** Tokens expire after 24 hours; refresh tokens last 30 days.
 - **Gem Status:** Only 'active' gems are shown to non-authenticated users.
-- **Map Tiles:** Using OpenStreetMap tiles with proper attribution.
+- **Map Tiles:** Using MapTiler vector tiles with proper attribution.
 - **Offline Sync:** Queued actions are automatically synced when connection is restored.
 - **Rate Limiting:** API rate limits are per-user for authenticated requests, per-IP for anonymous.
 
@@ -858,6 +858,7 @@ GET    /api/users/:id/completed # Get completed krawls
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.1 | 2025-10-30 | Replaced Leaflet/OpenStreetMap references with MapLibre GL JS/MapTiler; corrected API examples and notes | Development Team |
 | 1.0.0 | 2025-10-28 | Initial system design documentation | Development Team |
 
 ---
