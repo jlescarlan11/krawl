@@ -8,6 +8,7 @@ type AuthState = {
   token: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string, remember?: boolean) => Promise<void>;
+  signup: (username: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   setSession: (token: string, user: auth.User, remember?: boolean) => void;
 };
@@ -51,6 +52,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(res.token, res.user, remember);
   };
 
+  const signupFn = async (username: string, email: string, password: string) => {
+    const res = await auth.register({ name: username, email, password });
+    setSession(res.token, res.user); // Log the user in immediately after signup
+  };
+
   const logoutFn = async () => {
     try {
       await auth.logout();
@@ -68,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       token,
       isAuthenticated: !!token,
       login: loginFn,
+      signup: signupFn, 
       logout: logoutFn,
       setSession,
     }),
