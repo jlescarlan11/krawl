@@ -493,7 +493,7 @@
 
 **Acceptance Criteria:**
 - ✅ Endpoint exists, requires authentication
-- ✅ Accepts `UpdateProfileRequest` DTO (bio, displayName)
+- ✅ Accepts `UpdateProfileRequest` DTO (bio, username)
 - ✅ Validates input (length limits, sanitization)
 - ✅ Updates only the authenticated user's profile
 - ✅ Returns updated user profile data
