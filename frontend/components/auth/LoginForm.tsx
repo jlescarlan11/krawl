@@ -13,14 +13,25 @@ type LoginValues = {
 
 function validate(values: LoginValues) {
   const errors: Partial<Record<keyof LoginValues & string, string>> = {};
+
   if (!values.emailOrUsername.trim()) {
     errors.emailOrUsername = 'Email or username is required';
   }
+  
   if (!values.password) {
     errors.password = 'Password is required';
   } else if (values.password.length < 8) {
-    errors.password = 'Must be at least 8 characters';
+    errors.password = 'Password must be at least 8 characters';
+  } else if (!/[A-Z]/.test(values.password)) {
+    errors.password = 'Must contain at least one uppercase letter';
+  } else if (!/[a-z]/.test(values.password)) {
+    errors.password = 'Must contain at least one lowercase letter';
+  } else if (!/[0-9]/.test(values.password)) {
+    errors.password = 'Must contain at least one number';
+  } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(values.password)) {
+    errors.password = 'Must contain at least one special character';
   }
+  
   return errors;
 }
 
@@ -33,7 +44,7 @@ export default function LoginForm() {
       name: 'emailOrUsername',
       label: 'Email or Username',
       type: 'text',
-      placeholder: 'juan@halina.com or juan',
+      placeholder: 'juan@krawl.com or juandelacruz',
       autoComplete: 'username',
     },
     {
@@ -41,6 +52,7 @@ export default function LoginForm() {
       label: 'Password',
       type: 'password',
       autoComplete: 'current-password',
+      placeholder: '••••••••',
       showToggle: true,
     },
     {

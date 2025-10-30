@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { LuMail, LuLock, LuEye, LuEyeOff } from 'react-icons/lu';
+import { LuMail, LuLock, LuEye, LuEyeOff, LuUser, LuCheck } from 'react-icons/lu';
 
 /**
  * Supported field input types for the generic AuthForm.
@@ -26,6 +26,7 @@ export type FieldConfig<TValues> = {
   autoComplete?: string;
   showToggle?: boolean; // for password visibility toggle
   rightAccessory?: React.ReactNode; // renders at right for checkbox rows
+  helperText?: React.ReactNode;
 };
 
 /**
@@ -97,6 +98,7 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
   const renderIcon = (type: FieldType) => {
     if (type === 'email') return <LuMail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />;
     if (type === 'password') return <LuLock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />;
+    if (type === 'text') return <LuUser className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />;
     return null;
   };
 
@@ -107,6 +109,7 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
         <form onSubmit={handleSubmit} noValidate>
           {fields.map((f) => {
             const err = touched[f.name] && errors[f.name];
+            const isValid = touched[f.name] && !errors[f.name];
             const isCheckbox = f.type === 'checkbox';
             const isPassword = f.type === 'password';
             const inputType = isPassword && show[f.name] ? 'text' : f.type;
@@ -151,9 +154,15 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
                         onBlur={() => setTouched((t) => ({ ...t, [f.name]: true }))}
                         aria-invalid={!!err}
                         aria-describedby={`${f.name}-error`}
-                        className={`w-full rounded-md border bg-white ${f.type !== 'text' ? 'px-10' : 'px-3'} py-2 text-base text-neutral-800 placeholder-neutral-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-verde-600 ${err ? 'border-error' : 'border-neutral-300'}`}
+                        className={`w-full rounded-md border bg-white px-10 py-2 text-base text-neutral-800 placeholder-neutral-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-verde-600 ${err ? 'border-error' : isValid ? 'border-verde-600' : 'border-neutral-300'}`}
                         disabled={submitting}
                       />
+                      {isValid && !isPassword ? (
+                        <LuCheck
+                          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-verde-700"
+                          size={18}
+                        />
+                      ) : null}
                       {isPassword && f.showToggle ? (
                         <button
                           type="button"
@@ -172,6 +181,10 @@ export default function AuthForm<TValues extends Record<string, any>>(props: Aut
                 {err ? (
                   <p id={`${f.name}-error`} className="mt-2 text-xs text-error">
                     {errors[f.name]}
+                  </p>
+                ) : f.helperText ? (
+                  <p id={`${f.name}-helper`} className="mt-2 text-xs text-neutral-500">
+                    {f.helperText}
                   </p>
                 ) : null}
               </div>
