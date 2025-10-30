@@ -1,45 +1,19 @@
-'use client';
+"use client";
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AuthForm, { FieldConfig } from '@/components/auth/AuthForm';
 import { useAuth } from '@/context/AuthContext';
+import { loginSchema, type LoginFormValues } from '@/components/auth/schemas/login';
+import { makeZodValidator } from '@/components/auth/schemas/validateAdapter';
 
-type LoginValues = {
-  emailOrUsername: string;
-  password: string;
-  remember: boolean;
-};
+const validate = makeZodValidator(loginSchema);
 
-function validate(values: LoginValues) {
-  const errors: Partial<Record<keyof LoginValues & string, string>> = {};
-
-  if (!values.emailOrUsername.trim()) {
-    errors.emailOrUsername = 'Email or username is required';
-  }
-  
-  if (!values.password) {
-    errors.password = 'Password is required';
-  } else if (values.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters';
-  } else if (!/[A-Z]/.test(values.password)) {
-    errors.password = 'Must contain at least one uppercase letter';
-  } else if (!/[a-z]/.test(values.password)) {
-    errors.password = 'Must contain at least one lowercase letter';
-  } else if (!/[0-9]/.test(values.password)) {
-    errors.password = 'Must contain at least one number';
-  } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(values.password)) {
-    errors.password = 'Must contain at least one special character';
-  }
-  
-  return errors;
-}
-
-export default function LoginForm() {
+export default function LoginForm({ redirect = '/' }: { redirect?: string }) {
   const { login } = useAuth();
   const router = useRouter();
 
-    const fields: FieldConfig<LoginValues>[] = [
+  const fields: FieldConfig<LoginFormValues>[] = [
     {
       name: 'emailOrUsername',
       label: 'Email or Username',
@@ -68,7 +42,7 @@ export default function LoginForm() {
   ];
 
   return (
-    <AuthForm<LoginValues>
+    <AuthForm<LoginFormValues>
       title={undefined}
       initialValues={{ emailOrUsername: '', password: '', remember: false }}
       fields={fields}
@@ -84,7 +58,7 @@ export default function LoginForm() {
       }
       onSubmit={async (values) => {
         await login(values.emailOrUsername, values.password, values.remember);
-        router.push('/');
+        router.push(redirect);
       }}
     />
   );

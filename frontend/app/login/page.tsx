@@ -7,7 +7,15 @@ export const metadata: Metadata = {
   title: 'Login | Krawl',
 };
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams?: { redirect?: string };
+}) {
+  const raw = searchParams?.redirect;
+  const redirect =
+    typeof raw === 'string' && raw.startsWith('/') ? raw : '/';
+
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 items-center gap-8 px-6 py-10 lg:grid-cols-2">
@@ -24,7 +32,7 @@ export default function LoginPage() {
 
         {/* Right form card */}
         <div className="flex items-center justify-center">
-          <LoginForm />
+          <LoginForm redirect={redirect} />
         </div>
       </div>
     </div>
