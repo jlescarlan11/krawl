@@ -42,8 +42,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.localStorage.setItem('auth', payload);
       window.sessionStorage.removeItem('auth');
     } else {
-      window.sessionStorage.setItem('auth', payload);
+      // memory-only: do not persist to storage
       window.localStorage.removeItem('auth');
+      window.sessionStorage.removeItem('auth');
     }
   };
 
