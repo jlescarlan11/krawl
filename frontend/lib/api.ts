@@ -47,15 +47,29 @@ export async function apiFetch<T>(
     throw ApiError.fromNetworkError(new Error('OFFLINE'));
   }
 
+  
   const defaultHeaders = {
     'Content-Type': 'application/json',
   };
+
+  // Attach JWT if present (from either localStorage or sessionStorage)
+  let authHeader: Record<string, string> = {};
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = window.localStorage.getItem('auth') || window.sessionStorage.getItem('auth');
+      if (raw) {
+        const { token } = JSON.parse(raw);
+        if (token) authHeader.Authorization = `Bearer ${token}`;
+      }
+    } catch {}
+  }
 
   try {
     const response = await fetch(url, {
       ...options,
       headers: {
         ...defaultHeaders,
+        ...authHeader,            // include the Authorization header
         ...options?.headers,
       },
     });
