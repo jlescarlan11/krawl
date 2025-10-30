@@ -1,30 +1,110 @@
 package com.krawl.backend.exception;
 
 import com.krawl.backend.dto.ErrorResponse;
+import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 @Slf4j
+@Hidden
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ImageValidationException.class)
-    public ResponseEntity<ErrorResponse> handleImageValidation(
-            ImageValidationException ex, 
+    @ExceptionHandler(KrawlException.class)
+    public ResponseEntity<ErrorResponse> handleKrawlException(
+            KrawlException ex, 
             WebRequest request) {
         
-        log.warn("Image validation failed: {}", ex.getMessage());
+        HttpStatus status = ex.getHttpStatus();
+        log.warn("Krawl exception [{}]: {}", ex.getErrorCode(), ex.getMessage());
+        
+        ErrorResponse error = new ErrorResponse(
+            ex.getErrorCode(),
+            ex.getMessage(),
+            status.value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(
+            EntityNotFoundException ex, 
+            WebRequest request) {
+        
+        log.warn("Entity not found: {}", ex.getMessage());
+        
+        ErrorResponse error = new ErrorResponse(
+            ex.getErrorCode(),
+            ex.getMessage(),
+            ex.getHttpStatus().value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(ex.getHttpStatus()).body(error);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorized(
+            UnauthorizedException ex, 
+            WebRequest request) {
+        
+        log.warn("Unauthorized access: {}", ex.getMessage());
+        
+        ErrorResponse error = new ErrorResponse(
+            ex.getErrorCode(),
+            ex.getMessage(),
+            ex.getHttpStatus().value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(ex.getHttpStatus()).body(error);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(
+            ValidationException ex, 
+            WebRequest request) {
+        
+        log.warn("Validation failed: {}", ex.getMessage());
+        
+        ErrorResponse error = new ErrorResponse(
+            ex.getErrorCode(),
+            ex.getMessage(),
+            ex.getHttpStatus().value(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(ex.getHttpStatus()).body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, 
+            WebRequest request) {
+        
+        String errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        
+        log.warn("Validation failed: {}", errors);
         
         ErrorResponse error = new ErrorResponse(
             "VALIDATION_ERROR",
-            ex.getMessage(),
+            "Validation failed: " + errors,
             HttpStatus.BAD_REQUEST.value(),
             request.getDescription(false).replace("uri=", "")
         );
@@ -32,21 +112,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler(StorageException.class)
-    public ResponseEntity<ErrorResponse> handleStorageException(
-            StorageException ex, 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            ConstraintViolationException ex, 
             WebRequest request) {
         
-        log.error("Storage operation failed: {}", ex.getMessage(), ex);
+        String errors = ex.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(", "));
+        
+        log.warn("Constraint violation: {}", errors);
         
         ErrorResponse error = new ErrorResponse(
-            "STORAGE_ERROR",
-            "Failed to process image: " + ex.getMessage(),
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            "VALIDATION_ERROR",
+            "Validation failed: " + errors,
+            HttpStatus.BAD_REQUEST.value(),
             request.getDescription(false).replace("uri=", "")
         );
         
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)

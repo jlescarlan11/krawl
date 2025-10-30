@@ -4,7 +4,7 @@ spring:
 
   # Database Configuration
   datasource:
-    url: ${DATABASE_URL}?sslmode=require&prepareThreshold=0
+    url: ${DATABASE_URL}?sslmode=${DB_SSLMODE:prefer}&prepareThreshold=0
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -13,6 +13,9 @@ spring:
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: ${DB_MIN_IDLE:5}
+      leak-detection-threshold: 60000
 
   # JPA/Hibernate Configuration
   jpa:
@@ -25,8 +28,12 @@ spring:
         dialect: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
         format_sql: true
         jdbc:
+          batch_size: 20
+          batch_versioned_data: true
           lob:
             non_contextual_creation: true
+        order_inserts: true
+        order_updates: true
 
   # File Upload Configuration
   servlet:
@@ -44,6 +51,11 @@ spring:
     validate-on-migrate: false
     locations: classpath:db/migration
     schemas: public
+  
+  # Cache Configuration
+  cache:
+    type: simple # ConcurrentMapCacheManager (can be upgraded to Redis/Caffeine)
+    cache-names: tags,users,publicGems,publicKrawls
 
 # Server Configuration
 server:
@@ -63,6 +75,17 @@ cloudinary:
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
   folder: ${CLOUDINARY_FOLDER:krawl-gems}
+
+# Storage Validation Configuration
+storage:
+  validation:
+    max-file-size: ${STORAGE_MAX_FILE_SIZE:10485760} # 10MB in bytes
+    allowed-content-types:
+      - image/jpeg
+      - image/jpg
+      - image/png
+      - image/webp
+      - image/heic
 
 # SpringDoc OpenAPI Configuration
 springdoc:
@@ -85,3 +108,22 @@ cors:
   allowed-headers: "*"
   allow-credentials: true
   max-age: 3600
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:your-secret-key-change-this-in-production-min-256-bits}
+  expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: false # Enable if using Prometheus

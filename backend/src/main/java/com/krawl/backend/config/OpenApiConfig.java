@@ -42,7 +42,10 @@ public class OpenApiConfig {
                                 .description("Local Development Server"),
                         new Server()
                                 .url("/")
-                                .description("Current Server")))
+                                .description("Current Server"),
+                        new Server()
+                                .url("/api/v1")
+                                .description("API Version 1")))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
                                 new SecurityScheme()

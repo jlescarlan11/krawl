@@ -1,4 +1,4 @@
-package com.krawl.backend.dto;
+package com.krawl.backend.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,3 +17,4 @@ public class ImageUploadResponse {
         this.message = message;
     }
 }
+
