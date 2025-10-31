@@ -8,6 +8,7 @@ import com.krawl.backend.service.RegistrationService;
 import com.krawl.backend.service.email.EmailSender;
 import com.krawl.backend.dto.response.AuthResponse;
 import com.krawl.backend.entity.User;
+import com.krawl.backend.exception.ValidationException;
 import com.krawl.backend.security.JwtTokenProvider;
 import com.krawl.backend.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -53,22 +54,35 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     @Transactional
     public void requestRegistration(String username, String email, String captchaToken, String remoteIp) {
-        if (email == null || username == null) return;
+        log.debug("Registration request received for email: {}, username: {}", email, username);
+        
+        if (email == null || username == null) {
+            log.warn("Registration request rejected: email or username is null");
+            throw new ValidationException("Email and username are required");
+        }
 
         String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
         String normalizedUsername = username.trim();
         if (normalizedEmail.isBlank() || normalizedUsername.isBlank()) {
-            return;
+            log.warn("Registration request rejected: email or username is blank");
+            throw new ValidationException("Email and username cannot be empty");
         }
 
+        log.debug("Verifying CAPTCHA token for email: {}", normalizedEmail);
         boolean captchaOk = captchaVerifier.verify(captchaToken, remoteIp);
         if (!captchaOk) {
+            log.warn("CAPTCHA verification failed for email: {}", normalizedEmail);
             throw new IllegalArgumentException("Captcha verification failed");
         }
+        log.debug("CAPTCHA verification passed for email: {}", normalizedEmail);
 
-        // If either exists, return silently to avoid enumeration
-        if (userRepository.existsByEmail(normalizedEmail) || userRepository.existsByUsername(normalizedUsername)) {
-            return;
+        // Check if user already exists
+        boolean emailExists = userRepository.existsByEmail(normalizedEmail);
+        boolean usernameExists = userRepository.existsByUsername(normalizedUsername);
+        if (emailExists || usernameExists) {
+            log.info("Registration request rejected: user already exists (email exists: {}, username exists: {})", emailExists, usernameExists);
+            // Return generic error message to prevent email/username enumeration
+            throw new ValidationException("An account with this email or username already exists. Please use a different email or username, or try logging in instead.");
         }
 
         // Invalidate existing pending tokens for this email/username
@@ -90,7 +104,14 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .formatted(expiryMinutes, link);
 
         log.info("Registration verification link for {} (username: {}): {}", normalizedEmail, normalizedUsername, link);
-        emailSender.sendEmailAsync(normalizedEmail, subject, body);
+        log.debug("Sending registration email to: {}", normalizedEmail);
+        try {
+            emailSender.sendEmailAsync(normalizedEmail, subject, body);
+            log.info("Registration email queued for sending to: {}", normalizedEmail);
+        } catch (Exception e) {
+            log.error("Failed to queue registration email to: {}", normalizedEmail, e);
+            throw e;
+        }
     }
 
     @Override

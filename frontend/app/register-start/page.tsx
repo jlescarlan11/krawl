@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import AuthScaffold from '@/components/auth/AuthScaffold';
 import { registerRequest } from '@/lib/auth';
 
@@ -17,7 +18,6 @@ export default function RegisterStartPage() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
   const widgetIdRef = useRef<number | null>(null);
   const pendingSubmitRef = useRef(false);
   const usernameInputRef = useRef<HTMLInputElement | null>(null);
@@ -79,14 +79,15 @@ export default function RegisterStartPage() {
 
   async function actuallySubmit(token: string) {
     setLoading(true);
-    setErr(null);
+    setSent(false); // Always reset sent state when starting a new submission
     try {
       const usernameValue = (usernameInputRef.current?.value ?? username).trim();
       const emailValue = (emailInputRef.current?.value ?? email).trim();
 
       if (!usernameValue || !emailValue) {
         console.log('register payload invalid (blank fields):', { usernameValue, emailValue });
-        setErr('Please enter a username and email.');
+        toast.error('Please enter a username and email.');
+        setSent(false);
         return;
       }
 
@@ -96,9 +97,23 @@ export default function RegisterStartPage() {
         captchaToken: (typeof token === 'string' ? token.slice(0, 10) + '…' : token),
       });
       await registerRequest({ username: usernameValue, email: emailValue, captchaToken: token });
+      toast.success('Verification email sent! Please check your inbox.');
       setSent(true);
-    } catch {
-      setSent(true);
+      // Don't clear form - show success message instead
+    } catch (error: any) {
+      console.error('Registration request failed:', error);
+      // Error messages are already shown via toast in api.ts for ApiError
+      // Only show toast for non-API errors that aren't already handled
+      if (error?.name !== 'ApiError') {
+        if (error instanceof TypeError || error?.message?.includes('fetch') || error?.message === 'OFFLINE') {
+          toast.error('Network error. Please check your connection and try again.');
+        } else if (error?.message) {
+          toast.error(error.message);
+        } else {
+          toast.error('Failed to send verification email. Please try again.');
+        }
+      }
+      setSent(false);
     } finally {
       setLoading(false);
       setCaptchaToken(null);
@@ -112,8 +127,10 @@ export default function RegisterStartPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSent(false); // Reset sent state when form is submitted
     if (!siteKey || !window.grecaptcha || widgetIdRef.current === null) {
-      setErr('CAPTCHA is not ready. Please try again.');
+      toast.error('CAPTCHA is not ready. Please try again.');
+      setSent(false);
       return;
     }
     if (!captchaToken) {
@@ -138,7 +155,7 @@ export default function RegisterStartPage() {
           }, 1000);
         }
       } catch {
-        setErr('Failed to execute CAPTCHA.');
+        toast.error('Failed to execute CAPTCHA.');
       }
       return;
     }
@@ -161,9 +178,17 @@ export default function RegisterStartPage() {
           </p>
         ) : null}
         {sent ? (
-          <p className="text-sm text-neutral-700">
-            If the details are valid, we've sent a link to your email. Please check your inbox.
-          </p>
+          <div className="text-center space-y-4 py-8">
+            <div>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-2">Registration Successful!</h3>
+              <p className="text-sm text-neutral-600 mb-1">
+                We've sent a verification link to your email.
+              </p>
+              <p className="text-sm text-neutral-600">
+                Please check your inbox and click the link to complete your registration.
+              </p>
+            </div>
+          </div>
         ) : (
           <>
             <div className="space-y-2">
@@ -175,10 +200,11 @@ export default function RegisterStartPage() {
                 ref={usernameInputRef}
                 autoComplete="username"
                 required
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
-              <label className="block text.sm font-medium">Email</label>
+              <label className="block text-sm font-medium">Email</label>
               <input
                 type="email"
                 className="w-full rounded-md border px-3 py-2"
@@ -187,9 +213,9 @@ export default function RegisterStartPage() {
                 ref={emailInputRef}
                 autoComplete="email"
                 required
+                disabled={loading}
               />
             </div>
-            {err ? <p className="text-sm text-red-600">{err}</p> : null}
             <button
               type="submit"
               disabled={loading}
