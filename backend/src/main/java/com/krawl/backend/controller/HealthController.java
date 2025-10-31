@@ -20,7 +20,7 @@ import java.util.Map;
  * - Support cron jobs that ping instances to prevent cold starts
  */
 @RestController
-@RequestMapping("/api/health")
+@RequestMapping({"/api/health", "/api/v1/health"})  // Support both paths for compatibility
 @RequiredArgsConstructor
 @Tag(name = "Health", description = "Health check and warmup endpoints for monitoring and cold start prevention")
 public class HealthController {
