@@ -87,7 +87,29 @@ export async function apiFetch<T>(
       throw apiError;
     }
 
-    return await response.json();
+    // Check if response has a body before parsing JSON
+    const contentType = response.headers.get('content-type') || '';
+    const hasJsonBody = contentType.includes('application/json');
+    
+    // Handle 204 No Content or empty 200 responses
+    if (response.status === 204 || !hasJsonBody) {
+      return undefined as unknown as T;
+    }
+
+    // Read response as text first to check if empty
+    const text = await response.text();
+    if (!text.trim()) {
+      return undefined as unknown as T;
+    }
+
+    // Parse JSON only if content exists
+    try {
+      return JSON.parse(text) as T;
+    } catch (e) {
+      // If parsing fails, still return undefined rather than crashing
+      console.warn('Failed to parse JSON response, treating as empty:', e);
+      return undefined as unknown as T;
+    }
   } catch (error) {
     console.error('API Fetch Error:', error);
     

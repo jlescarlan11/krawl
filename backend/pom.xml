@@ -136,6 +136,17 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
 		</dependency>
+		<!-- Rate limiting -->
+		<dependency>
+		    <groupId>com.bucket4j</groupId>
+		    <artifactId>bucket4j-core</artifactId>
+		    <version>8.7.0</version>
+		</dependency>
+		<!-- SMTP Mail -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
 	</dependencies>
 
 

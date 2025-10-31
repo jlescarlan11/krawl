@@ -276,6 +276,39 @@
 
 ---
 
+### ✅ AU-8: Email-Verified Registration (Auto-login + CAPTCHA)
+
+Description: Users start sign-up with username + email. We email a link to complete registration by setting a password. CAPTCHA is required on request. On completion, user is auto-logged-in.
+
+Implementation Summary
+- Backend
+  - Endpoints: `POST /api/v1/auth/register/request`, `POST /api/v1/auth/register/complete`
+  - Table: `registration_tokens` with single active token per email/username
+  - Service: token issuance/verification; creates user transactionally
+  - Auto-login: returns `AuthResponse { token, type, userId, email, username }`
+  - Rate limiting: same filter covers register request/complete
+  - CAPTCHA: pluggable (hCaptcha default, reCAPTCHA supported)
+- Frontend
+  - Pages: `/register-start` (username, email, hCaptcha), `/register/complete/[token]` (set password)
+  - Lib: `registerRequest`, `registerComplete`
+
+Configuration
+- Backend env
+  - `APP_REGISTRATION_EXPIRY_MINUTES=60`
+  - `CAPTCHA_PROVIDER=hcaptcha` | `recaptcha`
+  - `CAPTCHA_SECRET=<server-secret-key>`
+- Frontend env
+  - `NEXT_PUBLIC_HCAPTCHA_SITEKEY=<site-key>` (or `NEXT_PUBLIC_RECAPTCHA_SITEKEY` if switching)
+
+Status: Done
+
+#### UI update
+- Default signup route is `/signup` and collects username + email, sends verification via Invisible reCAPTCHA.
+- Legacy `/register` redirects to `/signup`.
+- Password completion page uses the same helper text and `PasswordStrength` indicator as signup, with show/hide toggles.
+
+---
+
 ## Dependencies
 
 **Requires:**

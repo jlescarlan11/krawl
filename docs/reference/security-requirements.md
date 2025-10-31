@@ -164,6 +164,10 @@
 }
 ```
 
+Password reset endpoints:
+- `POST /api/v1/auth/password/reset-request` and `POST /api/v1/auth/password/reset` are subject to the Authentication rate limit.
+- Responses for reset-request are always generic (200) to prevent user enumeration.
+
 ---
 
 ### CORS Policy

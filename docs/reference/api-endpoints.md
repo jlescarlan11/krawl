@@ -17,6 +17,8 @@
 | **Authentication** ||||
 | `/auth/register` | POST | ❌ | Register new user |
 | `/auth/login` | POST | ❌ | Login user |
+| `/auth/password/reset-request` | POST | ❌ | Request password reset link |
+| `/auth/password/reset` | POST | ❌ | Reset password with token |
 | **Gems** ||||
 | `/gems` | GET | ❌ | List Gems in bounds |
 | `/gems` | POST | ✅ | Create new Gem |
@@ -113,6 +115,51 @@ Authorization: Bearer <jwt_token>
 ```
 
 **Errors:** `400` (validation), `401` (invalid credentials)
+
+---
+
+### Password Reset
+
+`POST /api/v1/auth/password/reset-request`
+
+Request a password reset link. Always returns 200 to prevent user enumeration.
+
+Request:
+```json
+{ "email": "user@example.com" }
+```
+
+Response (200):
+```json
+{}
+```
+
+Notes:
+- Rate limited: 5 requests per 15 minutes per IP (HTTP 429 on exceed)
+- Email contains a single-use token valid for 30 minutes by default
+
+`POST /api/v1/auth/password/reset`
+
+Reset password using token from the email.
+
+Request:
+```json
+{ "token": "<token>", "newPassword": "newStrongPass123" }
+```
+
+Response (200):
+```json
+{}
+```
+
+Errors:
+- `400` (validation)
+- `409` (token expired or used)
+
+Environment:
+- `FRONTEND_URL` base used to build reset link
+- `APP_PASSWORD_RESET_EXPIRY_MINUTES` default 30
+- `SPRING_MAIL_*` SMTP configuration
 
 ---
 
