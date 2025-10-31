@@ -32,9 +32,17 @@ export class ApiError extends Error {
       // If parsing fails, use defaults
     }
 
+    const fallbackByStatus: Record<number, string> = {
+      400: 'Validation failed',
+      401: 'Invalid email or password',
+      403: 'Access denied',
+      404: 'Resource not found',
+      500: 'An unexpected error occurred. Please try again later.',
+    };
+
     return new ApiError(
       response.status,
-      errorData.message || response.statusText || 'An error occurred',
+      errorData.message || fallbackByStatus[response.status] || response.statusText || 'An error occurred',
       errorData.errors
     );
   }

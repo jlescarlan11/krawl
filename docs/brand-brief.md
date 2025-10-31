@@ -2,8 +2,8 @@
 
 > **Purpose:** Defines Krawl's brand identity, voice, positioning, and values to guide all marketing, design, and communication decisions.
 
-**Version:** 1.1.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Marketing & Design Team
 

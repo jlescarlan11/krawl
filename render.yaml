@@ -1,0 +1,108 @@
+# Render Blueprint Configuration for Krawl Application
+# 
+# This configuration defines:
+# - Backend Spring Boot service with health checks and scaling
+# - Frontend Next.js service with health checks
+# - Cron job to warm up backend instances (prevents cold starts)
+#
+# To use this file:
+# 1. Push it to your repository root
+# 2. In Render dashboard, select "New" > "Blueprint" > connect your repo
+# 3. Render will auto-detect and deploy based on this configuration
+#
+# Note: Update environment variable values in Render dashboard after first deployment
+
+services:
+  # Backend Spring Boot API
+  - type: web
+    name: krawl-backend
+    runtime: docker
+    plan: starter  # Use 'free' for testing, 'starter' or higher for production
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      # Database connection - configure in Render dashboard after creating database
+      - key: DATABASE_URL
+        fromDatabase:
+          name: krawl-db
+          property: connectionString
+      - key: DB_USER
+        fromDatabase:
+          name: krawl-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: krawl-db
+          property: password
+      # Add other environment variables in Render dashboard:
+      # - JWT_SECRET
+      # - CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+      # - SPRING_MAIL_HOST, SPRING_MAIL_PORT, etc.
+      # - CORS_ALLOWED_ORIGINS (your frontend URL)
+      # - FRONTEND_URL
+    healthCheckPath: /actuator/health
+    # Keep at least 1 instance always running to prevent cold starts
+    scaling:
+      minInstances: 1  # Critical: prevents cold starts
+      maxInstances: 3  # Scale up during traffic spikes
+    
+  # Frontend Next.js Application
+  - type: web
+    name: krawl-frontend
+    runtime: node
+    buildCommand: cd frontend && npm ci && npm run build
+    startCommand: cd frontend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Add your backend API URL here:
+      # - key: NEXT_PUBLIC_API_URL
+      #   value: https://krawl-backend.onrender.com
+    healthCheckPath: /api/health
+    # Keep at least 1 instance always running
+    scaling:
+      minInstances: 1
+      maxInstances: 2
+    
+  # Cron job to warm up backend (prevents cold starts even on free tier)
+  # Pings the warmup endpoint every 5 minutes
+  - type: cron
+    name: warmup-backend
+    schedule: "*/5 * * * *"  # Every 5 minutes
+    plan: free  # Cron jobs are free
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+    # Command that pings the warmup endpoint
+    # Replace YOUR_BACKEND_URL with your actual backend URL after deployment
+    # Example: curl -f https://krawl-backend.onrender.com/api/health/warmup || exit 1
+    command: |
+      sh -c '
+        BACKEND_URL="${BACKEND_URL:-https://krawl-backend.onrender.com}"
+        echo "Warming up backend at $BACKEND_URL..."
+        curl -f -s -m 10 "$BACKEND_URL/api/health/warmup" || {
+          echo "Warmup failed, but continuing..."
+          exit 0  # Don't fail cron job if warmup fails (backend might be restarting)
+        }
+        echo "✅ Backend warmed up successfully at $(date)"
+      '
+    envVars:
+      - key: BACKEND_URL
+        value: https://krawl-backend.onrender.com  # Update this after deployment
+
+# Database service (PostgreSQL with PostGIS)
+# Uncomment if you want Render to manage your database
+# Otherwise, use Supabase or external PostgreSQL
+#
+# databases:
+#   - name: krawl-db
+#     plan: starter  # Use 'free' for development
+#     databaseName: krawl
+#     databaseUser: krawl_user
+#     # PostGIS extension should be enabled after creation via SQL
+

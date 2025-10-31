@@ -31,10 +31,19 @@ export default function Header() {
         
         {/* Right Side Actions */}
         <div className="flex items-center gap-2">
-          {/* Desktop Login Button */}
-          <button className="hidden md:block px-4 py-2 rounded-md border-2 border-white hover:bg-white hover:text-verde-700 transition-all duration-150 text-sm font-medium">
+          {/* Desktop Links */}
+          <Link
+            href="/signup"
+            className="hidden md:block px-4 py-2 rounded-md bg-white text-verde-700 hover:bg-sand-100 transition-all duration-150 text-sm font-medium"
+          >
+            Sign up
+          </Link>
+          <Link
+            href="/login"
+            className="hidden md:block px-4 py-2 rounded-md border-2 border-white hover:bg-white hover:text-verde-700 transition-all duration-150 text-sm font-medium"
+          >
             Login
-          </button>
+          </Link>
           
           {/* Mobile Menu Button */}
           <button className="md:hidden p-2 hover:bg-verde-700 rounded-md transition-colors duration-150">

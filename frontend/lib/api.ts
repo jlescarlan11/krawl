@@ -48,26 +48,69 @@ export async function apiFetch<T>(
     throw ApiError.fromNetworkError(new Error('OFFLINE'));
   }
 
+  
   const defaultHeaders = {
     'Content-Type': 'application/json',
   };
+
+  // Attach JWT if present (from either localStorage or sessionStorage)
+  let authHeader: Record<string, string> = {};
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = window.localStorage.getItem('auth') || window.sessionStorage.getItem('auth');
+      if (raw) {
+        const { token } = JSON.parse(raw);
+        if (token) authHeader.Authorization = `Bearer ${token}`;
+      }
+    } catch {}
+  }
 
   try {
     const response = await fetch(url, {
       ...options,
       headers: {
         ...defaultHeaders,
+        ...authHeader,            // include the Authorization header
         ...options?.headers,
       },
     });
 
     if (!response.ok) {
+      // Clear invalid auth on 401
+      if (response.status === 401 && typeof window !== 'undefined') {
+        try {
+          window.localStorage.removeItem('auth');
+          window.sessionStorage.removeItem('auth');
+        } catch {}
+      }
       const apiError = await ApiError.fromResponse(response);
       toast.error(apiError.message);
       throw apiError;
     }
 
-    return await response.json();
+    // Check if response has a body before parsing JSON
+    const contentType = response.headers.get('content-type') || '';
+    const hasJsonBody = contentType.includes('application/json');
+    
+    // Handle 204 No Content or empty 200 responses
+    if (response.status === 204 || !hasJsonBody) {
+      return undefined as unknown as T;
+    }
+
+    // Read response as text first to check if empty
+    const text = await response.text();
+    if (!text.trim()) {
+      return undefined as unknown as T;
+    }
+
+    // Parse JSON only if content exists
+    try {
+      return JSON.parse(text) as T;
+    } catch (e) {
+      // If parsing fails, still return undefined rather than crashing
+      console.warn('Failed to parse JSON response, treating as empty:', e);
+      return undefined as unknown as T;
+    }
   } catch (error) {
     console.error('API Fetch Error:', error);
     

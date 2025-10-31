@@ -6,11 +6,13 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -27,6 +29,9 @@ public class JwtTokenProvider {
     
     public String generateToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration());
         
@@ -34,6 +39,8 @@ public class JwtTokenProvider {
                 .subject(userPrincipal.getUserId().toString())
                 .claim("email", userPrincipal.getEmail())
                 .claim("username", userPrincipal.getUsername())
+                .claim("roles", roles)
+                .claim("tier", userPrincipal.getReputationTier())
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())

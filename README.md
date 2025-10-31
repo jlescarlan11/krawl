@@ -1,327 +1,170 @@
-# 🗺️ Krawl
-
 <div align="center">
 
-**Discover the Philippines, One Krawl at a Time**
+<img src="design/logo/final/krawl-lockup-color.svg" alt="Krawl logo" width="220" />
 
-*A community-driven Progressive Web App for mapping authentic, hyperlocal Filipino culture*
+<strong>Discover the Philippines, One Krawl at a Time</strong>
 
-[![Version](https://img.shields.io/badge/version-0.1.0--MVP-green.svg)](https://github.com/yourusername/krawl)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<em>Community‑driven PWA for authentic, hyperlocal experiences</em>
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Tech Stack](#-tech-stack) • [Documentation](#-documentation) • [Contributing](#-contributing)
+[![Version](https://img.shields.io/badge/version-0.1.0--MVP-green.svg)](./CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
+[Quick Start](#-quick-start) • [Documentation Hub](#documentation-hub) • [Contributing](CONTRIBUTING.md)
 
 </div>
-
----
-
-## 📖 Overview
-
-**Krawl** is a Progressive Web App (PWA) that empowers locals to share authentic Filipino experiences through:
-
-- 📍 **Gems**: Pin local spots (cafes, landmarks, hidden spots) on an interactive map
-- 🚶 **Krawls**: Create guided trails connecting Gems with insider notes and context
-- 📱 **Krawl Mode**: Interactive, location-aware navigation with offline functionality
-- ⭐ **Community Quality**: Vouching, ratings, and flagging to ensure fresh, accurate content
-
-### The Problem We're Solving
-
-Discovering authentic, hyperlocal Filipino culture is difficult:
-- 🗺️ Map apps are cluttered with commercial listings
-- 📱 Social media lacks structure and navigation
-- 📖 Travel guides are often outdated or tourist-focused
-
-**Krawl combines community-sourced knowledge with guided, navigable experiences.**
-
----
-
-## ✨ Features
-
-### Current Implementation (MVP Phase)
-
-- ✅ **Responsive PWA Layout**: Mobile-first design with desktop support
-- ✅ **Navigation System**: Bottom navigation (mobile) + Sidebar (desktop)
-- ✅ **Design System**: Complete "Lokal Verde" design system with 60+ tokens
-- ✅ **3D Map Integration**: MapLibre GL JS with tilted view and 3D buildings
-- ✅ **Offline-First Architecture**: IndexedDB with sync queue for offline operations
-- ✅ **Offline Support**: Service worker (506 lines) for offline functionality
-- ✅ **Core Pages**: Map view, Explore, Krawls, Add Gem, Profile
-- ✅ **Database**: PostgreSQL 15 with PostGIS 3.3 for geospatial data
-- ✅ **Backend API**: Spring Boot 3.5.7 REST API foundation
-
-### Coming Soon
-
-- 🔜 User authentication & profiles (JWT)
-- 🔜 Gem pinning with location services
-- 🔜 Krawl creation and management
-- 🔜 Map marker clustering
-- 🔜 Background sync for offline changes
-- 🔜 Vouching and rating system
-- 🔜 Business claim feature
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-Ensure you have the following installed:
-
-| Tool | Version | Download |
-|------|---------|----------|
-| **Node.js** | LTS (18+) | [nodejs.org](https://nodejs.org/) |
-| **JDK** | 17+ | [adoptium.net](https://adoptium.net/) |
-| **Docker** | Latest | [docker.com](https://www.docker.com/get-started) |
-| **Git** | Latest | [git-scm.com](https://git-scm.com/) |
-
-### Installation
-
-1. **Clone the repository**
+1. Clone and open the project
    ```bash
-   git clone <repository-url> krawl
-   cd krawl
+   git clone <repo-url> krawl && cd krawl
    ```
-
-2. **Set up the database**
-   
-   Create a `.env` file in the project root:
-   ```env
-   DB_USER=krawl_user
-   DB_PASSWORD=krawl_dev_password_2025
-   ```
-
-   Start PostgreSQL + PostGIS container:
+2. Start the stack (follow full guide if needed)
    ```bash
-   docker-compose up -d
+   docker-compose up -d  # DB
+   (cd backend && ./mvnw spring-boot:run)
+   (cd frontend && npm install && npm run dev)
    ```
-
-3. **Run the backend**
-   ```bash
-   cd backend
-   ./mvnw spring-boot:run
-   ```
-   
-   Backend will be available at `http://localhost:8080`
-
-4. **Run the frontend**
-   
-   Open a new terminal:
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-   
-   Frontend will be available at `http://localhost:3000`
-
-### Verify Setup
-
-- Open [http://localhost:3000](http://localhost:3000) in your browser
-- You should see the Krawl PWA interface with navigation
-- Check that the design system is loaded (Lokal Verde color scheme)
+3. Full setup instructions: [Getting Started](docs/tutorials/getting-started.md)
 
 ---
 
-## 🛠️ Tech Stack
+# Documentation Hub
 
-Krawl is built with a modern, mobile-first tech stack optimized for PWA performance:
+> **Welcome to the Krawl documentation!** This hub helps you find the right information quickly using the Diátaxis framework.
 
-- **Frontend:** Next.js 16 with TypeScript, Tailwind CSS v4, React 19
-- **Mapping:** MapLibre GL JS v5.10.0 with MapTiler vector tiles
-- **Offline Storage:** IndexedDB (idb v8.0.3) with 7 specialized stores
-- **Backend:** Spring Boot 3.5.7 REST API (Java 25) with Spring Data JPA
-- **Database:** PostgreSQL 15 with PostGIS 3.3 for geospatial queries
-- **Infrastructure:** Docker, Vercel (frontend), Render (backend)
-
-For detailed technology choices, architecture decisions, and rationale, see:
-- [docs/tech-stack.md](docs/tech-stack.md) - Complete technology stack and CSS architecture
-- [docs/system-architecture.md](docs/system-architecture.md) - System design and component interactions
+**Last Updated:** 2025-10-31  
+**Status:** Active
 
 ---
 
-## 📁 Project Structure
+## 🧭 Quick Navigation
 
-```
-krawl/
-├── frontend/              # Next.js PWA Frontend
-│   ├── app/               # App Router pages
-│   │   ├── add/           # Add Gem page
-│   │   ├── explore/       # Explore Gems
-│   │   ├── krawls/        # Krawls page
-│   │   ├── profile/       # User profile
-│   │   ├── layout.tsx     # Root layout
-│   │   ├── page.tsx       # Home/Map page
-│   │   └── globals.css    # Design system (545 lines)
-│   ├── components/        # Reusable components
-│   │   ├── AppLayout.tsx
-│   │   ├── BottomNav.tsx
-│   │   ├── Header.tsx
-│   │   ├── MapArea.tsx
-│   │   └── Sidebar.tsx
-│   ├── lib/               # Utilities & API client
-│   └── public/            # Static assets + PWA files
-│
-├── backend/               # Spring Boot Backend
-│   ├── src/main/java/     # Java source code
-│   │   └── com/krawl/backend/
-│   │       ├── config/
-│   │       ├── controller/
-│   │       ├── dto/
-│   │       ├── entity/
-│   │       ├── repository/
-│   │       ├── security/
-│   │       └── service/
-│   └── src/main/resources/
-│       ├── application.yaml
-│       └── db/migration/  # Flyway migrations
-│
-├── docs/                  # Project documentation (38 files)
-│   ├── project-brief.md
-│   ├── tech-stack.md
-│   ├── project-setup.md
-│   ├── system-architecture.md
-│   ├── database-schema.md
-│   └── ...
-│
-├── docker-compose.yml     # Database container setup
-├── README.md              # This file
-└── CONTRIBUTING.md        # Contribution guidelines
-```
+**New to Krawl?** → Start with [Tutorials](#-tutorials)  
+**Need to complete a task?** → Check [How-to Guides](#-how-to-guides)  
+**Want to understand the system?** → Read [Explanation](#-explanation)  
+**Looking for technical specs?** → Browse [Reference](#-reference)
 
 ---
 
-## 📚 Documentation
+## 📚 Documentation Framework
 
-Comprehensive documentation is available in the [`docs/`](docs/) folder:
-
-### 📋 Getting Started
-- [Project Brief](docs/project-brief.md) - High-level overview and objectives
-- [Project Setup](docs/project-setup.md) - Detailed setup instructions
-- [Tech Stack](docs/tech-stack.md) - Technology choices and rationale
-
-### 🏗️ Architecture & Design
-- [System Architecture](docs/system-architecture.md) - System design overview
-- [System Design](docs/system-design.md) - Detailed design patterns
-- [Database Schema](docs/database-schema.md) - Database structure and relationships
-- [UI/UX Design System](docs/ui-ux-design-system.md) - Design guidelines
-
-### 📝 Development
-- [API Documentation](docs/api-documentation.md) - Backend API specifications
-- [Version Control Strategy](docs/version-control-strategy.md) - Git workflow
-- [Testing Plan](docs/testing-plan.md) - Testing strategies
-- [Security Plan](docs/security-plan.md) - Security considerations
-
-### 📊 Planning
-- [Scope of Work](docs/scope-of-work.md) - Feature scope and deliverables
-- [Milestone and Timeline](docs/milestone-and-timeline.md) - 12-week development timeline
-- [Kanban Task](docs/kanban-task.md) - Task management
-- [User Stories](docs/user-story.md) - Feature requirements
-
-### 🎨 Design
-- [Brand Guidelines](docs/brand-guidelines.md) - Brand identity
-- [Wireframe](docs/wireframe.md) - Interface mockups
-- [User Journey](docs/user-journey.md) - User flows
-- [Design Progression](docs/design-progression.md) - Design evolution
-
-### 🚀 Deployment
-- [Hosting Deployment Plan](docs/hosting-deployment-plan.md) - Deployment infrastructure
-- [Budget and Resource](docs/budget-and-resource.md) - Resource planning
+This documentation follows the **Diátaxis framework** (Tutorials, How-to, Explanation, Reference).
 
 ---
 
-## 🗄️ Database Setup
+## 📚 Tutorials
 
-The project uses **PostgreSQL 15 with PostGIS 3.3** for geospatial features. The database runs in a Docker container for consistent local development on port **5434**.
+**Learn by doing** - Step-by-step guides for beginners
 
-For complete setup instructions, connection details, schema documentation, and testing procedures, see:
-- [docs/project-setup.md](docs/project-setup.md) - Initial setup and configuration steps
-- [docs/database-schema.md](docs/database-schema.md) - Complete schema, relationships, and queries
-- [docs/database-testing-guide.md](docs/database-testing-guide.md) - Testing and verification procedures
-
----
-
-
-## 🤝 Contributing
-
-We welcome contributions to Krawl! To get started:
-
-1. Read the [Contributing Guidelines](CONTRIBUTING.md) for detailed workflow, coding standards, and best practices
-2. Review the [Version Control Strategy](docs/version-control-strategy.md) for branching and commit conventions
-3. Check the [Project Setup Guide](docs/project-setup.md) to configure your development environment
-
-**Quick workflow:** Fork → Create feature branch → Make changes → Test → Commit with conventional format → Open PR
-
-For questions or issues, please open a GitHub issue or join the discussion in existing pull requests.
+### Getting Started
+- [Getting Started Guide](docs/tutorials/getting-started.md) - Complete setup walkthrough ⭐
+- [Pin Your First Gem](docs/tutorials/first-gem-tutorial.md) - Learn the basics of adding locations
+- [Create Your First Krawl](docs/tutorials/create-first-krawl.md) - Build your first guided trail
 
 ---
 
-## 📈 Project Status
+## 📖 How-to Guides
 
-**Current Phase**: MVP Development (Week 1-12)
+**Solve specific problems** - Task-focused instructions
 
-**Completed**:
-- ✅ Project setup and documentation (38 docs)
-- ✅ Frontend foundation (Next.js 16 + Tailwind v4)
-- ✅ Backend foundation (Spring Boot 3.5.7)
-- ✅ Database setup (PostgreSQL 15 + PostGIS 3.3)
-- ✅ Design system implementation (545 lines)
-- ✅ PWA infrastructure (service worker, manifest)
-- ✅ Navigation components (Sidebar, BottomNav, AppLayout)
-- ✅ 3D Map integration (MapLibre GL JS + MapTiler)
-- ✅ Offline database (IndexedDB with 7 stores)
-
-**In Progress**:
-- 🔄 User authentication system (JWT)
-- 🔄 Gem pinning functionality
-- 🔄 Background sync implementation
-
-**Next Steps**:
-- 📋 Krawl creation and management
-- 📋 Vouching and rating system
-- 📋 Offline data synchronization
-- 📋 Business claim feature
-
-For detailed timeline, see [Milestone and Timeline](docs/milestone-and-timeline.md).
+- [Implement Security](docs/how-to/implement-security.md)
+- [Database Triggers](docs/how-to/database-triggers.md)
+- [Database Testing Guide](docs/database-testing-guide.md)
+- [Storage Testing Guide](docs/storage-testing-guide.md)
 
 ---
 
+## 💡 Explanation
+
+**Understand the system** - Concepts and decisions
+
+- [System Architecture](docs/system-architecture.md)
+- [System Design](docs/system-design.md)
+- [Tech Stack](docs/tech-stack.md)
+- [Security Approach](docs/explanation/security-approach.md)
+- [User Personas](docs/user-persona-profile.md)
+- [User Journey](docs/user-journey.md)
 
 ---
 
-## 📄 License
+## 📋 Reference
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Look up details** - Technical specifications and standards
+
+### API & Database
+- [API Endpoints](docs/reference/api-endpoints.md)
+- [Database Schema](docs/reference/database-schema.md)
+- [Database Queries](docs/reference/database-queries.md)
+
+### Design System
+- [Design Tokens](docs/reference/design-tokens.md)
+- [Design Components](docs/reference/design-components.md)
+- [Design Patterns](docs/reference/design-patterns.md)
+- [Brand Guidelines](docs/brand-guidelines.md)
+
+### Content & Structure
+- [Sitemap](docs/sitemap.md)
+- [Content Plan](docs/content-plan.md)
+- [Page Copy Draft](docs/page-copy-draft.md)
+- [SEO Plan](docs/seo-plan.md)
+
+### Standards
+- [Documentation Template](docs/documentation-template.md)
+- [Security Requirements](docs/reference/security-requirements.md)
 
 ---
 
-## 🆘 Support
+## 📁 Planning Documents
 
-- **Documentation**: Check the [docs/](docs/) folder
-- **Issues**: Report bugs via GitHub Issues
-- **Questions**: Reach out to the development team
+Project planning and management resources
+
+- [Project Brief](docs/project-brief.md)
+- [Project Proposal](docs/project-proposal.md)
+- [Scope of Work](docs/scope-of-work.md)
+- [Milestone and Timeline](docs/milestone-and-timeline.md)
+- [Task Epics (Kanban)](docs/planning/tasks/README.md)
+- [User Stories](docs/user-story.md)
+- [Budget and Resource](docs/budget-and-resource.md)
+- [Version Control Strategy](docs/version-control-strategy.md)
 
 ---
 
-## 🙏 Acknowledgments
+## 🎨 Design Resources
 
-- Local Filipino communities for inspiration
-- Open source contributors
-- Early adopters and testers
+- [Wireframes Overview](docs/design/wireframes/README.md)
+- [Design Progression](docs/design-progression.md)
+- [Mood Board](docs/mood-board.md)
+
+---
+
+## 🔍 Find What You Need
+
+**New Developer** → Getting Started → Architecture → API Endpoints  
+**Designer** → Brand Guidelines → Design Tokens/Components → Wireframes  
+**Project Manager** → Brief → Timeline → Task Epics  
+**Security** → Security Approach → Security Requirements → Implement Security
+
+---
+
+## 🤝 Contributing to Documentation
+
+See: [Documentation Template](docs/documentation-template.md)
 
 ---
 
 <div align="center">
 
-**Built with ❤️ for the Filipino community**
+**Need help?** Check the [Glossary](docs/reference/glossary.md).
 
-*Powered by Local Knowledge • Built for Community*
-
-[⬆ back to top](#-krawl)
+**Still stuck?** Open an issue on GitHub or contact the team.
 
 </div>
 
 ---
 
-**Last Updated**: October 29, 2025  
-**Version**: 0.1.0-MVP  
-**Maintainer**: Development Team
+## 🙌 Community & Conduct
+
+Participation in this project is governed by our [Code of Conduct](CODE_OF_CONDUCT.md). Please read it to understand expected behavior and how to report issues.

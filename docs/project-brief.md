@@ -2,8 +2,8 @@
 
 > **Purpose:** This document provides a high-level overview of the Krawl project, including the problem being solved, the solution approach, core objectives, stakeholders, and success metrics for the MVP phase.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Project Lead
 

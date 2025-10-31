@@ -2,8 +2,8 @@
 
 > **Purpose:** This guide outlines the repository structure, naming conventions, environment setup steps, and configuration needed to begin development on the Krawl PWA.
 
-**Version:** 1.2.0  
-**Last Updated:** 2025-10-29  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Development Team
 
@@ -284,13 +284,13 @@ Flyway/Liquibase migrations are typically integrated into the build or run comma
 - ✅ File size validation (10MB limit)
 
 **API Endpoints:**
-- `POST /api/storage/upload` - Upload image with optional gemId
-- `DELETE /api/storage/delete?url={imageUrl}` - Delete image by URL
+- `POST /api/v1/storage/upload` - Upload image with optional gemId
+- `DELETE /api/v1/storage/delete?url={imageUrl}` - Delete image by URL
 
 **Test Upload (using cURL):**
 ```bash
 # Upload a test image
-curl -X POST http://localhost:8080/api/storage/upload \
+curl -X POST http://localhost:8080/api/v1/storage/upload \
   -F "file=@path/to/image.jpg" \
   -F "gemId=123e4567-e89b-12d3-a456-426614174000"
 

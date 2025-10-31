@@ -2,8 +2,8 @@
 
 > **Purpose:** This document defines the complete scope of work for the Krawl MVP, detailing all in-scope and out-of-scope features, pages, integrations, and development phases.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Project Lead
 
@@ -31,7 +31,7 @@ The core "**Krawl Mode**" feature provides an interactive, location-aware naviga
 ### 📦 MVP Scope
 - **Timeline:** ~3 months
 - **Launch Area:** Initial hub (e.g., Cebu City)
-- **Tech Stack:** Next.js, Spring Boot, PostgreSQL/PostGIS, Leaflet
+- **Tech Stack:** Next.js, Spring Boot, PostgreSQL/PostGIS, MapLibre GL JS
 
 > **Goal:** Deliver a focused MVP that validates the core Krawl concept and provides immediate value to users in the initial launch area.
 
@@ -46,7 +46,7 @@ The MVP will include the following primary user interface views:
 **Description:** The primary application interface, showing Gems on an interactive map. This is the default view upon app load.
 
 **Details:**
-- Displays Gems using Leaflet markers
+- Displays Gems using MapLibre GL JS markers
 - Incorporates clustering at lower zoom levels
 - Zoom-dependent visibility logic
 - Standard map controls (zoom, pan, locate user)
@@ -264,8 +264,8 @@ My Library
 
 | Feature | Description |
 |---------|-------------|
-| **Gem Rendering** | Leaflet markers from backend API |
-| **Clustering** | Leaflet.markercluster for density management |
+| **Gem Rendering** | MapLibre GL JS markers from backend API |
+| **Clustering** | MapLibre GL JS clustering for density management |
 | **Zoom Logic** | Show/hide markers based on zoom level |
 | **GPS Location** | Display user's current position |
 | **Pending Gems** | Hidden when zoomed out |
@@ -364,7 +364,7 @@ Controls
 │   └─ To IndexedDB/localStorage
 │
 └─ Cache Map Tiles
-    └─ Using Leaflet plugins
+    └─ Using MapLibre GL JS with MapTiler tiles
 ```
 
 **Offline Operation:**
@@ -445,8 +445,8 @@ Frontend Display
 
 | Integration | Technology | Purpose |
 |-------------|------------|---------|
-| **🗺️ Mapping Library** | Leaflet.js + plugins | Interactive maps, clustering, offline tiles |
-| **🌍 Map Tiles** | OpenStreetMap (OSM) | Base map layer (free tier) |
+| **🗺️ Mapping Library** | MapLibre GL JS | Interactive maps, clustering, offline tiles |
+| **🌍 Map Tiles** | MapTiler (Vector Tiles) | Base map layer (free tier) |
 | **📍 Geospatial Database** | PostgreSQL + PostGIS | Store coordinates, spatial queries |
 | **🔐 Authentication** | Spring Security + JWT | Email/password auth, session management |
 | **📸 Cloud Storage** | AWS S3 / Cloudinary | User-uploaded Gem photos (free tier) |

@@ -2,8 +2,8 @@
 
 > **Purpose:** This document provides comprehensive system design documentation for Krawl, including architecture overview, component interactions, data flow diagrams, and technical design patterns for all major features.
 
-**Version:** 1.1.0  
-**Last Updated:** 2025-10-29  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Development Team
 
@@ -88,10 +88,10 @@ graph TB
 - 📊 Rating & vouching calculations
 
 **Key Endpoints:**
-- `/api/auth/*` - Authentication
-- `/api/gems/*` - Gem management
-- `/api/krawls/*` - Krawl operations
-- `/api/users/*` - User profiles
+- `/api/v1/auth/*` - Authentication
+- `/api/v1/gems/*` - Gem management
+- `/api/v1/krawls/*` - Krawl operations
+- `/api/v1/users/*` - User profiles
 
 ---
 
@@ -127,11 +127,11 @@ sequenceDiagram
     
     User->>FE: Navigate to / (homepage)
     FE->>FE: Load PWA shell
-    FE->>BE: GET /api/gems?viewport=[coords]<br/>(with auth token if available)
+    FE->>BE: GET /api/v1/gems?viewport=[coords]<br/>(with auth token if available)
     BE->>DB: PostGIS: SELECT gems<br/>WHERE ST_Within(location, viewport)
     DB-->>BE: Return Gem list
     BE-->>FE: JSON: { gems: [...], auth: {...} }
-    FE->>FE: Render Leaflet map
+    FE->>FE: Render MapLibre GL JS map
     FE->>FE: Display Gem markers (clustered)
     FE->>User: Show interactive map
     
@@ -147,7 +147,7 @@ sequenceDiagram
 | 3 | BE | Queries PostGIS for spatial data | `ST_Within()` query |
 | 4 | DB | Returns matching Gems | `[{id, name, lat, lng, status}]` |
 | 5 | BE | Sends Gem data + auth status | `{gems: [...], isAuthenticated: bool}` |
-| 6 | FE | Renders map with markers | Leaflet.js clustering |
+| 6 | FE | Renders map with markers | MapLibre GL JS clustering |
 
 ---
 
@@ -162,7 +162,7 @@ sequenceDiagram
     
     User->>FE: Enter email & password
     FE->>FE: Validate form inputs
-    FE->>BE: POST /api/auth/login<br/>{email, password}
+    FE->>BE: POST /api/v1/auth/login<br/>{email, password}
     BE->>BE: Validate & sanitize input
     BE->>DB: SELECT user WHERE email = ?
     DB-->>BE: Return user record (hashed password)
@@ -173,7 +173,7 @@ sequenceDiagram
         FE->>FE: Store token (localStorage)
         FE->>FE: Update UI to logged-in state
         FE->>User: Show success message
-        FE->>BE: GET /api/gems?viewport=[coords]<br/>(with new auth token)
+        FE->>BE: GET /api/v1/gems?viewport=[coords]<br/>(with new auth token)
     else Invalid credentials
         BE-->>FE: 401 Unauthorized
         FE->>User: Show error message
@@ -212,7 +212,7 @@ sequenceDiagram
     
     User->>FE: Fill signup form<br/>(username, email, password)
     FE->>FE: Client-side validation
-    FE->>BE: POST /api/auth/register<br/>{username, email, password}
+    FE->>BE: POST /api/v1/auth/register<br/>{username, email, password}
     BE->>BE: Validate inputs
     BE->>DB: SELECT COUNT(*) WHERE<br/>email = ? OR username = ?
     DB-->>BE: Return count
@@ -246,7 +246,7 @@ sequenceDiagram
     FE->>FE: Show "Add Gem" form
     User->>FE: Fill form (name, description, tags)
     FE->>FE: Get GPS coordinates
-    FE->>BE: POST /api/gems<br/>{name, desc, lat, lng, tags}<br/>+ Auth token
+    FE->>BE: POST /api/v1/gems<br/>{name, desc, lat, lng, tags}<br/>+ Auth token
     BE->>BE: Verify JWT token
     BE->>DB: PostGIS: SELECT gems WHERE<br/>ST_DWithin(location, point, 50m)
     DB-->>BE: Return nearby Gems (empty)
@@ -294,7 +294,7 @@ sequenceDiagram
     participant DB as 🗄️ Database
     
     User->>FE: Submit "Add Gem" form
-    FE->>BE: POST /api/gems<br/>{name, desc, lat, lng, tags}
+    FE->>BE: POST /api/v1/gems<br/>{name, desc, lat, lng, tags}
     BE->>DB: PostGIS: SELECT gems WHERE<br/>ST_DWithin(location, point, 50m)
     DB-->>BE: Return nearby Gems
     BE->>BE: Calculate name similarity<br/>(Levenshtein distance)
@@ -305,14 +305,14 @@ sequenceDiagram
     
     alt User selects existing Gem
         User->>FE: Choose "Use Existing"
-        FE->>BE: POST /api/gems/:id/vouch
+        FE->>BE: POST /api/v1/gems/:id/vouch
         BE->>DB: UPDATE gems<br/>SET vouch_count += 1
         DB-->>BE: Success
         BE-->>FE: 200 OK + updated Gem
         FE->>User: Show "Vouch added!" message
     else User insists it's different
         User->>FE: Choose "Mine is Different"
-        FE->>BE: POST /api/gems<br/>?force=true (with override flag)
+        FE->>BE: POST /api/v1/gems<br/>?force=true (with override flag)
         BE->>DB: INSERT new Gem<br/>(allow duplicate)
         DB-->>BE: New Gem created
         BE-->>FE: 201 Created
@@ -365,7 +365,7 @@ sequenceDiagram
     participant DB as 🗄️ Database
     
     User->>FE: Navigate to /krawl/:id
-    FE->>BE: GET /api/krawls/:id
+    FE->>BE: GET /api/v1/krawls/:id
     BE->>DB: SELECT krawl WHERE id = ?
     BE->>DB: SELECT krawl_items<br/>JOIN gems<br/>WHERE krawl_id = ?<br/>ORDER BY order_index
     BE->>DB: SELECT user (creator info)
@@ -462,7 +462,7 @@ sequenceDiagram
     end
     
     User->>FE: Complete all stops
-    FE->>BE: POST /api/krawls/:id/complete<br/>(when back online)
+    FE->>BE: POST /api/v1/krawls/:id/complete<br/>(when back online)
     BE->>DB: UPDATE user_krawls<br/>SET completed = true
     FE->>User: Show completion badge!
 ```
@@ -495,7 +495,7 @@ sequenceDiagram
     FE->>User: Show download progress modal
     
     par Fetch Krawl Data
-        FE->>BE: GET /api/krawls/:id/offline
+        FE->>BE: GET /api/v1/krawls/:id/offline
         BE->>DB: SELECT krawl + all stops + notes
         DB-->>BE: Return complete dataset
         BE-->>FE: JSON package (compressed)
@@ -504,7 +504,7 @@ sequenceDiagram
         FE->>FE: Calculate bounding box<br/>for all stops
         FE->>SW: Request tile caching
         SW->>SW: Download tiles for zoom levels 13-18
-        Note over SW: Leaflet tiles cached via<br/>service worker
+        Note over SW: MapTiler tiles cached via<br/>service worker
     and Cache Media
         FE->>BE: GET photo URLs from Krawl
         BE-->>FE: Return photo URLs
@@ -752,48 +752,48 @@ graph TB
 ### Authentication Endpoints
 
 ```http
-POST   /api/auth/register      # Create new user account
-POST   /api/auth/login          # Authenticate user
-POST   /api/auth/logout         # Invalidate token
-POST   /api/auth/refresh        # Refresh JWT token
-GET    /api/auth/me             # Get current user info
+POST   /api/v1/auth/register      # Create new user account
+POST   /api/v1/auth/login          # Authenticate user
+POST   /api/v1/auth/logout         # Invalidate token
+POST   /api/v1/auth/refresh        # Refresh JWT token
+GET    /api/v1/auth/me             # Get current user info
 ```
 
 ### Gem Endpoints
 
 ```http
-GET    /api/gems                # List gems (with viewport filter)
-GET    /api/gems/:id            # Get gem details
-POST   /api/gems                # Create new gem
-PUT    /api/gems/:id            # Update gem (creator only)
-DELETE /api/gems/:id            # Delete gem (creator only)
-POST   /api/gems/:id/vouch      # Vouch for gem
-POST   /api/gems/:id/rate       # Rate gem
-GET    /api/gems/:id/ratings    # Get gem ratings
-POST   /api/gems/:id/report     # Report inappropriate gem
+GET    /api/v1/gems                # List gems (with viewport filter)
+GET    /api/v1/gems/:id            # Get gem details
+POST   /api/v1/gems                # Create new gem
+PUT    /api/v1/gems/:id            # Update gem (creator only)
+DELETE /api/v1/gems/:id            # Delete gem (creator only)
+POST   /api/v1/gems/:id/vouch      # Vouch for gem
+POST   /api/v1/gems/:id/rate       # Rate gem
+GET    /api/v1/gems/:id/ratings    # Get gem ratings
+POST   /api/v1/gems/:id/report     # Report inappropriate gem
 ```
 
 ### Krawl Endpoints
 
 ```http
-GET    /api/krawls              # List public krawls
-GET    /api/krawls/:id          # Get krawl details
-POST   /api/krawls              # Create new krawl
-PUT    /api/krawls/:id          # Update krawl (creator only)
-DELETE /api/krawls/:id          # Delete krawl (creator only)
-GET    /api/krawls/:id/offline  # Get offline package
-POST   /api/krawls/:id/complete # Mark krawl as completed
-POST   /api/krawls/:id/rate     # Rate krawl
+GET    /api/v1/krawls              # List public krawls
+GET    /api/v1/krawls/:id          # Get krawl details
+POST   /api/v1/krawls              # Create new krawl
+PUT    /api/v1/krawls/:id          # Update krawl (creator only)
+DELETE /api/v1/krawls/:id          # Delete krawl (creator only)
+GET    /api/v1/krawls/:id/offline  # Get offline package
+POST   /api/v1/krawls/:id/complete # Mark krawl as completed
+POST   /api/v1/krawls/:id/rate     # Rate krawl
 ```
 
 ### User Endpoints
 
 ```http
-GET    /api/users/:id           # Get user profile
-PUT    /api/users/:id           # Update profile (self only)
-GET    /api/users/:id/gems      # Get user's gems
-GET    /api/users/:id/krawls    # Get user's krawls
-GET    /api/users/:id/completed # Get completed krawls
+GET    /api/v1/users/:id           # Get user profile
+PUT    /api/v1/users/:id           # Update profile (self only)
+GET    /api/v1/users/:id/gems      # Get user's gems
+GET    /api/v1/users/:id/krawls    # Get user's krawls
+GET    /api/v1/users/:id/completed # Get completed krawls
 ```
 
 ---
@@ -835,7 +835,7 @@ GET    /api/users/:id/completed # Get completed krawls
 - **PostGIS Queries:** All spatial queries use geography type for accurate distance calculations in meters.
 - **JWT Expiration:** Tokens expire after 24 hours; refresh tokens last 30 days.
 - **Gem Status:** Only 'active' gems are shown to non-authenticated users.
-- **Map Tiles:** Using OpenStreetMap tiles with proper attribution.
+- **Map Tiles:** Using MapTiler vector tiles with proper attribution.
 - **Offline Sync:** Queued actions are automatically synced when connection is restored.
 - **Rate Limiting:** API rate limits are per-user for authenticated requests, per-IP for anonymous.
 
@@ -858,6 +858,7 @@ GET    /api/users/:id/completed # Get completed krawls
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.1.1 | 2025-10-30 | Replaced Leaflet/OpenStreetMap references with MapLibre GL JS/MapTiler; corrected API examples and notes | Development Team |
 | 1.0.0 | 2025-10-28 | Initial system design documentation | Development Team |
 
 ---

@@ -26,7 +26,7 @@
 
 | Type | Description |
 |------|-------------|
-| **Map Tiles** | Provided by map service (e.g., Google Maps via Leaflet provider) |
+| **Map Tiles** | Provided by MapTiler (vector tiles) |
 | **Gem Markers** | Displayed based on fetched Gem data (status, coordinates, category icon) |
 | **Cluster Markers** | Dynamically generated numbers indicating Gem count |
 

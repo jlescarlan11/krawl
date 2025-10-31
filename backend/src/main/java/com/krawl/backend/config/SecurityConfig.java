@@ -2,6 +2,7 @@ package com.krawl.backend.config;
 
 import com.krawl.backend.security.JwtAuthenticationFilter;
 import com.krawl.backend.security.JwtAuthEntryPoint;
+import com.krawl.backend.security.RestAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +27,12 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
+    private final RestAccessDeniedHandler restAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> {})
             // Disable CSRF for REST API
             .csrf(AbstractHttpConfigurer::disable)
             
@@ -53,7 +56,12 @@ public class SecurityConfig {
                 // Permit public GET endpoints (both v1 and legacy)
                 .requestMatchers(HttpMethod.GET, "/api/gems/**", "/api/v1/gems/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/krawls/**", "/api/v1/krawls/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/users/**", "/api/v1/users/**").permitAll()
+                
+                // Explicitly require auth for /api/v1/users/me (must come before permitAll)
+                .requestMatchers("/api/v1/users/me", "/api/v1/users/me/**").authenticated()
+                
+                // Permit public user profiles by username (single segment after /users/)
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/*").permitAll()
                 
                 // Require authentication for all other endpoints
                 .anyRequest().authenticated()
@@ -65,6 +73,7 @@ public class SecurityConfig {
             // Set authentication entry point for unauthorized access
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint(jwtAuthEntryPoint)
+                .accessDeniedHandler(restAccessDeniedHandler)
             );
 
         return http.build();

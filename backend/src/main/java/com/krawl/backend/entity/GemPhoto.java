@@ -2,7 +2,6 @@ package com.krawl.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -16,8 +15,7 @@ import java.util.UUID;
 public class GemPhoto {
     
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "photo_id", updatable = false, nullable = false)
     private UUID photoId;
     
@@ -35,7 +33,7 @@ public class GemPhoto {
     @Column(name = "caption", columnDefinition = "TEXT")
     private String caption;
     
-    @Column(name = "is_featured", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_featured", nullable = false)
     private Boolean isFeatured = false;
     
     @CreatedDate

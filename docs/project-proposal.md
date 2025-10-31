@@ -2,8 +2,8 @@
 
 > **Purpose:** This proposal presents the comprehensive business case for Krawl, including problem statement, solution approach, target audience, goals, timeline, and budget for the MVP phase.
 
-**Version:** 1.1.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Project Lead
 

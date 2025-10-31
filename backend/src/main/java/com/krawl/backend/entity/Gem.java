@@ -2,7 +2,6 @@ package com.krawl.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,8 +18,7 @@ import java.util.UUID;
 public class Gem {
     
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "gem_id", updatable = false, nullable = false)
     private UUID gemId;
     
@@ -37,19 +35,19 @@ public class Gem {
     @JoinColumn(name = "founder_id")
     private User founder;
     
-    @Column(name = "vouch_count", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "vouch_count", nullable = false)
     private Integer vouchCount = 0;
     
-    @Column(name = "average_rating", precision = 3, scale = 2, nullable = false, columnDefinition = "NUMERIC(3,2) DEFAULT 0.00")
+    @Column(name = "average_rating", precision = 3, scale = 2, nullable = false)
     private java.math.BigDecimal averageRating = java.math.BigDecimal.ZERO;
     
-    @Column(name = "rating_count", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "rating_count", nullable = false)
     private Integer ratingCount = 0;
     
-    @Column(name = "approval_status", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'pending'")
+    @Column(name = "approval_status", length = 50, nullable = false)
     private String approvalStatus = "pending";
     
-    @Column(name = "lifecycle_status", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'open'")
+    @Column(name = "lifecycle_status", length = 50, nullable = false)
     private String lifecycleStatus = "open";
     
     @Column(name = "last_verified_at")

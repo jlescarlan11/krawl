@@ -2,8 +2,8 @@
 
 > **Purpose:** This document outlines the comprehensive deployment strategy for the Krawl Progressive Web App (PWA) and backend infrastructure, including hosting providers, CI/CD workflow, SSL configuration, and monitoring setup.
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-28  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** DevOps Team
 

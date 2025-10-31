@@ -22,5 +22,7 @@ public class UserResponse {
     private String reputationTier;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private int gemsCreated;
+    private int krawlsCreated;
 }
 

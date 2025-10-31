@@ -2,7 +2,6 @@ package com.krawl.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,8 +17,7 @@ import java.util.UUID;
 public class Krawl {
     
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "krawl_id", updatable = false, nullable = false)
     private UUID krawlId;
     
@@ -33,13 +31,13 @@ public class Krawl {
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
     
-    @Column(name = "visibility", length = 50, nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'public'")
+    @Column(name = "visibility", length = 50, nullable = false)
     private String visibility = "public";
     
-    @Column(name = "average_rating", precision = 3, scale = 2, nullable = false, columnDefinition = "NUMERIC(3,2) DEFAULT 0.00")
+    @Column(name = "average_rating", precision = 3, scale = 2, nullable = false)
     private java.math.BigDecimal averageRating = java.math.BigDecimal.ZERO;
     
-    @Column(name = "rating_count", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "rating_count", nullable = false)
     private Integer ratingCount = 0;
     
     @CreatedDate

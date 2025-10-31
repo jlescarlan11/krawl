@@ -2,8 +2,8 @@
 
 > **Purpose:** This document outlines the core technologies, frameworks, libraries, and deployment strategies chosen for building the Krawl Progressive Web App MVP, with rationale for each decision.
 
-**Version:** 1.3.0  
-**Last Updated:** 2025-10-29  
+**Version:** 0.1.0-MVP  
+**Last Updated:** 2025-10-31  
 **Status:** Active  
 **Owner:** Development Team
 
@@ -27,7 +27,7 @@
 
 ### **Next.js** (React Framework)
 
-**Version:** 16.0.0  
+**Version:** 0.1.0-MVP  
 **Language:** TypeScript
 
 **Rationale:**
@@ -195,7 +195,7 @@ Each class includes appropriate font-size, weight, line-height, and letter-spaci
 
 ### **React Icons** (Lucide Icons)
 
-**Version:** 5.5.0  
+**Version:** 0.1.0-MVP  
 **Icon Set:** Lucide React (`react-icons/lu`)
 
 **Rationale:**
@@ -223,7 +223,7 @@ import { LuMapPin, LuSearch, LuPlus } from 'react-icons/lu';
 
 ### **MapLibre GL JS**
 
-**Version:** 5.10.0  
+**Version:** 0.1.0-MVP  
 **Map Provider:** MapTiler (with API key)
 
 **Rationale:**
@@ -238,8 +238,6 @@ import { LuMapPin, LuSearch, LuPlus } from 'react-icons/lu';
 
 **Key Dependencies:**
 - `maplibre-gl`: ^5.10.0
-- `leaflet`: ^1.9.4 (legacy, to be replaced)
-- `leaflet.markercluster`: ^1.5.3 (legacy, to be replaced)
 
 **Implementation:**
 - 3D tilted map view (60° pitch)
@@ -306,7 +304,7 @@ This technology stack balances several key requirements for the MVP phase:
 
 ### **IndexedDB** (via idb library)
 
-**Version:** 8.0.3  
+**Version:** 0.1.0-MVP  
 **Library:** `idb` - Promise-based IndexedDB wrapper
 
 **Rationale:**

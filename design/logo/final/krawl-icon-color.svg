@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Krawl icon: breadcrumb chevron • Grid unit = 4px, dot diameter = 24px (6u) -->
+  <defs>
+    <style>
+      .verde{fill:#2D7A3E}
+    </style>
+  </defs>
+  <g>
+    <circle class="verde" cx="20" cy="92" r="12"/>
+    <circle class="verde" cx="52" cy="60" r="12"/>
+    <circle class="verde" cx="84" cy="84" r="12"/>
+    <circle class="verde" cx="108" cy="44" r="12"/>
+  </g>
+</svg>
+
