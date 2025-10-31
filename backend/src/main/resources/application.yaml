@@ -14,18 +14,24 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       maximum-pool-size: ${DB_POOL_SIZE:20}
-      minimum-idle: ${DB_MIN_IDLE:5}
+      # Optimize for faster startup: reduce minimum idle connections in dev
+      # Production will use higher value via application-prod.yaml
+      minimum-idle: ${DB_MIN_IDLE:3}
       leak-detection-threshold: 60000
+      # Don't fail startup if connection pool initialization takes time
+      initialization-fail-timeout: -1
 
   # JPA/Hibernate Configuration
   jpa:
     hibernate:
       ddl-auto: validate  # Let Flyway handle schema
-    show-sql: true
+    show-sql: true  # Set to false in production via application-prod.yaml
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
         format_sql: true
+        # Optimize for faster startup - delay metadata scanning until first use
+        temp.use_jdbc_metadata_defaults: false
         jdbc:
           batch_size: 20
           batch_versioned_data: true
@@ -76,6 +82,7 @@ server:
   port: ${SERVER_PORT:8080}
 
 # Logging Configuration
+# Production uses less verbose logging via application-prod.yaml
 logging:
   level:
     com.krawl.backend: DEBUG
@@ -145,6 +152,7 @@ captcha:
   secret: ${CAPTCHA_SECRET:}
 
 # Actuator Configuration
+# Health endpoints are used by Render for health checks and monitoring
 management:
   endpoints:
     web:
@@ -153,6 +161,13 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+      # Enable health probes for better container orchestration
+      probes:
+        enabled: true
+        liveness-state:
+          enabled: true
+        readiness-state:
+          enabled: true
   metrics:
     export:
       prometheus:

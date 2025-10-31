@@ -15,11 +15,22 @@ logging:
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
 
-# Disable SQL logging in production for performance
+# Production optimizations for faster startup and better performance
 spring:
   jpa:
     show-sql: false
     properties:
       hibernate:
         format_sql: false
+        # Production optimizations
+        temp.use_jdbc_metadata_defaults: false
+        jdbc.batch_size: 20
+  
+  # Optimize connection pool for production
+  datasource:
+    hikari:
+      # Production: keep more connections ready for faster response
+      minimum-idle: ${DB_MIN_IDLE:5}
+      # Ensure connections are validated before use
+      connection-test-query: SELECT 1
 
