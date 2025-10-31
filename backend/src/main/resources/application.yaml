@@ -34,6 +34,21 @@ spring:
         order_inserts: true
         order_updates: true
 
+  # Mail (SMTP)
+  mail:
+    host: ${SPRING_MAIL_HOST}
+    port: ${SPRING_MAIL_PORT}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:true}
+    default-encoding: UTF-8
+    test-connection: false
+
   # File Upload Configuration
   servlet:
     multipart:
@@ -112,6 +127,22 @@ cors:
 jwt:
   secret: ${JWT_SECRET:your-secret-key-change-this-in-production-min-256-bits}
   expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
+
+# App configuration
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  password-reset:
+    expiry-minutes: ${APP_PASSWORD_RESET_EXPIRY_MINUTES:30}
+  registration:
+    expiry-minutes: ${APP_REGISTRATION_EXPIRY_MINUTES:60}
+  mail:
+    from: ${MAIL_FROM}
+    fromName: ${MAIL_FROM_NAME:Krawl}
+
+# CAPTCHA Configuration
+captcha:
+  provider: ${CAPTCHA_PROVIDER:hcaptcha} # hcaptcha | recaptcha
+  secret: ${CAPTCHA_SECRET:}
 
 # Actuator Configuration
 management:

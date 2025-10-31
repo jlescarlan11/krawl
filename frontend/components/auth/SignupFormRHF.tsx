@@ -41,6 +41,22 @@ export default function SignupFormRHF() {
     router.push('/');
   };
 
+  const sendVerificationLink = () => {
+    const values = ((): SignupFormValues => {
+      // react-hook-form get values via watch
+      return {
+        username: watch('username') || '',
+        email: watch('email') || '',
+        password: watch('password') || '',
+        confirmPassword: watch('confirmPassword') || '',
+        termsAccepted: !!watch('termsAccepted'),
+      } as SignupFormValues;
+    })();
+    const username = encodeURIComponent(values.username.trim());
+    const email = encodeURIComponent(values.email.trim());
+    router.push(`/register-start?username=${username}&email=${email}`);
+  };
+
   return (
     <div className="w-full">
       <div className="mx-auto w-full max-w-xl rounded-lg border border-neutral-200 bg-white p-6 shadow-md md:p-8">
@@ -210,6 +226,16 @@ export default function SignupFormRHF() {
             className="w-full rounded-md bg-verde-700 px-4 py-3 text-center text-white shadow-md transition-colors hover:bg-verde-800 focus:outline-none focus:ring-2 focus:ring-verde-600 disabled:opacity-75"
           >
             {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+          </button>
+
+          <div className="my-4 text-center text-xs text-neutral-500">or</div>
+
+          <button
+            type="button"
+            onClick={sendVerificationLink}
+            className="w-full rounded-md border border-neutral-300 px-4 py-3 text-center text-neutral-800 shadow-sm transition-colors hover:bg-neutral-50"
+          >
+            Send verification link instead
           </button>
 
           <div className="mt-6 text-center">

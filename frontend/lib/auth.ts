@@ -54,10 +54,16 @@ export async function register(data: { username: string; email: string; password
 }
 
 export async function forgotPassword(data: { email: string }) {
-  // Adjust endpoint to match backend when implemented
-  return apiFetch<{ message: string }>('/auth/forgot', {
+  return apiFetch<void>('/auth/password/reset-request', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: JSON.stringify({ email: data.email }),
+  });
+}
+
+export async function resetPassword(data: { token: string; newPassword: string }) {
+  return apiFetch<void>('/auth/password/reset', {
+    method: 'POST',
+    body: JSON.stringify({ token: data.token, newPassword: data.newPassword }),
   });
 }
 
@@ -67,4 +73,26 @@ export async function me() {
 
 export async function logout() {
   return apiFetch<{ message: string }>('/auth/logout', { method: 'POST' });
+}
+
+export async function registerRequest(data: { username: string; email: string; captchaToken: string }) {
+  return apiFetch<void>('/auth/register/request', {
+    method: 'POST',
+    body: JSON.stringify({ username: data.username, email: data.email, captchaToken: data.captchaToken }),
+  });
+}
+
+export async function registerComplete(data: { token: string; password: string }) {
+  const backendRes = await apiFetch<BackendAuthResponse>('/auth/register/complete', {
+    method: 'POST',
+    body: JSON.stringify({ token: data.token, password: data.password }),
+  });
+  return {
+    token: backendRes.token,
+    user: {
+      id: backendRes.userId,
+      email: backendRes.email,
+      username: backendRes.username,
+    },
+  };
 }
