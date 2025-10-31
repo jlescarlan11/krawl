@@ -34,7 +34,8 @@ export async function apiFetch<T>(
   const now = Date.now();
   if (now - lastConnectivityCheck > API_CONSTANTS.CONNECTIVITY_CACHE_MS) {
     try {
-      lastConnectivityResult = await checkActualConnectivity(`${basePath}/health`)
+      // Health endpoint is not versioned on the backend, use baseURL directly
+      lastConnectivityResult = await checkActualConnectivity(`${config.api.baseURL}/api/health`)
         .catch(() => checkActualConnectivity('/manifest.json'));
       lastConnectivityCheck = now;
     } catch {

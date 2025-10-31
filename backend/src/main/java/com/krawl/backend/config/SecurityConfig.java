@@ -40,6 +40,10 @@ public class SecurityConfig {
             
             // Configure authorization rules
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Permit health check and warmup endpoints (for monitoring and cold start prevention)
+                // Allow both /api/health and /api/v1/health for compatibility
+                .requestMatchers("/api/health/**", "/api/v1/health/**", "/actuator/health/**").permitAll()
                 // Permit Swagger/OpenAPI endpoints
                 .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 
