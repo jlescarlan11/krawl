@@ -40,10 +40,10 @@ spring:
         order_inserts: true
         order_updates: true
 
-  # Mail (SMTP)
+  # Mail (SMTP) - Only needed if MAIL_PROVIDER=smtp
   mail:
-    host: ${SPRING_MAIL_HOST}
-    port: ${SPRING_MAIL_PORT}
+    host: ${SPRING_MAIL_HOST:}
+    port: ${SPRING_MAIL_PORT:}
     username: ${SPRING_MAIL_USERNAME:}
     password: ${SPRING_MAIL_PASSWORD:}
     properties:
@@ -52,6 +52,21 @@ spring:
           auth: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH:true}
           starttls:
             enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:true}
+            required: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED:true}
+          # SSL configuration (for port 465)
+          ssl:
+            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_ENABLE:false}
+            trust: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST:*}
+            protocols: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_PROTOCOLS:TLSv1.2}
+          # Connection timeout settings (in milliseconds)
+          # IMPORTANT: These must be positive integers. Negative values cause connection issues.
+          connectiontimeout: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_CONNECTIONTIMEOUT:30000}
+          timeout: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_TIMEOUT:30000}
+          writetimeout: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_WRITETIMEOUT:30000}
+          # Socket factory for better SSL/TLS handling
+          socketFactory:
+            class: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SOCKET_FACTORY_CLASS:javax.net.ssl.SSLSocketFactory}
+            fallback: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_SOCKET_FACTORY_FALLBACK:false}
     default-encoding: UTF-8
     test-connection: false
 
@@ -135,6 +150,7 @@ jwt:
   secret: ${JWT_SECRET:your-secret-key-change-this-in-production-min-256-bits}
   expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
 
+
 # App configuration
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
@@ -143,8 +159,23 @@ app:
   registration:
     expiry-minutes: ${APP_REGISTRATION_EXPIRY_MINUTES:60}
   mail:
+    # Email provider: 'smtp', 'sendgrid', 'resend', or 'mailjet'
+    # Use 'mailjet', 'resend', or 'sendgrid' for Render deployments (SMTP ports are blocked)
+    # Use 'smtp' for local development or platforms that support SMTP
+    # Recommended: 'mailjet' (best free tier: 6,000/month, 200/day)
+    provider: ${MAIL_PROVIDER:smtp}
     from: ${MAIL_FROM}
     fromName: ${MAIL_FROM_NAME:Krawl}
+    # SendGrid API configuration (only needed if provider=sendgrid)
+    sendgrid:
+      api-key: ${SENDGRID_API_KEY:}
+    # Resend API configuration (only needed if provider=resend)
+    resend:
+      api-key: ${RESEND_API_KEY:}
+    # Mailjet API configuration (only needed if provider=mailjet)
+    mailjet:
+      api-key-public: ${MAILJET_API_KEY_PUBLIC:}
+      api-key-private: ${MAILJET_API_KEY_PRIVATE:}
 
 # CAPTCHA Configuration
 captcha:
