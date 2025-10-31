@@ -7,12 +7,13 @@ export const metadata: Metadata = {
   title: 'Login | Krawl',
 };
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams?: { redirect?: string };
+  searchParams?: Promise<{ redirect?: string }>;
 }) {
-  const raw = searchParams?.redirect;
+  const params = await searchParams ?? {};
+  const raw = params.redirect;
   const redirect =
     typeof raw === 'string' && raw.startsWith('/') ? raw : '/';
 

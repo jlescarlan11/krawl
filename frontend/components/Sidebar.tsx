@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { LuMapPin, LuSearch, LuRoute, LuUser, LuSettings, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
+import { useAuth } from '@/context/AuthContext';
 
 const navItems = [
   { href: '/', label: 'Map', icon: LuMapPin },
@@ -18,6 +19,20 @@ interface SidebarProps {
 
 export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
   const pathname = usePathname();
+  const { user, isAuthenticated } = useAuth();
+
+  // Get display name: prefer username, fallback to name or email
+  const displayName = user?.username || user?.name || user?.email || 'Guest User';
+  const displaySubtext = isAuthenticated 
+    ? (user?.email || '')
+    : 'Sign in to save progress';
+  
+  // Get avatar initials
+  const getAvatarText = () => {
+    if (!isAuthenticated) return 'GU';
+    const text = user?.username || user?.name || user?.email || '';
+    return text.slice(0, 2).toUpperCase();
+  };
 
   return (
     <aside 
@@ -32,7 +47,7 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
     >
       {/* Header Section with Toggle - Aligned with main header */}
       {isExpanded ? (
-        <div className="h-[60px] px-4 flex items-center justify-between">
+        <div className="h-[72px] px-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
               <Image
@@ -55,7 +70,7 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
           </button>
         </div>
       ) : (
-        <div className="h-[60px] px-2 flex flex-col items-center justify-center gap-1 group">
+        <div className="h-[72px] px-2 flex flex-col items-center justify-center gap-1 group">
           <button 
             onClick={onToggle}
             className="flex items-center justify-center relative w-10 h-10"
@@ -135,26 +150,30 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
       <div className={`${isExpanded ? 'px-4 py-4' : 'px-2 py-2'}`}>
         {isExpanded ? (
           <Link
-            href="/profile"
+            href={isAuthenticated ? "/profile" : "/login"}
             className="flex items-center gap-3 p-2 rounded-md hover:bg-neutral-100 transition-colors"
           >
-            <div className="w-10 h-10 bg-sand-300 rounded-full flex items-center justify-center flex-shrink-0">
-              <LuUser size={20} className="text-sand-800" />
+            <div className="w-10 h-10 bg-sand-300 rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-sand-900">
+              {getAvatarText()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-neutral-900">Guest User</p>
-              <p className="text-xs text-neutral-500 truncate">Sign in to save progress</p>
+              <p className="text-sm font-medium text-neutral-900 truncate">
+                {displayName}
+              </p>
+              <p className="text-xs text-neutral-500 truncate">{displaySubtext}</p>
             </div>
-            <LuSettings size={18} className="text-neutral-400 flex-shrink-0" />
+            {isAuthenticated && (
+              <LuSettings size={18} className="text-neutral-400 flex-shrink-0" />
+            )}
           </Link>
         ) : (
           <Link
-            href="/profile"
-            title="Profile"
+            href={isAuthenticated ? "/profile" : "/login"}
+            title={isAuthenticated ? displayName : "Profile"}
             className="flex items-center justify-center rounded-md hover:bg-neutral-100 transition-colors"
           >
-            <div className="w-10 h-10 bg-sand-300 rounded-full flex items-center justify-center">
-              <LuUser size={20} className="text-sand-800" />
+            <div className="w-10 h-10 bg-sand-300 rounded-full flex items-center justify-center font-semibold text-sand-900">
+              {getAvatarText()}
             </div>
           </Link>
         )}

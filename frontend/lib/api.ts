@@ -75,6 +75,13 @@ export async function apiFetch<T>(
     });
 
     if (!response.ok) {
+      // Clear invalid auth on 401
+      if (response.status === 401 && typeof window !== 'undefined') {
+        try {
+          window.localStorage.removeItem('auth');
+          window.sessionStorage.removeItem('auth');
+        } catch {}
+      }
       const apiError = await ApiError.fromResponse(response);
       toast.error(apiError.message);
       throw apiError;

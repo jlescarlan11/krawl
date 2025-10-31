@@ -18,6 +18,7 @@ public interface GemRepository extends JpaRepository<Gem, UUID> {
     List<Gem> findGemsInViewport(@Param("viewport") Polygon viewport);
     
     List<Gem> findByFounderUserId(UUID founderId);
+    long countByFounderUserId(UUID founderId);
     
     List<Gem> findByDeletedAtIsNull();
 }
