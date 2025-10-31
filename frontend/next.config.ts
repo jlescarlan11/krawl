@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   },
   
   // Production optimizations for better performance and faster builds
-  swcMinify: true,
+  // Note: swcMinify is enabled by default in Next.js 16+ (no need to specify)
   
   // Remove console logs in production (except errors and warnings)
   compiler: {
