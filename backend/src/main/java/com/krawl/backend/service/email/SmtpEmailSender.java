@@ -23,6 +23,7 @@ public class SmtpEmailSender implements EmailSender {
     @Override
     @Async("taskExecutor")
     public void sendEmailAsync(String to, String subject, String body) {
+        log.debug("Attempting to send email to: {} with subject: {}", to, subject);
         try {
             var mime = mailSender.createMimeMessage();
             var helper = new MimeMessageHelper(mime, false, "UTF-8");
@@ -31,8 +32,9 @@ public class SmtpEmailSender implements EmailSender {
             helper.setSubject(subject);
             helper.setText(body, false);
             mailSender.send(mime);
+            log.info("Successfully sent email to: {} with subject: {}", to, subject);
         } catch (Exception e) {
-            log.error("Failed to send email to {} with subject {}", to, subject, e);
+            log.error("Failed to send email to {} with subject {}: {}", to, subject, e.getMessage(), e);
         }
     }
 }
