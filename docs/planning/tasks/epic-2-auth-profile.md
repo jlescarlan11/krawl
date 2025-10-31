@@ -27,11 +27,11 @@
 │  To Do              In Progress            Done      │
 ├──────────────────────────────────────────────────────┤
 │                                                       │
-│  AU-6                                      AU-1 ✅   │
-│  AU-7                                      AU-2 ✅   │
-│                                              AU-3 ✅ │
-│                                              AU-4 ✅ │
-│                                              AU-5 ✅ │
+│                      AU-3                AU-1 ✅   │
+│                                          AU-2 ✅        │
+│  AU-7                                    AU-4 ✅        │
+│                                           AU-5 ✅       │
+│                                           AU-6 ✅       │
 │                                                       │
 └──────────────────────────────────────────────────────┘
 ```
@@ -200,37 +200,34 @@
 
 ---
 
-### ⚪ AU-6: Implement Password Reset Flow
+### ✅ AU-6: Implement Password Reset Flow
 
 **Description:** Allow users to reset forgotten passwords via email.
 
 **Acceptance Criteria:**
-- ⚪ Reset request endpoint
-- ⚪ Email integration
-- ⚪ Reset token validation
-- ⚪ New password endpoint
-- ⚪ Frontend reset flow
+- ✅ Reset request endpoint
+- ✅ Email integration
+- ✅ Reset token validation
+- ✅ New password endpoint
+- ✅ Frontend reset flow
 
-#### How to Implement
-- Context: Provide secure account recovery.
-- Prerequisites:
-  - Email provider credentials (env only)
-- Steps:
-  1) Backend: `POST /auth/password/reset-request` accepts email; send token link.
-  2) Backend: `POST /auth/password/reset` with token + new password; rotate creds.
-  3) Frontend: `/forgot-password` form (email), `/reset-password?token=` form.
-  4) Rate limit requests; generic responses to avoid user enumeration.
-  5) Invalidate existing tokens on reset.
-- References:
-  - Security: `docs/reference/security-requirements.md` (rate limits)
-- Acceptance Criteria (verify):
-  - End-to-end reset works; tokens single-use, time-limited
-- Test/Verification:
-  - Integration tests mocking email sender
-- Artifacts:
-  - PR: "auth: add password reset flow (backend+frontend)"
+#### Implementation Summary
+- Backend endpoints:
+  - `POST /api/v1/auth/password/reset-request` and `POST /api/v1/auth/password/reset` in `AuthPasswordController`
+  - `PasswordResetServiceImpl` issues single-use tokens, emails link, validates/consumes token, rotates password
+  - Rate limiting for password reset endpoints via `AuthPasswordRateLimitFilter` (Bucket4j 5 per 15m/IP)
+- Frontend:
+  - `/forgot-password` request page and `/reset-password` (query and path token variants) implemented
+  - `lib/auth.forgotPassword` and `lib/auth.resetPassword` integrated
+- Email integration:
+  - `EmailSender` used to send reset links (`app.frontend-url` + pretty path)
+- Tokens:
+  - 30-minute expiry by default; invalidates existing tokens on new request and after successful reset
 
-**Status:** To Do
+#### Verification
+- Manual: request link returns 200 (generic); email sender mocked in tests; reset with valid token updates password and redirects
+
+**Status:** Done
 
 ---
 
@@ -268,13 +265,13 @@
 
 ---
 
-## Progress: 90%
+## Progress: 95%
 
 - [x] Backend authentication infrastructure
 - [x] JWT implementation
 - [x] Frontend auth UI (registration + login complete)
 - [x] Profile management (view/edit, counts, tier banner)
-- [ ] Password reset
+- [x] Password reset
 - [ ] Session refresh
 
 ---
@@ -295,7 +292,7 @@
 - ✅ Passwords hashed with BCrypt
 - ✅ JWT secrets in environment variables
 - ✅ HTTPS only in production
-- ⚪ Rate limiting on auth endpoints
+- ✅ Rate limiting on password reset endpoints
 - ⚪ Account lockout after failed attempts
 
 See: [Security Requirements](../../reference/security-requirements.md)
