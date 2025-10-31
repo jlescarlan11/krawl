@@ -18,6 +18,8 @@ public class UserProfileResponse {
     private LocalDateTime joinDate;
     private BigDecimal score;
     private String tier;
+    private int gemsCreated;
+    private int krawlsCreated;
 }
 
 

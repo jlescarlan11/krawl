@@ -4,7 +4,7 @@
 
 **Epic ID:** EPIC-2  
 **Priority:** 🔴 Critical  
-**Status:** 🟡 In Progress (80%)  
+**Status:** 🟢 Mostly Complete (90%)  
 **Owner:** Backend & Frontend Developers
 
 ---
@@ -161,27 +161,29 @@
 
 ---
 
-### ⚪ AU-5: Implement Profile View & Edit
+### ✅ AU-5: Implement Profile View & Edit
 
 **Description:** Display user profile and allow editing.
 
 **Acceptance Criteria:**
-- ⚪ `GET /api/v1/users/{username}` endpoint
-- ⚪ `PUT /api/v1/users/me` endpoint
-- ⚪ Profile page UI
-- ⚪ Edit profile form
-- ⚪ Creator score and tier display
+- ✅ `GET /api/v1/users/{username}` endpoint (public profile with counts)
+- ✅ `PUT /api/v1/users/me` endpoint (edit username and bio)
+- ✅ Profile page UI (self and public)
+- ✅ Edit profile via modal
+- ✅ Creator score and tier banner (consistent card style)
+- ✅ Display created gems/krawls counts
 
-#### How to Implement
-- Context: Allow users to view and edit their profile and see creator metrics.
-- Prerequisites:
-  - Auth in place; tokens attached to requests
-- Steps:
-  1) Build `/profile` (self) and `/users/[username]` (public) pages.
-  2) Fetch profile via GET; show username, bio, creator score/tier.
-  3) Create edit form for bio/avatar; PUT `/users/me` on save.
-  4) Handle 401 by redirecting to login; optimistic UI for edits.
-  5) Display created gems/krawls counts (queries in `database-queries.md`).
+#### Implementation Summary
+- Built `/profile` (self) and `/users/[username]` (public) pages
+- Public profiles permitted via security config; self-profile requires auth
+- Added `UserProfileResponse` with `gemsCreated` and `krawlsCreated`; wired via `UserStatsService`
+- Self-profile `UserResponse` now includes counts; controller populates via `UserStatsService`
+- Frontend `TierScoreBanner` for creator score/tier (card style, accessible, white text)
+- Frontend `ProfileStats` now card-style for Gems and Krawls (consistent spacing/padding)
+- Edit profile modal to update username and bio
+- `AuthContext` session persistence fixed (sessionStorage for non-remember, localStorage for remember)
+- Sidebar now reflects logged-in user (initials, username/email, profile link) instead of Guest
+- Header alignment unified with `PageHeaderBar`; map/profile/public pages consistent
 - References:
   - Reference: `docs/reference/api-endpoints.md#user--profile`
   - Queries: `docs/reference/database-queries.md#user-content-queries`
@@ -192,7 +194,7 @@
 - Artifacts:
   - PR: "profile: implement view/edit and creator metrics"
 
-**Status:** To Do
+**Status:** Done
 
 ---
 
@@ -264,12 +266,12 @@
 
 ---
 
-## Progress: 80%
+## Progress: 90%
 
 - [x] Backend authentication infrastructure
 - [x] JWT implementation
 - [x] Frontend auth UI (registration + login complete)
-- [ ] Profile management
+- [x] Profile management (view/edit, counts, tier banner)
 - [ ] Password reset
 - [ ] Session refresh
 

@@ -14,6 +14,7 @@ import com.krawl.backend.repository.projection.KrawlSummaryRow;
 @Repository
 public interface KrawlRepository extends JpaRepository<Krawl, UUID> {
     List<Krawl> findByCreator_UserId(UUID creatorId);
+    long countByCreator_UserId(UUID creatorId);
     List<Krawl> findByVisibility(String visibility);
     Page<Krawl> findByCreator_UserId(UUID creatorId, Pageable pageable);
 

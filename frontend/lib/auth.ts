@@ -2,19 +2,38 @@
 
 import { apiFetch } from '@/lib/api';
 
-export type User = { id: string; email: string; name?: string };
+export type User = { id: string; email: string; username?: string; name?: string };
 export type AuthResponse = { token: string; user: User };
+
+// Backend response structure
+type BackendAuthResponse = {
+  token: string;
+  type: string;
+  userId: string;
+  email: string;
+  username: string;
+};
 
 export async function login(data: { email: string; password: string }) {
   const payload = { emailOrUsername: data.email, password: data.password };
-  return apiFetch<AuthResponse>('/auth/login', {
+  const backendRes = await apiFetch<BackendAuthResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
+  
+  // Transform backend response to frontend format
+  return {
+    token: backendRes.token,
+    user: {
+      id: backendRes.userId,
+      email: backendRes.email,
+      username: backendRes.username,
+    },
+  };
 }
 
 export async function register(data: { username: string; email: string; password: string }) {
-  return apiFetch<AuthResponse>('/auth/register', {
+  const backendRes = await apiFetch<BackendAuthResponse>('/auth/register', {
     method: 'POST',
     body: JSON.stringify({
       username: data.username,
@@ -22,6 +41,16 @@ export async function register(data: { username: string; email: string; password
       password: data.password,
     }),
   });
+  
+  // Transform backend response to frontend format
+  return {
+    token: backendRes.token,
+    user: {
+      id: backendRes.userId,
+      email: backendRes.email,
+      username: backendRes.username,
+    },
+  };
 }
 
 export async function forgotPassword(data: { email: string }) {

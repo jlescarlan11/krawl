@@ -47,5 +47,21 @@ public class UserMapper {
                 .tier(user.getReputationTier())
                 .build();
     }
+
+    public UserProfileResponse toPublicProfile(UserResponse user, int gemsCreated, int krawlsCreated) {
+        if (user == null) {
+            return null;
+        }
+
+        return UserProfileResponse.builder()
+                .username(user.getUsername())
+                .bio(user.getBio())
+                .joinDate(user.getCreatedAt())
+                .score(user.getCreatorScore())
+                .tier(user.getReputationTier())
+                .gemsCreated(gemsCreated)
+                .krawlsCreated(krawlsCreated)
+                .build();
+    }
 }
 

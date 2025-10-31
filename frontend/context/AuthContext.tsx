@@ -39,12 +39,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(u);
     const payload = JSON.stringify({ token: t, user: u });
     if (remember) {
+      // Persist across browser sessions
       window.localStorage.setItem('auth', payload);
       window.sessionStorage.removeItem('auth');
     } else {
-      // memory-only: do not persist to storage
+      // Store in sessionStorage only (clears when tab closes)
+      window.sessionStorage.setItem('auth', payload);
       window.localStorage.removeItem('auth');
-      window.sessionStorage.removeItem('auth');
     }
   };
 

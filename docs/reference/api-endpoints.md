@@ -563,7 +563,7 @@ Authorization: Bearer <jwt_token>
 
 ### Update My Profile
 
-`PUT /api/v1/users/me` 🔒
+`PUT /api/v1/users/me` or `PATCH /api/v1/users/me` 🔒
 
 **Request:**
 ```json

@@ -14,7 +14,7 @@ interface MapSearchHeaderProps {
 
 export function MapSearchHeader({ onSearch, onCategorySelect }: MapSearchHeaderProps) {
   return (
-    <header className="absolute top-0 left-0 right-0 z-[1000] h-[60px]">
+    <header className="absolute top-0 left-0 right-0 z-[1000] h-[72px]">
       <div className="flex items-center gap-3 px-4 h-full">
         <div className="flex-1 max-w-2xl relative">
           <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 z-10" size={20} />
