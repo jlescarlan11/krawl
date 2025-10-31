@@ -1,26 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AuthForm, { type FieldConfig } from '@/components/auth/AuthForm';
+import PasswordConfirmForm from '@/components/auth/PasswordConfirmForm';
 import { resetPassword } from '@/lib/auth';
-
-type Values = { password: string; confirm: string };
-
-function validate(v: Values) {
-  const e: Partial<Record<keyof Values & string, string>> = {};
-  if (!v.password) e.password = 'Password is required';
-  else if (v.password.length < 8) e.password = 'Must be at least 8 characters';
-  if (v.confirm !== v.password) e.confirm = 'Passwords do not match';
-  return e;
-}
 
 export default function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
-
-  const fields: FieldConfig<Values>[] = [
-    { name: 'password', label: 'New password', type: 'password', autoComplete: 'new-password', showToggle: true },
-    { name: 'confirm', label: 'Confirm password', type: 'password', autoComplete: 'new-password', showToggle: true },
-  ];
+  const [err, setErr] = useState<string | null>(null);
 
   if (!token) {
     return (
@@ -35,15 +22,14 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   }
 
   return (
-    <AuthForm<Values>
-      title="Reset password"
-      initialValues={{ password: '', confirm: '' }}
-      fields={fields}
-      validate={validate}
+    <PasswordConfirmForm
+      token={token}
       submitLabel="Reset password"
-      submittingLabel="Resetting..."
-      onSubmit={async (values) => {
-        await resetPassword({ token, newPassword: values.password });
+      submittingLabel="Resetting…"
+      error={err}
+      onError={() => setErr('The link is invalid or has expired.')}
+      onSubmit={async (password) => {
+        await resetPassword({ token, newPassword: password });
         router.push('/login?reset=success');
       }}
     />
