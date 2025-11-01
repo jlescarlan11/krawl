@@ -29,7 +29,12 @@ export default function ForgotPasswordPage() {
       >
         <div className="mx-auto w-full max-w-xl rounded-lg border border-neutral-200 bg-white p-6 shadow-md md:p-8">
           <h2 className="mb-2 text-xl font-semibold text-neutral-800">Check your email</h2>
-          <p className="text-neutral-700">If an account exists for that email, we sent a reset link.</p>
+          <p className="mb-3 text-neutral-700">
+            If an account exists for that email, we sent a reset link.
+          </p>
+          <p className="text-sm text-neutral-600">
+            <strong>Can't find the email?</strong> Please check your spam or junk folder. Some email providers may filter automated emails.
+          </p>
         </div>
       </AuthScaffold>
     );

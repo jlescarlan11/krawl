@@ -7,17 +7,25 @@ import com.krawl.backend.repository.UserRepository;
 import com.krawl.backend.service.PasswordResetService;
 import com.krawl.backend.service.TokenService;
 import com.krawl.backend.service.email.EmailSender;
+import com.krawl.backend.service.email.EmailTemplates;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Locale;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,12 +37,16 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final PasswordEncoder passwordEncoder;
     private final EmailSender emailSender;
     private final TokenService tokenService;
+    private final PlatformTransactionManager transactionManager;
 
     @Value("${app.frontend-url:http://localhost:3000}")
     private String frontendUrl;
 
     @Value("${app.password-reset.expiry-minutes:30}")
     private long expiryMinutes;
+
+    @Value("${app.password-reset.resend-cooldown-minutes:5}")
+    private long resendCooldownMinutes = 5;
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
@@ -45,30 +57,101 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
-    @Transactional
     public void requestReset(String email) {
         if (email == null) return;
         String normalized = email.trim().toLowerCase(Locale.ROOT);
         userRepository.findByEmail(normalized).ifPresent(user -> {
-            // Invalidate existing tokens
+            TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+            try {
+                transactionTemplate.executeWithoutResult(status -> {
+                    requestResetInternal(user);
+                });
+            } catch (DataIntegrityViolationException e) {
+                // Race condition: another request created a token between our check and save
+                // Query for the existing token in a new transaction
+                log.warn("Password reset encountered race condition for user {}. Finding existing token...", user.getEmail());
+                TransactionTemplate retryTemplate = new TransactionTemplate(transactionManager);
+                retryTemplate.executeWithoutResult(status -> {
+                    Optional<PasswordResetToken> existingTokenOpt = tokenRepository.findActiveTokenByUserId(user.getUserId());
+                    if (existingTokenOpt.isPresent()) {
+                        PasswordResetToken token = existingTokenOpt.get();
+                        log.info("Found existing active token for user {} (recovered from race condition). Reusing it.", user.getEmail());
+                        sendResetEmail(user, token);
+                    } else {
+                        log.error("Race condition occurred but could not find existing token for user {}. User should try again.", user.getEmail());
+                        // Don't throw - return without email to avoid user enumeration
+                    }
+                });
+            }
+        });
+    }
+
+    @Transactional
+    private void requestResetInternal(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        
+        // Check if there's an existing active token
+        Optional<PasswordResetToken> existingTokenOpt = tokenRepository.findActiveTokenByUserId(user.getUserId());
+        
+        PasswordResetToken token;
+        boolean shouldSendEmail = true;
+        
+        if (existingTokenOpt.isPresent()) {
+            PasswordResetToken existingToken = existingTokenOpt.get();
+            LocalDateTime createdAt = existingToken.getCreatedAt();
+            LocalDateTime cooldownExpiry = createdAt.plusMinutes(resendCooldownMinutes);
+            
+            // If token was created within cooldown period, don't send another email
+            if (now.isBefore(cooldownExpiry)) {
+                log.info("Password reset requested for user {} but within cooldown period ({} minutes). Existing token will be reused.", 
+                        user.getEmail(), resendCooldownMinutes);
+                shouldSendEmail = false;
+                token = existingToken;
+            } else {
+                // Token exists but cooldown expired, resend the existing token
+                log.info("Password reset requested for user {}. Resending existing token (created {} minutes ago).", 
+                        user.getEmail(), java.time.Duration.between(createdAt, now).toMinutes());
+                token = existingToken;
+            }
+        } else {
+            // No active token exists, create a new one
+            // Clean up expired/used tokens first (this is safe - they're no longer active)
             tokenRepository.deleteByUser_UserId(user.getUserId());
+            
+            // Double-check one more time right before creating (helps with race conditions)
+            Optional<PasswordResetToken> lastCheck = tokenRepository.findActiveTokenByUserId(user.getUserId());
+            if (lastCheck.isPresent()) {
+                token = lastCheck.get();
+                log.info("Found active token for user {} during double-check (race condition detected). Reusing it.", user.getEmail());
+                shouldSendEmail = true;
+            } else {
+                // Create new token
+                token = new PasswordResetToken();
+                token.setUser(user);
+                token.setToken(generateToken());
+                token.setExpiresAt(now.plusMinutes(expiryMinutes));
+                tokenRepository.save(token);
+                log.info("Created new password reset token for user {}.", user.getEmail());
+            }
+        }
+        
+        // Send email only if not in cooldown period
+        if (shouldSendEmail && token != null) {
+            sendResetEmail(user, token);
+        }
+    }
 
-            PasswordResetToken token = new PasswordResetToken();
-            token.setUser(user);
-            token.setToken(generateToken());
-            token.setExpiresAt(LocalDateTime.now().plusMinutes(expiryMinutes));
-            tokenRepository.save(token);
-
+    private void sendResetEmail(User user, PasswordResetToken token) {
+        try {
             // Prefer pretty URL path to avoid querystring issues in email clients
             String link = String.format("%s/reset-password/%s", frontendUrl, token.getToken());
             String subject = "Reset your Krawl password";
-            String body = ("We received a request to reset your password.\n\n" +
-                    "Click the link below to set a new password (valid for %d minutes):\n%s\n\n" +
-                    "If you did not request this, you can safely ignore this email.")
-                    .formatted(expiryMinutes, link);
+            String body = EmailTemplates.passwordResetEmail(link, expiryMinutes);
             emailSender.sendEmailAsync(user.getEmail(), subject, body);
-        });
-        // Always return success (generic) to avoid user enumeration
+        } catch (Exception e) {
+            log.error("Failed to send password reset email to {}: {}", user.getEmail(), e.getMessage(), e);
+            // Don't throw - always return success to avoid user enumeration
+        }
     }
 
     @Override
