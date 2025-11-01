@@ -24,6 +24,7 @@ export default function Sidebar() {
         bg-white border-r border-neutral-200 
         flex-col
         transition-all duration-300 ease-in-out
+        shadow-lg
         ${isExpanded ? 'w-80' : 'w-16'}
       `}
     >

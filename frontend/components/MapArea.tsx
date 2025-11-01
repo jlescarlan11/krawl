@@ -6,11 +6,13 @@ import Link from 'next/link';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useNetworkStatus } from '@/lib/hooks/useNetworkStatus';
 import { useMapInitialization } from '@/lib/map/hooks/useMapInitialization';
+import { useSidebar } from '@/context/SidebarContext';
 import { OfflineOverlay } from './map/OfflineOverlay';
 import { MapSearchHeader } from './map/MapSearchHeader';
 
 function MapArea() {
   const { isOnline } = useNetworkStatus();
+  const { isExpanded } = useSidebar();
   
   const {
     mapContainerRef,
@@ -30,7 +32,16 @@ function MapArea() {
 
       {/* Offline Indicator Badge */}
       {!isOnline && mapLoaded && !showOfflineOverlay && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[1001] bg-yellow-500/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-300">
+        <div 
+          className={`
+            absolute top-16 z-[1001] 
+            bg-yellow-500/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg 
+            flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-300
+            transition-all
+            left-1/2 -translate-x-1/2
+            ${isExpanded ? 'md:left-[calc(50%+10rem)]' : 'md:left-[calc(50%+2rem)]'}
+          `}
+        >
           <LuWifiOff size={16} />
           <span className="text-sm font-medium">Offline Mode - Using Cached Map</span>
         </div>
@@ -38,7 +49,16 @@ function MapArea() {
 
       {/* Map Error Banner */}
       {isOnline && mapError && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[1001] bg-red-500/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-300">
+        <div 
+          className={`
+            absolute top-16 z-[1001]
+            bg-red-500/90 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg 
+            flex items-center gap-2 animate-in fade-in slide-in-from-top-3 duration-300
+            transition-all
+            left-1/2 -translate-x-1/2
+            ${isExpanded ? 'md:left-[calc(50%+10rem)]' : 'md:left-[calc(50%+2rem)]'}
+          `}
+        >
           <LuWifiOff size={16} />
           <span className="text-sm font-medium">{mapError}</span>
         </div>
