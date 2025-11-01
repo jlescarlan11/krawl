@@ -108,14 +108,9 @@ cd backend
 
 ### Install Dependencies
 
-**If using Maven:**
+**Build the project:**
 ```bash
 ./mvnw clean install
-```
-
-**If using Gradle:**
-```bash
-./gradlew build
 ```
 
 **Expected output:**
@@ -144,8 +139,6 @@ Migrations will create all necessary tables:
 
 ```bash
 ./mvnw flyway:migrate
-# or
-./gradlew flywayMigrate
 ```
 
 **Expected output:**
@@ -157,8 +150,6 @@ Successfully applied 1 migration to schema "public"
 
 ```bash
 ./mvnw spring-boot:run
-# or
-./gradlew bootRun
 ```
 
 **Expected output:**
@@ -538,5 +529,5 @@ git push origin feature/my-feature
 
 **You're all set!** Happy coding! 🚀
 
-*Tutorial maintained by Development Team • Last updated: 2025-10-31*
+*Tutorial maintained by Development Team • Last updated: 2025-11-01*
 

@@ -3,7 +3,7 @@
 > **Purpose:** This document defines the complete scope of work for the Krawl MVP, detailing all in-scope and out-of-scope features, pages, integrations, and development phases.
 
 **Version:** 0.1.0-MVP  
-**Last Updated:** 2025-10-31  
+**Last Updated:** 2025-11-01  
 **Status:** Active  
 **Owner:** Project Lead
 
@@ -695,12 +695,11 @@ Subsequent phases will build upon this foundation with:
 
 ## 📚 Related Documents
 
-- [Project Brief](./project-brief.md) - High-level project overview
-- [Project Proposal](./project-proposal.md) - Business case and proposal
+- [Project Brief](./project-brief.md) - Project overview and business case
 - [Milestone and Timeline](./milestone-and-timeline.md) - Development schedule
 - [User Stories](./user-story.md) - Detailed feature requirements
-- [System Architecture](./system-architecture.md) - Technical architecture
-- [API Documentation](./api-documentation.md) - API specifications
+- [Architecture Overview](../explanation/architecture-overview.md) - Technical architecture
+- [API Documentation](../reference/api-endpoints.md) - API specifications
 
 ---
 

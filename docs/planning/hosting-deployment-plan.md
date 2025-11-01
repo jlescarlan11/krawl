@@ -300,7 +300,7 @@ Render Auto-Detects Changes
     ↓
 Build Spring Boot Application
     ├─ Option A: Docker build (if Dockerfile present)
-    ├─ Option B: Native buildpack (Maven/Gradle)
+    ├─ Option B: Native buildpack (Maven)
     └─ Install dependencies
     ↓
 Run Automated Tests
@@ -352,8 +352,8 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 | Tool | Language | Integration |
 |------|----------|-------------|
-| **Flyway** ⭐ | SQL | Maven/Gradle plugin |
-| Liquibase | XML/SQL | Maven/Gradle plugin |
+| **Flyway** ⭐ | SQL | Maven plugin |
+| Liquibase | XML/SQL | Maven plugin |
 
 #### Migration Workflow
 
@@ -507,9 +507,10 @@ Week 4: Integration & Testing
 ## 📚 Related Documents
 
 - [Tech Stack](./tech-stack.md) - Technology choices affecting deployment
-- [System Architecture](./system-architecture.md) - System design and infrastructure
+- [Architecture Overview](./explanation/architecture-overview.md) - System architecture and infrastructure
+- [Design Patterns](./explanation/design-patterns.md) - Design patterns and data flows
 - [Project Setup](./project-setup.md) - Development environment setup
-- [Version Control Strategy](./version-control-strategy.md) - Git workflow and CI/CD
+- [Version Control Strategy](./planning/version-control-strategy.md) - Git workflow and CI/CD
 - [Security Plan](./security-plan.md) - Security considerations for deployment
 
 ---

@@ -2,7 +2,7 @@
 
 > **Welcome to the Krawl documentation!** This guide helps you find the right information quickly using the Diátaxis framework.
 
-**Last Updated:** 2025-10-31  
+**Last Updated:** 2025-11-01  
 **Status:** Active
 
 ---
@@ -70,8 +70,7 @@ This documentation follows the **[Diátaxis framework](https://diataxis.fr/)**, 
 
 ### Architecture & Design
 - [Architecture Overview](./explanation/architecture-overview.md) - System architecture and components
-- [System Design Decisions](./explanation/system-design-decisions.md) - Why we built it this way
-- [Technology Choices](./explanation/technology-choices.md) - Tech stack rationale
+- [Design Patterns](./explanation/design-patterns.md) - Detailed data flows, algorithms, and design patterns
 - [Security Approach](./explanation/security-approach.md) - Security strategy and principles
 
 ### Product & UX
@@ -117,8 +116,7 @@ This documentation follows the **[Diátaxis framework](https://diataxis.fr/)**, 
 Project planning and management resources
 
 ### Project Overview
-- [Project Brief](./planning/project-brief.md) - High-level overview
-- [Project Proposal](./planning/project-proposal.md) - Detailed proposal
+- [Project Brief](docs/planning/project-brief.md) - Project overview and business case
 - [Scope of Work](./planning/scope-of-work.md) - Feature scope and deliverables
 
 ### Timeline & Tasks

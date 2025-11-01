@@ -433,7 +433,8 @@ Once all tests pass:
 
 - [Database Schema](./database-schema.md) - Complete schema documentation
 - [Project Setup](./project-setup.md) - Development environment setup
-- [System Architecture](./system-architecture.md) - System design
+- [Architecture Overview](./explanation/architecture-overview.md) - System architecture
+- [Design Patterns](./explanation/design-patterns.md) - Design patterns
 - [Testing Plan](./testing-plan.md) - Overall testing strategy
 - [API Documentation](./api-documentation.md) - API endpoints
 

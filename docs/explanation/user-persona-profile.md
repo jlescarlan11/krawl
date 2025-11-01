@@ -244,7 +244,7 @@
 
 - [User Journey](./user-journey.md) - User flow and journey maps
 - [User Stories](./user-story.md) - Feature requirements based on personas
-- [Project Proposal](./project-proposal.md) - Target audience definition
+- [Project Brief](./planning/project-brief.md) - Target audience definition
 - [Brand Brief](./brand-brief.md) - Brand positioning for audiences
 - [SEO Plan](./seo-plan.md) - SEO targeting these personas
 

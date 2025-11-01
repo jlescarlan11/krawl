@@ -409,8 +409,8 @@ This technology stack balances several key requirements for the MVP phase:
 ## 📚 Related Documents
 
 - [Project Setup](./project-setup.md) - Development environment configuration
-- [System Architecture](./system-architecture.md) - System design and architecture
-- [System Design](./system-design.md) - Detailed system design patterns
+- [Architecture Overview](./explanation/architecture-overview.md) - System architecture and components
+- [Design Patterns](./explanation/design-patterns.md) - Detailed design patterns and data flows
 - [Database Schema](./database-schema.md) - PostgreSQL/PostGIS schema
 - [Hosting Deployment Plan](./hosting-deployment-plan.md) - Deployment infrastructure
 

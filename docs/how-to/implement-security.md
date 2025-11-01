@@ -3,7 +3,7 @@
 > **Purpose:** Step-by-step implementation guide for security features in the Krawl application.
 
 **Version:** 2.0.0  
-**Last Updated:** 2025-10-31  
+**Last Updated:** 2025-11-01  
 **Status:** Active  
 **Owner:** Security Team
 
@@ -22,7 +22,7 @@
 
 ### Backend (Spring Boot)
 
-**Step 1:** Add Spring Security dependency to `pom.xml` or `build.gradle`:
+**Step 1:** Add Spring Security dependency to `pom.xml`:
 
 ```xml
 <dependency>

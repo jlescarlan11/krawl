@@ -759,7 +759,7 @@ Core Principle
 - [User Journey](./user-journey.md) - User flow through site
 - [Content Plan](./content-plan.md) - Content for each page
 - [UI/UX Design System](./ui-ux-design-system.md) - Navigation patterns
-- [Scope of Work](./scope-of-work.md) - Feature pages
+- [Scope of Work](./planning/scope-of-work.md) - Feature pages
 
 ---
 
