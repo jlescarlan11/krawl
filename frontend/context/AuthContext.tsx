@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import * as auth from '@/lib/auth';
+import { config } from '@/lib/config/env';
 
 type AuthState = {
   user: auth.User | null;
@@ -33,6 +34,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch {}
     }
   }, []);
+
+  // Proactive token refresh - check if token expires soon and refresh it
+  useEffect(() => {
+    if (!token) return;
+
+    const isTokenExpiringSoon = (jwtToken: string): boolean => {
+      try {
+        const payload = JSON.parse(atob(jwtToken.split('.')[1]));
+        const expiry = payload.exp * 1000; // Convert to milliseconds
+        const now = Date.now();
+        const timeUntilExpiry = expiry - now;
+        
+        // Refresh if expires in less than 5 minutes
+        return timeUntilExpiry < 5 * 60 * 1000;
+      } catch {
+        return true; // If we can't parse, assume expired
+      }
+    };
+
+    const refreshTokenProactively = async () => {
+      if (isTokenExpiringSoon(token)) {
+        console.log('Token expiring soon, refreshing proactively...');
+        try {
+          const basePath = config.api.getBasePath();
+          const response = await fetch(`${basePath}/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include', // Send HttpOnly cookie
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const newToken = data.token;
+            const newUser = { 
+              id: data.userId, 
+              email: data.email, 
+              username: data.username 
+            };
+            
+            // Update state and storage
+            setToken(newToken);
+            setUser(newUser);
+            
+            const payload = JSON.stringify({ token: newToken, user: newUser });
+            const storage = window.localStorage.getItem('auth') ? window.localStorage : window.sessionStorage;
+            storage.setItem('auth', payload);
+            
+            console.log('Token refreshed proactively');
+          }
+        } catch (error) {
+          console.error('Proactive token refresh failed:', error);
+        }
+      }
+    };
+
+    // Check every minute
+    const interval = setInterval(refreshTokenProactively, 60 * 1000);
+    refreshTokenProactively(); // Initial check
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   const setSession = (t: string, u: auth.User, remember?: boolean) => {
     setToken(t);
