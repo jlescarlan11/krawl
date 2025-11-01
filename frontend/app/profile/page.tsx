@@ -32,6 +32,15 @@ export default function ProfilePage() {
     return () => { mounted = false; };
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <AppLayout showBottomNav={true}>
       <div className="h-full overflow-auto">
@@ -100,6 +109,16 @@ export default function ProfilePage() {
                   onClose={() => setEditOpen(false)}
                   onUpdated={(p) => setProfile(p)}
                 />
+
+                <div className="pt-4 border-t border-neutral-200">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+                  >
+                    Log Out
+                  </button>
+                </div>
               </div>
             </div>
           )}
