@@ -4,6 +4,7 @@ import com.krawl.backend.dto.request.GemCreateRequest;
 import com.krawl.backend.dto.request.GemUpdateRequest;
 import com.krawl.backend.dto.response.GemResponse;
 import com.krawl.backend.entity.Gem;
+import com.krawl.backend.exception.EntityNotFoundException;
 import com.krawl.backend.mapper.GemMapper;
 import com.krawl.backend.repository.GemRepository;
 import com.krawl.backend.repository.UserRepository;
@@ -29,7 +30,7 @@ public class GemServiceImpl implements GemService {
     @Transactional
     public GemResponse createGem(GemCreateRequest request, UUID founderId) {
         var founder = userRepository.findById(founderId)
-            .orElseThrow(() -> new IllegalArgumentException("Founder not found"));
+            .orElseThrow(() -> new EntityNotFoundException("User", founderId));
 
         Gem gem = gemMapper.toEntity(request);
         gem.setFounder(founder);
@@ -41,7 +42,7 @@ public class GemServiceImpl implements GemService {
     @Override
     public GemResponse getGemById(UUID gemId) {
         Gem gem = gemRepository.findById(gemId)
-            .orElseThrow(() -> new IllegalArgumentException("Gem not found"));
+            .orElseThrow(() -> new EntityNotFoundException("Gem", gemId));
         return gemMapper.toResponse(gem);
     }
 
@@ -54,7 +55,7 @@ public class GemServiceImpl implements GemService {
     @Transactional
     public GemResponse updateGem(UUID gemId, GemUpdateRequest request) {
         Gem gem = gemRepository.findById(gemId)
-            .orElseThrow(() -> new IllegalArgumentException("Gem not found"));
+            .orElseThrow(() -> new EntityNotFoundException("Gem", gemId));
 
         gemMapper.updateEntity(gem, request);
         Gem saved = gemRepository.save(gem);

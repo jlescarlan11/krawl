@@ -16,10 +16,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Legacy authentication controller.
+ * 
+ * @deprecated This controller is deprecated. Please use {@link com.krawl.backend.controller.v1.AuthControllerV1} instead.
+ * The legacy endpoints under {@code /api/auth} will be removed in a future release.
+ * Migration path: Replace {@code /api/auth} with {@code /api/v1/auth} in your API calls.
+ * 
+ * @since 1.0.0
+ * @see com.krawl.backend.controller.v1.AuthControllerV1
+ */
+@Deprecated(since = "1.0.0", forRemoval = true)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "User registration and authentication endpoints")
+@Tag(name = "Authentication (Legacy)", description = "DEPRECATED: Use /api/v1/auth endpoints instead. Legacy user registration and authentication endpoints.")
 public class AuthController {
     
     private final AuthenticationService authenticationService;

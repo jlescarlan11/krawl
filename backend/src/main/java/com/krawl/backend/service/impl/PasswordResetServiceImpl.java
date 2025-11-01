@@ -8,6 +8,8 @@ import com.krawl.backend.service.PasswordResetService;
 import com.krawl.backend.service.TokenService;
 import com.krawl.backend.service.email.EmailSender;
 import com.krawl.backend.service.email.EmailTemplates;
+import com.krawl.backend.exception.ValidationException;
+import com.krawl.backend.util.TokenGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -38,6 +38,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final EmailSender emailSender;
     private final TokenService tokenService;
     private final PlatformTransactionManager transactionManager;
+    private final TokenGenerator tokenGenerator;
 
     @Value("${app.frontend-url:http://localhost:3000}")
     private String frontendUrl;
@@ -47,14 +48,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
     @Value("${app.password-reset.resend-cooldown-minutes:5}")
     private long resendCooldownMinutes = 5;
-
-    private static final SecureRandom secureRandom = new SecureRandom();
-
-    private String generateToken() {
-        byte[] bytes = new byte[32]; // 256 bits
-        secureRandom.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
 
     @Override
     public void requestReset(String email) {
@@ -128,7 +121,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
                 // Create new token
                 token = new PasswordResetToken();
                 token.setUser(user);
-                token.setToken(generateToken());
+                token.setToken(tokenGenerator.generateSecureToken());
                 token.setExpiresAt(now.plusMinutes(expiryMinutes));
                 tokenRepository.save(token);
                 log.info("Created new password reset token for user {}.", user.getEmail());
@@ -158,10 +151,10 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Transactional
     public void resetPassword(String tokenValue, String newPassword) {
         PasswordResetToken token = tokenRepository.findByToken(tokenValue)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+                .orElseThrow(() -> new ValidationException("Invalid token"));
 
         if (token.getUsedAt() != null || LocalDateTime.now().isAfter(token.getExpiresAt())) {
-            throw new IllegalStateException("Token expired or used");
+            throw new ValidationException("Token expired or used");
         }
 
         User user = token.getUser();

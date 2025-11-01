@@ -1,6 +1,7 @@
 package com.krawl.backend.service.impl;
 
 import com.krawl.backend.entity.Tag;
+import com.krawl.backend.exception.ConflictException;
 import com.krawl.backend.repository.TagRepository;
 import com.krawl.backend.service.TagService;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class TagServiceImpl implements TagService {
         log.info("Creating new tag: {}", tagName);
         
         if (tagRepository.findByTagName(tagName).isPresent()) {
-            throw new RuntimeException("Tag already exists: " + tagName);
+            throw new ConflictException("Tag already exists: " + tagName);
         }
         
         Tag tag = new Tag();

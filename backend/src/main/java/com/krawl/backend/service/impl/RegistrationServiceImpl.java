@@ -9,9 +9,11 @@ import com.krawl.backend.service.email.EmailSender;
 import com.krawl.backend.service.email.EmailTemplates;
 import com.krawl.backend.dto.response.AuthResponse;
 import com.krawl.backend.entity.User;
+import com.krawl.backend.exception.ConflictException;
 import com.krawl.backend.exception.ValidationException;
 import com.krawl.backend.security.JwtTokenProvider;
 import com.krawl.backend.security.UserPrincipal;
+import com.krawl.backend.util.TokenGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Locale;
 
 @Slf4j
@@ -37,20 +37,13 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final CaptchaVerifier captchaVerifier;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+    private final TokenGenerator tokenGenerator;
 
     @Value("${app.frontend-url:http://localhost:3000}")
     private String frontendUrl;
 
     @Value("${app.registration.expiry-minutes:60}")
     private long expiryMinutes;
-
-    private static final SecureRandom secureRandom = new SecureRandom();
-
-    private String generateToken() {
-        byte[] bytes = new byte[32];
-        secureRandom.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
 
     @Override
     @Transactional
@@ -73,7 +66,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         boolean captchaOk = captchaVerifier.verify(captchaToken, remoteIp);
         if (!captchaOk) {
             log.warn("CAPTCHA verification failed for email: {}", normalizedEmail);
-            throw new IllegalArgumentException("Captcha verification failed");
+            throw new ValidationException("Captcha verification failed");
         }
         log.debug("CAPTCHA verification passed for email: {}", normalizedEmail);
 
@@ -93,7 +86,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         RegistrationToken token = new RegistrationToken();
         token.setEmail(normalizedEmail);
         token.setUsername(normalizedUsername);
-        token.setToken(generateToken());
+        token.setToken(tokenGenerator.generateSecureToken());
         token.setExpiresAt(LocalDateTime.now().plusMinutes(expiryMinutes));
         tokenRepository.save(token);
 
@@ -116,17 +109,17 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     public AuthResponse completeRegistration(String tokenValue, String password) {
         RegistrationToken token = tokenRepository.findByToken(tokenValue)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+                .orElseThrow(() -> new ValidationException("Invalid token"));
 
         if (token.getUsedAt() != null || LocalDateTime.now().isAfter(token.getExpiresAt())) {
-            throw new IllegalStateException("Token expired or used");
+            throw new ValidationException("Token expired or used");
         }
 
         String email = token.getEmail();
         String username = token.getUsername();
 
         if (userRepository.existsByEmail(email) || userRepository.existsByUsername(username)) {
-            throw new IllegalStateException("Username or email already taken");
+            throw new ConflictException("Username or email already taken");
         }
 
         User user = new User();

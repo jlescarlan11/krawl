@@ -9,6 +9,7 @@ import com.krawl.backend.repository.RefreshTokenRepository;
 import com.krawl.backend.repository.UserRepository;
 import com.krawl.backend.security.JwtTokenProvider;
 import com.krawl.backend.service.TokenService;
+import com.krawl.backend.util.TokenGenerator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -38,30 +34,7 @@ public class TokenServiceImpl implements TokenService {
     private final UserRepository userRepository;
     private final JwtProperties jwtProperties;
     private final JwtTokenProvider tokenProvider;
-    private final SecureRandom secureRandom = new SecureRandom();
-    
-    /**
-     * Generate a cryptographically secure random token
-     */
-    private String generateSecureToken() {
-        // Combine UUID with secure random for extra entropy
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        long randomLong = secureRandom.nextLong();
-        return uuid + Long.toHexString(randomLong);
-    }
-    
-    /**
-     * Hash a token using SHA-256 for secure storage
-     */
-    private String hashToken(String token) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 algorithm not available", e);
-        }
-    }
+    private final TokenGenerator tokenGenerator;
     
     @Override
     @Transactional
@@ -70,8 +43,8 @@ public class TokenServiceImpl implements TokenService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         
         // Generate secure token
-        String token = generateSecureToken();
-        String tokenHash = hashToken(token);
+        String token = tokenGenerator.generateSecureToken();
+        String tokenHash = tokenGenerator.hashToken(token);
         
         // Create and save refresh token entity
         RefreshToken refreshToken = new RefreshToken();
@@ -90,7 +63,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     @Transactional
     public Optional<String> validateAndRotateRefreshToken(String refreshToken) {
-        String tokenHash = hashToken(refreshToken);
+        String tokenHash = tokenGenerator.hashToken(refreshToken);
         
         Optional<RefreshToken> storedTokenOpt = refreshTokenRepository.findByTokenHash(tokenHash);
         
@@ -113,8 +86,8 @@ public class TokenServiceImpl implements TokenService {
         
         // Generate new refresh token
         UUID userId = storedToken.getUser().getUserId();
-        String newToken = generateSecureToken();
-        String newTokenHash = hashToken(newToken);
+        String newToken = tokenGenerator.generateSecureToken();
+        String newTokenHash = tokenGenerator.hashToken(newToken);
         
         RefreshToken newRefreshToken = new RefreshToken();
         newRefreshToken.setUser(storedToken.getUser());
@@ -132,7 +105,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     @Transactional
     public void revokeRefreshToken(String refreshToken) {
-        String tokenHash = hashToken(refreshToken);
+        String tokenHash = tokenGenerator.hashToken(refreshToken);
         refreshTokenRepository.findByTokenHash(tokenHash).ifPresent(token -> {
             token.setRevokedAt(LocalDateTime.now());
             refreshTokenRepository.save(token);
@@ -167,7 +140,7 @@ public class TokenServiceImpl implements TokenService {
             
             // Create blacklist entry
             BlacklistedToken blacklisted = new BlacklistedToken();
-            blacklisted.setTokenHash(hashToken(accessToken));
+            blacklisted.setTokenHash(tokenGenerator.hashToken(accessToken));
             blacklisted.setUserId(userId);
             blacklisted.setExpiresAt(expiry.toInstant()
                     .atZone(ZoneId.systemDefault())
@@ -185,7 +158,7 @@ public class TokenServiceImpl implements TokenService {
     
     @Override
     public boolean isAccessTokenBlacklisted(String accessToken) {
-        String tokenHash = hashToken(accessToken);
+        String tokenHash = tokenGenerator.hashToken(accessToken);
         return blacklistedTokenRepository.existsByTokenHash(tokenHash);
     }
     
