@@ -34,3 +34,12 @@ spring:
       # Ensure connections are validated before use
       connection-test-query: SELECT 1
 
+# Email Configuration for Production
+# IMPORTANT: For Render deployments, set MAIL_PROVIDER=mailjet, resend, or sendgrid
+# SMTP ports (25, 587, 465) are blocked on Render
+app:
+  mail:
+    # Use 'mailjet' (recommended - best free tier), 'resend', or 'sendgrid' for Render
+    # Use 'smtp' for other platforms that support SMTP
+    provider: ${MAIL_PROVIDER:mailjet}
+

@@ -66,7 +66,113 @@ CAPTCHA_PROVIDER=recaptcha
 CAPTCHA_SECRET=your-recaptcha-secret-key
 
 # ============================================
-# EMAIL/SMTP CONFIGURATION (Required for Registration Emails)
+# EMAIL CONFIGURATION (Required for Registration Emails)
+# ============================================
+# Choose email provider: 'smtp', 'sendgrid', 'resend', or 'mailjet'
+# 
+# IMPORTANT FOR RENDER DEPLOYMENTS:
+#   Render blocks SMTP ports (25, 587, 465). Use 'mailjet', 'resend', or 'sendgrid'!
+#   Recommended: MAIL_PROVIDER=mailjet (best free tier: 6,000/month, 200/day)
+#
+# For local development or platforms supporting SMTP:
+#   Set: MAIL_PROVIDER=smtp (or omit for default)
+
+MAIL_PROVIDER=mailjet  # Options: 'smtp', 'sendgrid', 'resend', or 'mailjet' (recommended)
+
+# Email sender configuration (required for all providers)
+MAIL_FROM=your-email@example.com
+MAIL_FROM_NAME=Krawl
+
+# Frontend URL - used in registration email links
+# For local development: http://localhost:3000
+# For production: https://your-domain.com
+FRONTEND_URL=http://localhost:3000
+
+# ============================================
+# RESEND CONFIGURATION (Required if MAIL_PROVIDER=resend) - RECOMMENDED
+# ============================================
+# Get your Resend API key from: https://resend.com/api-keys
+# 
+# Steps to create Resend API key:
+# 1. Sign up at https://resend.com (free tier: 3,000 emails/month, 100 emails/day)
+# 2. Go to https://resend.com/api-keys
+# 3. Click "Create API Key"
+# 4. Name it (e.g., "Krawl Production")
+# 5. Select permissions (Email Sending is required)
+# 6. Copy the API key (starts with "re_")
+# 7. Set it as RESEND_API_KEY environment variable
+#
+# Verify sender domain (required for production):
+# 1. Go to https://resend.com/domains
+# 2. Click "Add Domain" and follow DNS setup instructions
+# 3. Or use a verified email address as MAIL_FROM
+#
+# Benefits of Resend:
+# - Modern, developer-friendly API
+# - Better free tier (3,000 emails/month vs 100/day)
+# - Simpler setup than SendGrid
+# - Great documentation and DX
+#
+RESEND_API_KEY=re_your-resend-api-key-here
+
+# ============================================
+# MAILJET CONFIGURATION (Required if MAIL_PROVIDER=mailjet) - RECOMMENDED
+# ============================================
+# Get your Mailjet API keys from: https://app.mailjet.com/account/apikeys
+# 
+# Steps to create Mailjet API keys:
+# 1. Sign up at https://www.mailjet.com (free tier: 6,000 emails/month, 200/day)
+# 2. Go to https://app.mailjet.com/account/apikeys
+# 3. You'll see two keys:
+#    - API Key (Public) - use as MAILJET_API_KEY_PUBLIC
+#    - Secret Key (Private) - use as MAILJET_API_KEY_PRIVATE
+# 4. Copy both keys and set them as environment variables
+#
+# Free tier features:
+# - 6,000 emails/month, 200 emails/day
+# - Mailjet branding included (removed in paid plans)
+# - Access to API, SMTP Relay, and Webhooks
+# - Contact limit: 1,000 contacts (from Oct 2025)
+#
+# Verify sender (recommended):
+# 1. Go to https://app.mailjet.com/account/sender
+# 2. Click "Add a sender" or "Verify a sender"
+# 3. Enter your email address
+# 4. Check inbox and verify
+# 5. Use verified email as MAIL_FROM
+#
+# Benefits of Mailjet:
+# - Best free tier (6,000/month vs SendGrid's 3,000/month or 100/day)
+# - Official Java SDK
+# - Both API and SMTP support
+# - Good deliverability
+#
+MAILJET_API_KEY_PUBLIC=your-mailjet-public-api-key
+MAILJET_API_KEY_PRIVATE=your-mailjet-private-secret-key
+
+# ============================================
+# SENDGRID CONFIGURATION (Required if MAIL_PROVIDER=sendgrid)
+# ============================================
+# Get your SendGrid API key from: https://app.sendgrid.com/settings/api_keys
+# 
+# Steps to create SendGrid API key:
+# 1. Sign up at https://sendgrid.com (free tier: 100 emails/day)
+# 2. Go to Settings > API Keys
+# 3. Click "Create API Key"
+# 4. Name it (e.g., "Krawl Production")
+# 5. Select "Full Access" or "Restricted Access" > "Mail Send" permission
+# 6. Copy the API key (you'll only see it once!)
+# 7. Set it as SENDGRID_API_KEY environment variable
+#
+# Verify sender identity (required for production):
+# 1. Go to Settings > Sender Authentication
+# 2. Verify Single Sender or Domain Authentication
+# 3. Use verified email as MAIL_FROM
+#
+SENDGRID_API_KEY=your-sendgrid-api-key-here
+
+# ============================================
+# SMTP CONFIGURATION (Required if MAIL_PROVIDER=smtp)
 # ============================================
 # Gmail SMTP Settings
 SPRING_MAIL_HOST=smtp.gmail.com
@@ -78,18 +184,8 @@ SPRING_MAIL_PASSWORD=your-app-specific-password
 SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
 SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
 
-# Email sender configuration
-# MAIL_FROM must match the Gmail account used in SPRING_MAIL_USERNAME
-MAIL_FROM=your-gmail-address@gmail.com
-MAIL_FROM_NAME=Krawl
-
-# Frontend URL - used in registration email links
-# For local development: http://localhost:3000
-# For production: https://your-domain.com
-FRONTEND_URL=http://localhost:3000
-
 # ============================================
-# GMAIL APP PASSWORD SETUP
+# GMAIL APP PASSWORD SETUP (For SMTP provider)
 # ============================================
 # Gmail requires App Passwords for SMTP when 2FA is enabled
 # 
