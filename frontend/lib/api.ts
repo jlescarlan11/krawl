@@ -22,7 +22,69 @@ import { ApiError } from './errors/api-error';
 let lastConnectivityCheck = 0;
 let lastConnectivityResult = true;
 
-// Generic fetch wrapper with error handling
+// Token refresh state
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+/**
+ * Refresh access token using refresh token from HttpOnly cookie
+ */
+async function refreshAccessToken(): Promise<string | null> {
+  // Deduplicate concurrent refresh calls
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const basePath = config.api.getBasePath();
+      const response = await fetch(`${basePath}/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include', // Important: send HttpOnly cookie
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Refresh failed');
+      }
+
+      const data = await response.json();
+      const { token } = data;
+
+      // Update stored token
+      if (typeof window !== 'undefined' && token) {
+        const raw = window.localStorage.getItem('auth') || window.sessionStorage.getItem('auth');
+        if (raw) {
+          const auth = JSON.parse(raw);
+          auth.token = token;
+          auth.user = { id: data.userId, email: data.email, username: data.username };
+          const storage = window.localStorage.getItem('auth') ? window.localStorage : window.sessionStorage;
+          storage.setItem('auth', JSON.stringify(auth));
+        }
+      }
+
+      return token;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      // Clear auth on refresh failure
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('auth');
+        window.sessionStorage.removeItem('auth');
+      }
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
+// Generic fetch wrapper with error handling and automatic token refresh
 export async function apiFetch<T>(
   endpoint: string,
   options?: RequestInit
@@ -68,6 +130,7 @@ export async function apiFetch<T>(
   try {
     const response = await fetch(url, {
       ...options,
+      credentials: 'include', // Include cookies for refresh token
       headers: {
         ...defaultHeaders,
         ...authHeader,            // include the Authorization header
@@ -75,14 +138,63 @@ export async function apiFetch<T>(
       },
     });
 
-    if (!response.ok) {
-      // Clear invalid auth on 401
-      if (response.status === 401 && typeof window !== 'undefined') {
-        try {
+    // Handle 401 with token refresh (except for refresh endpoint itself)
+    if (response.status === 401 && !endpoint.includes('/auth/refresh')) {
+      console.log('Received 401, attempting token refresh...');
+      
+      const newToken = await refreshAccessToken();
+      
+      if (newToken) {
+        // Retry original request with new token
+        console.log('Token refreshed, retrying request...');
+        return fetch(url, {
+          ...options,
+          credentials: 'include',
+          headers: {
+            ...defaultHeaders,
+            Authorization: `Bearer ${newToken}`,
+            ...options?.headers,
+          },
+        }).then(async (retryResponse) => {
+          if (!retryResponse.ok) {
+            const apiError = await ApiError.fromResponse(retryResponse);
+            toast.error(apiError.message);
+            throw apiError;
+          }
+          
+          // Handle successful retry response
+          const contentType = retryResponse.headers.get('content-type') || '';
+          const hasJsonBody = contentType.includes('application/json');
+          
+          if (retryResponse.status === 204 || !hasJsonBody) {
+            return undefined as unknown as T;
+          }
+
+          const text = await retryResponse.text();
+          if (!text.trim()) {
+            return undefined as unknown as T;
+          }
+
+          try {
+            return JSON.parse(text) as T;
+          } catch (e) {
+            console.warn('Failed to parse JSON response:', e);
+            return undefined as unknown as T;
+          }
+        });
+      } else {
+        // Refresh failed, clear auth
+        if (typeof window !== 'undefined') {
           window.localStorage.removeItem('auth');
           window.sessionStorage.removeItem('auth');
-        } catch {}
+        }
+        const apiError = await ApiError.fromResponse(response);
+        toast.error(apiError.message);
+        throw apiError;
       }
+    }
+
+    if (!response.ok) {
       const apiError = await ApiError.fromResponse(response);
       toast.error(apiError.message);
       throw apiError;

@@ -3,6 +3,7 @@
 import AppLayout from '@/components/AppLayout';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { getMyProfile } from '@/lib/users';
 import type { MyProfile } from '@/types/user';
 import ProfileHeader from '@/components/profile/ProfileHeader';
@@ -12,7 +13,7 @@ import PageHeaderBar from '@/components/common/PageHeaderBar';
 import TierScoreBanner from './TierScoreBanner';
 import ProfileSkeleton from '@/components/skeletons/ProfileSkeleton';
 import { toUiProfileSelf } from '@/lib/users/uiProfile';
-import { useAuth } from '@/context/AuthContext';
+import { LuLogOut } from 'react-icons/lu';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<MyProfile | null>(null);
@@ -51,13 +52,30 @@ export default function ProfilePage() {
               <PageHeaderBar
                 title="Your Profile"
                 action={
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded-md border border-neutral-300"
-                    onClick={() => setEditOpen(true)}
-                  >
-                    Edit
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      className="px-4 py-2 rounded-md border border-neutral-300 hover:bg-neutral-50 transition-colors"
+                      onClick={() => setEditOpen(true)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="px-4 py-2 rounded-md border border-red-300 text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                      onClick={async () => {
+                        try {
+                          await logout();
+                          router.push('/login');
+                        } catch (error) {
+                          console.error('Logout failed:', error);
+                        }
+                      }}
+                    >
+                      <LuLogOut size={18} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
                 }
               />
 

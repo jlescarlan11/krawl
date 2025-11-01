@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { LuMapPin, LuSearch, LuRoute, LuUser, LuSettings, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
-import { useAuth } from '@/context/AuthContext';
+import { LuMapPin, LuSearch, LuRoute, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
+import { useSidebar } from '@/context/SidebarContext';
 
 const navItems = [
   { href: '/', label: 'Map', icon: LuMapPin },
@@ -12,27 +12,9 @@ const navItems = [
   { href: '/krawls', label: 'Krawls', icon: LuRoute },
 ];
 
-interface SidebarProps {
-  isExpanded: boolean;
-  onToggle: () => void;
-}
-
-export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
+export default function Sidebar() {
   const pathname = usePathname();
-  const { user, isAuthenticated } = useAuth();
-
-  // Get display name: prefer username, fallback to name or email
-  const displayName = user?.username || user?.name || user?.email || 'Guest User';
-  const displaySubtext = isAuthenticated 
-    ? (user?.email || '')
-    : 'Sign in to save progress';
-  
-  // Get avatar initials
-  const getAvatarText = () => {
-    if (!isAuthenticated) return 'GU';
-    const text = user?.username || user?.name || user?.email || '';
-    return text.slice(0, 2).toUpperCase();
-  };
+  const { isExpanded, toggleSidebar } = useSidebar();
 
   return (
     <aside 
@@ -42,37 +24,40 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
         bg-white border-r border-neutral-200 
         flex-col
         transition-all duration-300 ease-in-out
+        shadow-lg
         ${isExpanded ? 'w-80' : 'w-16'}
       `}
     >
       {/* Header Section with Toggle - Aligned with main header */}
       {isExpanded ? (
-        <div className="h-[72px] px-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+        <div className="h-[72px] px-4 flex items-center">
+          <button 
+            onClick={toggleSidebar}
+            className="flex items-center gap-2 group"
+            aria-label="Collapse sidebar"
+          >
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0 relative">
+              {/* Logo - shown by default, fades out on hover */}
               <Image
                 src="/krawl-icon-color.svg"
                 alt="Krawl Logo"
                 width={40}
                 height={40}
-                className="w-8 h-8"
+                className="w-8 h-8 absolute transition-all duration-300 ease-in-out transform group-hover:-rotate-90 group-hover:opacity-0 group-hover:scale-75"
                 priority
               />
+              {/* Collapse icon - hidden by default, fades in on hover */}
+              <div className="absolute opacity-0 transition-all ease-in-out transform rotate-90 scale-75 group-hover:opacity-100 group-hover:rotate-0 group-hover:scale-100 duration-300">
+                <LuChevronLeft size={24} className="text-verde-600" />
+              </div>
             </div>
             <span className="text-xl font-bold text-neutral-900 whitespace-nowrap">Krawl</span>
-          </Link>
-          <button
-            onClick={onToggle}
-            className="p-2 hover:bg-neutral-100 rounded-md transition-colors flex-shrink-0"
-            aria-label="Collapse sidebar"
-          >
-            <LuChevronLeft size={20} className="text-neutral-700" />
           </button>
         </div>
       ) : (
         <div className="h-[72px] px-2 flex flex-col items-center justify-center gap-1 group">
           <button 
-            onClick={onToggle}
+            onClick={toggleSidebar}
             className="flex items-center justify-center relative w-10 h-10"
             aria-label="Expand sidebar"
           >
@@ -145,39 +130,6 @@ export default function Sidebar({ isExpanded, onToggle }: SidebarProps) {
             </div>
         )}
       </nav>
-        
-      {/* Bottom Section - User Profile */}
-      <div className={`${isExpanded ? 'px-4 py-4' : 'px-2 py-2'}`}>
-        {isExpanded ? (
-          <Link
-            href={isAuthenticated ? "/profile" : "/login"}
-            className="flex items-center gap-3 p-2 rounded-md hover:bg-neutral-100 transition-colors"
-          >
-            <div className="w-10 h-10 bg-sand-300 rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-sand-900">
-              {getAvatarText()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-neutral-900 truncate">
-                {displayName}
-              </p>
-              <p className="text-xs text-neutral-500 truncate">{displaySubtext}</p>
-            </div>
-            {isAuthenticated && (
-              <LuSettings size={18} className="text-neutral-400 flex-shrink-0" />
-            )}
-          </Link>
-        ) : (
-          <Link
-            href={isAuthenticated ? "/profile" : "/login"}
-            title={isAuthenticated ? displayName : "Profile"}
-            className="flex items-center justify-center rounded-md hover:bg-neutral-100 transition-colors"
-          >
-            <div className="w-10 h-10 bg-sand-300 rounded-full flex items-center justify-center font-semibold text-sand-900">
-              {getAvatarText()}
-            </div>
-          </Link>
-        )}
-      </div>
     </aside>
   );
 }

@@ -1,275 +1,59 @@
-# Krawl Backend - Environment Variables Example
-# Copy this file and configure for your environment
-# 
-# For local development:
-#   - Copy to .env and update values
-#   - Or export these in your shell
-#
-# For production/staging:
-#   - Set these in your deployment platform (Render, AWS, Heroku, etc.)
-#   - Never commit actual values to git!
+# ============================================
+# DATABASE CONFIGURATION
+# ============================================
+DATABASE_URL=jdbc:postgresql://localhost:5432/your_database_name
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
 
 # ============================================
-# DATABASE CONFIGURATION (Required)
-# ============================================
-DB_USER=krawl_user
-DB_PASSWORD=krawl_dev_password_2025
-
-# ============================================
-# SERVER CONFIGURATION (Optional)
+# SERVER CONFIGURATION
 # ============================================
 SERVER_PORT=8080
+SPRING_PROFILES_ACTIVE=dev
 
 # ============================================
-# CORS CONFIGURATION (Optional)
+# CORS CONFIGURATION
 # ============================================
 # Comma-separated list of allowed origins
-# 
-# Examples:
-#   Local Development:
-#     CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
-#
-#   Staging:
-#     CORS_ALLOWED_ORIGINS=https://staging.krawl.com,https://test.krawl.com
-#
-#   Production:
-#     CORS_ALLOWED_ORIGINS=https://krawl.app,https://www.krawl.app
-#
-#   Vercel Preview (wildcard):
-#     CORS_ALLOWED_ORIGINS=https://*.vercel.app
-#
-# Default if not set: http://localhost:3000,http://localhost:3001
 CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
-
-# ============================================
-# CLOUDINARY CONFIGURATION (Required)
-# ============================================
-# Get these from: https://cloudinary.com/console
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-CLOUDINARY_FOLDER=krawl-gems
-
-# ============================================
-# CAPTCHA CONFIGURATION (Required for Registration)
-# ============================================
-# CAPTCHA provider: recaptcha (Google reCAPTCHA) or hcaptcha
-# Default if not set: hcaptcha
-CAPTCHA_PROVIDER=recaptcha
-
-# Get your reCAPTCHA secret key from:
-# 1. Go to https://www.google.com/recaptcha/admin
-# 2. Select or create your site
-# 3. Copy the "Secret key" (not the Site key)
-# The Secret key is used by the backend to verify tokens
-# The Site key is used by the frontend (set as NEXT_PUBLIC_RECAPTCHA_SITEKEY)
-CAPTCHA_SECRET=your-recaptcha-secret-key
-
-# ============================================
-# EMAIL CONFIGURATION (Required for Registration Emails)
-# ============================================
-# Choose email provider: 'smtp', 'sendgrid', 'resend', or 'mailjet'
-# 
-# IMPORTANT FOR RENDER DEPLOYMENTS:
-#   Render blocks SMTP ports (25, 587, 465). Use 'mailjet', 'resend', or 'sendgrid'!
-#   Recommended: MAIL_PROVIDER=mailjet (best free tier: 6,000/month, 200/day)
-#
-# For local development or platforms supporting SMTP:
-#   Set: MAIL_PROVIDER=smtp (or omit for default)
-
-MAIL_PROVIDER=mailjet  # Options: 'smtp', 'sendgrid', 'resend', or 'mailjet' (recommended)
-
-# Email sender configuration (required for all providers)
-MAIL_FROM=your-email@example.com
-MAIL_FROM_NAME=Krawl
-
-# Frontend URL - used in registration email links
-# For local development: http://localhost:3000
-# For production: https://your-domain.com
 FRONTEND_URL=http://localhost:3000
 
 # ============================================
-# RESEND CONFIGURATION (Required if MAIL_PROVIDER=resend) - RECOMMENDED
+# JWT AUTHENTICATION
 # ============================================
-# Get your Resend API key from: https://resend.com/api-keys
-# 
-# Steps to create Resend API key:
-# 1. Sign up at https://resend.com (free tier: 3,000 emails/month, 100 emails/day)
-# 2. Go to https://resend.com/api-keys
-# 3. Click "Create API Key"
-# 4. Name it (e.g., "Krawl Production")
-# 5. Select permissions (Email Sending is required)
-# 6. Copy the API key (starts with "re_")
-# 7. Set it as RESEND_API_KEY environment variable
-#
-# Verify sender domain (required for production):
-# 1. Go to https://resend.com/domains
-# 2. Click "Add Domain" and follow DNS setup instructions
-# 3. Or use a verified email address as MAIL_FROM
-#
-# Benefits of Resend:
-# - Modern, developer-friendly API
-# - Better free tier (3,000 emails/month vs 100/day)
-# - Simpler setup than SendGrid
-# - Great documentation and DX
-#
-RESEND_API_KEY=re_your-resend-api-key-here
+# Generate a secure random string (256+ bits recommended)
+# You can generate one using: openssl rand -base64 256
+JWT_SECRET=your_jwt_secret_here_minimum_256_bits
+# Token expiration in milliseconds (86400000 = 24 hours)
+JWT_EXPIRATION=86400000
 
 # ============================================
-# MAILJET CONFIGURATION (Required if MAIL_PROVIDER=mailjet) - RECOMMENDED
+# CLOUDINARY CONFIGURATION
 # ============================================
-# Get your Mailjet API keys from: https://app.mailjet.com/account/apikeys
-# 
-# Steps to create Mailjet API keys:
-# 1. Sign up at https://www.mailjet.com (free tier: 6,000 emails/month, 200/day)
-# 2. Go to https://app.mailjet.com/account/apikeys
-# 3. You'll see two keys:
-#    - API Key (Public) - use as MAILJET_API_KEY_PUBLIC
-#    - Secret Key (Private) - use as MAILJET_API_KEY_PRIVATE
-# 4. Copy both keys and set them as environment variables
-#
-# Free tier features:
-# - 6,000 emails/month, 200 emails/day
-# - Mailjet branding included (removed in paid plans)
-# - Access to API, SMTP Relay, and Webhooks
-# - Contact limit: 1,000 contacts (from Oct 2025)
-#
-# Verify sender (recommended):
-# 1. Go to https://app.mailjet.com/account/sender
-# 2. Click "Add a sender" or "Verify a sender"
-# 3. Enter your email address
-# 4. Check inbox and verify
-# 5. Use verified email as MAIL_FROM
-#
-# Benefits of Mailjet:
-# - Best free tier (6,000/month vs SendGrid's 3,000/month or 100/day)
-# - Official Java SDK
-# - Both API and SMTP support
-# - Good deliverability
-#
-MAILJET_API_KEY_PUBLIC=your-mailjet-public-api-key
-MAILJET_API_KEY_PRIVATE=your-mailjet-private-secret-key
+# Get credentials from: https://cloudinary.com/console
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+CLOUDINARY_FOLDER=your_upload_folder
 
 # ============================================
-# SENDGRID CONFIGURATION (Required if MAIL_PROVIDER=sendgrid)
+# EMAIL CONFIGURATION (Mailjet)
 # ============================================
-# Get your SendGrid API key from: https://app.sendgrid.com/settings/api_keys
-# 
-# Steps to create SendGrid API key:
-# 1. Sign up at https://sendgrid.com (free tier: 100 emails/day)
-# 2. Go to Settings > API Keys
-# 3. Click "Create API Key"
-# 4. Name it (e.g., "Krawl Production")
-# 5. Select "Full Access" or "Restricted Access" > "Mail Send" permission
-# 6. Copy the API key (you'll only see it once!)
-# 7. Set it as SENDGRID_API_KEY environment variable
-#
-# Verify sender identity (required for production):
-# 1. Go to Settings > Sender Authentication
-# 2. Verify Single Sender or Domain Authentication
-# 3. Use verified email as MAIL_FROM
-#
-SENDGRID_API_KEY=your-sendgrid-api-key-here
+# Choose your email provider: mailjet or resend
+MAIL_PROVIDER=mailjet
+MAIL_FROM=your_email@example.com
+MAIL_FROM_NAME=Your App Name
+
+# Mailjet credentials (get from: https://app.mailjet.com/account/apikeys)
+MAILJET_API_KEY_PUBLIC=your_mailjet_public_key
+MAILJET_API_KEY_PRIVATE=your_mailjet_private_key
+
+# Alternative: Resend email provider (get from: https://resend.com/api-keys)
+# RESEND_API_KEY=your_resend_api_key
 
 # ============================================
-# SMTP CONFIGURATION (Required if MAIL_PROVIDER=smtp)
+# CAPTCHA CONFIGURATION (reCAPTCHA)
 # ============================================
-# Gmail SMTP Settings
-SPRING_MAIL_HOST=smtp.gmail.com
-SPRING_MAIL_PORT=587
-SPRING_MAIL_USERNAME=your-gmail-address@gmail.com
-# IMPORTANT: Use App Password, not your regular Gmail password!
-# See instructions below for creating App Password
-SPRING_MAIL_PASSWORD=your-app-specific-password
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
-
-# ============================================
-# GMAIL APP PASSWORD SETUP (For SMTP provider)
-# ============================================
-# Gmail requires App Passwords for SMTP when 2FA is enabled
-# 
-# Steps to create App Password:
-# 1. Enable 2-Step Verification on your Google account:
-#    - Go to https://myaccount.google.com/security
-#    - Enable "2-Step Verification"
-#
-# 2. Generate App Password:
-#    - Go to https://myaccount.google.com/apppasswords
-#    - Select "Mail" and your device
-#    - Click "Generate"
-#    - Copy the 16-character password (no spaces)
-#    - Use this password as SPRING_MAIL_PASSWORD
-#
-# If 2FA is not enabled, you may need to:
-# - Enable "Less secure app access" (not recommended)
-# - OR enable 2FA and use App Password (recommended)
-#
-# For workspace/enterprise Gmail accounts, contact your admin
-
-# ============================================
-# SPRING PROFILES (Optional)
-# ============================================
-# Active profile determines which application-{profile}.yaml to load
-# Options: dev, prod
-# 
-# Examples:
-#   Development:
-#     SPRING_PROFILES_ACTIVE=dev
-#
-#   Production:
-#     SPRING_PROFILES_ACTIVE=prod
-#
-# Default if not set: Uses application.yaml only
-# SPRING_PROFILES_ACTIVE=dev
-
-# ============================================
-# HOW TO USE
-# ============================================
-#
-# Option 1 - Export in shell (Linux/Mac):
-#   export DB_USER=krawl_user
-#   export DB_PASSWORD=krawl_dev_password_2025
-#   export CORS_ALLOWED_ORIGINS=http://localhost:3000
-#   ./mvnw spring-boot:run
-#
-# Option 2 - Export in PowerShell (Windows):
-#   $env:DB_USER="krawl_user"
-#   $env:DB_PASSWORD="krawl_dev_password_2025"
-#   $env:CORS_ALLOWED_ORIGINS="http://localhost:3000"
-#   ./mvnw spring-boot:run
-#
-# Option 3 - Create .env file (with docker-compose):
-#   Copy this file to .env and update values
-#   docker-compose up
-#
-# Option 4 - IDE Configuration:
-#   IntelliJ IDEA: Run > Edit Configurations > Environment Variables
-#   VS Code: .vscode/launch.json > "env" section
-#
-# Option 5 - Deployment Platforms:
-#   Render: Environment > Add Environment Variable
-#   Heroku: Settings > Config Vars
-#   AWS: ECS Task Definition > Environment Variables
-#   Vercel: Settings > Environment Variables
-
-# ============================================
-# DEPLOYMENT EXAMPLES
-# ============================================
-#
-# Local Development:
-#   CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
-#   SPRING_PROFILES_ACTIVE=dev
-#
-# Staging Server:
-#   CORS_ALLOWED_ORIGINS=https://staging.krawl.com,https://test.krawl.com
-#   SPRING_PROFILES_ACTIVE=prod
-#
-# Production Server:
-#   CORS_ALLOWED_ORIGINS=https://krawl.app,https://www.krawl.app
-#   SPRING_PROFILES_ACTIVE=prod
-#
-# With Vercel Previews:
-#   CORS_ALLOWED_ORIGINS=https://krawl.vercel.app,https://*.vercel.app
-#   SPRING_PROFILES_ACTIVE=prod
-
+# Get credentials from: https://www.google.com/recaptcha/admin
+CAPTCHA_PROVIDER=recaptcha
+CAPTCHA_SECRET=your_recaptcha_secret_key

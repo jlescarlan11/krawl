@@ -5,7 +5,7 @@ import MapWrapper from '@/components/MapWrapper';
 export default function Home() {
   return (
    <ErrorBoundary>
-      <AppLayout showBottomNav={true}>
+      <AppLayout showBottomNav={true} fixedLayout={true}>
         <MapWrapper />
       </AppLayout>
     </ErrorBoundary>
