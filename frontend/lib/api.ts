@@ -14,75 +14,17 @@ import {
 } from './db';
 import { checkActualConnectivity } from './utils/network';
 import { offlineFirstFetch, createWithOfflineSupport } from './api/offline-first';
+import { parseApiResponse } from './api/response';
+import { API_ROUTES } from './api/routes';
 import { config } from './config/env';
 import { API_CONSTANTS } from './constants';
 import { ApiError } from './errors/api-error';
+import { refreshAccessToken } from './auth/token';
+import { clearAuthData, getAuthToken } from './auth/storage';
 
 // Connectivity check caching to avoid checking on every request
 let lastConnectivityCheck = 0;
 let lastConnectivityResult = true;
-
-// Token refresh state
-let isRefreshing = false;
-let refreshPromise: Promise<string | null> | null = null;
-
-/**
- * Refresh access token using refresh token from HttpOnly cookie
- */
-async function refreshAccessToken(): Promise<string | null> {
-  // Deduplicate concurrent refresh calls
-  if (isRefreshing && refreshPromise) {
-    return refreshPromise;
-  }
-
-  isRefreshing = true;
-  refreshPromise = (async () => {
-    try {
-      const basePath = config.api.getBasePath();
-      const response = await fetch(`${basePath}/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include', // Important: send HttpOnly cookie
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Refresh failed');
-      }
-
-      const data = await response.json();
-      const { token } = data;
-
-      // Update stored token
-      if (typeof window !== 'undefined' && token) {
-        const raw = window.localStorage.getItem('auth') || window.sessionStorage.getItem('auth');
-        if (raw) {
-          const auth = JSON.parse(raw);
-          auth.token = token;
-          auth.user = { id: data.userId, email: data.email, username: data.username };
-          const storage = window.localStorage.getItem('auth') ? window.localStorage : window.sessionStorage;
-          storage.setItem('auth', JSON.stringify(auth));
-        }
-      }
-
-      return token;
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      // Clear auth on refresh failure
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem('auth');
-        window.sessionStorage.removeItem('auth');
-      }
-      return null;
-    } finally {
-      isRefreshing = false;
-      refreshPromise = null;
-    }
-  })();
-
-  return refreshPromise;
-}
 
 // Generic fetch wrapper with error handling and automatic token refresh
 export async function apiFetch<T>(
@@ -97,7 +39,7 @@ export async function apiFetch<T>(
   if (now - lastConnectivityCheck > API_CONSTANTS.CONNECTIVITY_CACHE_MS) {
     try {
       // Health endpoint is not versioned on the backend, use baseURL directly
-      lastConnectivityResult = await checkActualConnectivity(`${config.api.baseURL}/api/health`)
+      lastConnectivityResult = await checkActualConnectivity(`${config.api.baseURL}${API_ROUTES.HEALTH}`)
         .catch(() => checkActualConnectivity('/manifest.json'));
       lastConnectivityCheck = now;
     } catch {
@@ -115,16 +57,11 @@ export async function apiFetch<T>(
     'Content-Type': 'application/json',
   };
 
-  // Attach JWT if present (from either localStorage or sessionStorage)
-  let authHeader: Record<string, string> = {};
-  if (typeof window !== 'undefined') {
-    try {
-      const raw = window.localStorage.getItem('auth') || window.sessionStorage.getItem('auth');
-      if (raw) {
-        const { token } = JSON.parse(raw);
-        if (token) authHeader.Authorization = `Bearer ${token}`;
-      }
-    } catch {}
+  // Attach JWT if present
+  const token = getAuthToken();
+  const authHeader: Record<string, string> = {};
+  if (token) {
+    authHeader.Authorization = `Bearer ${token}`;
   }
 
   try {
@@ -139,7 +76,7 @@ export async function apiFetch<T>(
     });
 
     // Handle 401 with token refresh (except for refresh endpoint itself)
-    if (response.status === 401 && !endpoint.includes('/auth/refresh')) {
+    if (response.status === 401 && !endpoint.includes(API_ROUTES.AUTH.REFRESH)) {
       console.log('Received 401, attempting token refresh...');
       
       const newToken = await refreshAccessToken();
@@ -147,7 +84,7 @@ export async function apiFetch<T>(
       if (newToken) {
         // Retry original request with new token
         console.log('Token refreshed, retrying request...');
-        return fetch(url, {
+        const retryResponse = await fetch(url, {
           ...options,
           credentials: 'include',
           headers: {
@@ -155,39 +92,18 @@ export async function apiFetch<T>(
             Authorization: `Bearer ${newToken}`,
             ...options?.headers,
           },
-        }).then(async (retryResponse) => {
-          if (!retryResponse.ok) {
-            const apiError = await ApiError.fromResponse(retryResponse);
-            toast.error(apiError.message);
-            throw apiError;
-          }
-          
-          // Handle successful retry response
-          const contentType = retryResponse.headers.get('content-type') || '';
-          const hasJsonBody = contentType.includes('application/json');
-          
-          if (retryResponse.status === 204 || !hasJsonBody) {
-            return undefined as unknown as T;
-          }
-
-          const text = await retryResponse.text();
-          if (!text.trim()) {
-            return undefined as unknown as T;
-          }
-
-          try {
-            return JSON.parse(text) as T;
-          } catch (e) {
-            console.warn('Failed to parse JSON response:', e);
-            return undefined as unknown as T;
-          }
         });
+
+        if (!retryResponse.ok) {
+          const apiError = await ApiError.fromResponse(retryResponse);
+          toast.error(apiError.message);
+          throw apiError;
+        }
+
+        return parseApiResponse<T>(retryResponse);
       } else {
         // Refresh failed, clear auth
-        if (typeof window !== 'undefined') {
-          window.localStorage.removeItem('auth');
-          window.sessionStorage.removeItem('auth');
-        }
+        clearAuthData();
         const apiError = await ApiError.fromResponse(response);
         toast.error(apiError.message);
         throw apiError;
@@ -200,29 +116,7 @@ export async function apiFetch<T>(
       throw apiError;
     }
 
-    // Check if response has a body before parsing JSON
-    const contentType = response.headers.get('content-type') || '';
-    const hasJsonBody = contentType.includes('application/json');
-    
-    // Handle 204 No Content or empty 200 responses
-    if (response.status === 204 || !hasJsonBody) {
-      return undefined as unknown as T;
-    }
-
-    // Read response as text first to check if empty
-    const text = await response.text();
-    if (!text.trim()) {
-      return undefined as unknown as T;
-    }
-
-    // Parse JSON only if content exists
-    try {
-      return JSON.parse(text) as T;
-    } catch (e) {
-      // If parsing fails, still return undefined rather than crashing
-      console.warn('Failed to parse JSON response, treating as empty:', e);
-      return undefined as unknown as T;
-    }
+    return parseApiResponse<T>(response);
   } catch (error) {
     console.error('API Fetch Error:', error);
     
@@ -252,14 +146,14 @@ export async function apiFetch<T>(
 export const api = {
   // Gems
   getGems: () => offlineFirstFetch({
-    fetchFn: () => apiFetch<Gem[]>('/gems'),
+    fetchFn: () => apiFetch<Gem[]>(API_ROUTES.GEMS.BASE),
     getCachedFn: getAllGems,
     saveCacheFn: saveGems,
     resourceName: 'gems',
   }),
 
   getGemById: (id: string) => offlineFirstFetch({
-    fetchFn: () => apiFetch<Gem>(`/gems/${id}`),
+    fetchFn: () => apiFetch<Gem>(API_ROUTES.GEMS.BY_ID(id)),
     getCachedFn: async () => {
       const gem = await getGem(id);
       return gem ?? null;
@@ -270,14 +164,14 @@ export const api = {
 
   // Krawls
   getKrawls: () => offlineFirstFetch({
-    fetchFn: () => apiFetch<Krawl[]>('/krawls'),
+    fetchFn: () => apiFetch<Krawl[]>(API_ROUTES.KRAWLS.BASE),
     getCachedFn: getAllKrawls,
     saveCacheFn: saveKrawls,
     resourceName: 'krawls',
   }),
 
   getKrawlById: (id: string) => offlineFirstFetch({
-    fetchFn: () => apiFetch<Krawl>(`/krawls/${id}`),
+    fetchFn: () => apiFetch<Krawl>(API_ROUTES.KRAWLS.BY_ID(id)),
     getCachedFn: async () => {
       const krawl = await getKrawl(id);
       return krawl ?? null;
@@ -289,7 +183,7 @@ export const api = {
   // Create with offline support
   createGem: (gemData: Omit<Gem, 'gem_id' | 'created_at' | 'updated_at'>) => createWithOfflineSupport({
     data: gemData,
-    createFn: (data) => apiFetch<Gem>('/gems', {
+    createFn: (data) => apiFetch<Gem>(API_ROUTES.GEMS.BASE, {
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -308,7 +202,7 @@ export const api = {
 
   createKrawl: (krawlData: Omit<Krawl, 'krawl_id' | 'created_at' | 'updated_at'>) => createWithOfflineSupport({
     data: krawlData,
-    createFn: (data) => apiFetch<Krawl>('/krawls', {
+    createFn: (data) => apiFetch<Krawl>(API_ROUTES.KRAWLS.BASE, {
       method: 'POST',
       body: JSON.stringify(data),
     }),

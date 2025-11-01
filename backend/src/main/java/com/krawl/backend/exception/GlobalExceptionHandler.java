@@ -172,11 +172,20 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex,
             WebRequest request) {
         
-        log.warn("Invalid argument: {}", ex.getMessage());
+        String errorMessage = ex.getMessage();
+        
+        // Sanitize error messages that might contain formatting issues
+        // Format errors from String.formatted() can have confusing messages
+        if (errorMessage != null && errorMessage.contains("Conversion =")) {
+            log.warn("Format string error detected: {}", errorMessage);
+            errorMessage = "Invalid request format. Please check your input and try again.";
+        }
+        
+        log.warn("Invalid argument: {}", errorMessage);
         
         ErrorResponse error = new ErrorResponse(
             "INVALID_ARGUMENT",
-            ex.getMessage(),
+            errorMessage != null ? errorMessage : "Invalid argument provided",
             HttpStatus.BAD_REQUEST.value(),
             request.getDescription(false).replace("uri=", "")
         );

@@ -4,12 +4,14 @@ import com.krawl.backend.entity.PasswordResetToken;
 import com.krawl.backend.entity.User;
 import com.krawl.backend.repository.PasswordResetTokenRepository;
 import com.krawl.backend.repository.UserRepository;
+import com.krawl.backend.service.TokenService;
 import com.krawl.backend.service.email.EmailSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +27,8 @@ class PasswordResetServiceImplTest {
     private PasswordResetTokenRepository tokenRepository;
     private PasswordEncoder passwordEncoder;
     private EmailSender emailSender;
+    private TokenService tokenService;
+    private PlatformTransactionManager transactionManager;
     private PasswordResetServiceImpl service;
 
     @BeforeEach
@@ -33,12 +37,15 @@ class PasswordResetServiceImplTest {
         tokenRepository = mock(PasswordResetTokenRepository.class);
         passwordEncoder = mock(PasswordEncoder.class);
         emailSender = mock(EmailSender.class);
+        tokenService = mock(TokenService.class);
+        transactionManager = mock(PlatformTransactionManager.class);
 
-        service = new PasswordResetServiceImpl(userRepository, tokenRepository, passwordEncoder, emailSender);
+        service = new PasswordResetServiceImpl(userRepository, tokenRepository, passwordEncoder, emailSender, tokenService, transactionManager);
 
         // Inject defaults
         TestUtils.setField(service, "frontendUrl", "http://localhost:3000");
         TestUtils.setField(service, "expiryMinutes", 30L);
+        TestUtils.setField(service, "resendCooldownMinutes", 5L);
     }
 
     @Test
@@ -47,18 +54,42 @@ class PasswordResetServiceImplTest {
         user.setUserId(UUID.randomUUID());
         user.setEmail("user@example.com");
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+        // No existing active token
+        when(tokenRepository.findActiveTokenByUserId(user.getUserId())).thenReturn(Optional.empty());
 
         service.requestReset("user@example.com");
 
         verify(tokenRepository).deleteByUser_UserId(user.getUserId());
         verify(tokenRepository).save(any(PasswordResetToken.class));
-        verify(emailSender).sendEmailAsync(eq("user@example.com"), anyString(), contains("/reset-password?token="));
+        verify(emailSender).sendEmailAsync(eq("user@example.com"), anyString(), contains("/reset-password/"));
     }
 
     @Test
     void resetPassword_throwsOnInvalidToken() {
         when(tokenRepository.findByToken("bad")).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> service.resetPassword("bad", "newPass123"));
+    }
+
+    @Test
+    void requestReset_reusesExistingToken_whenActiveTokenExists() {
+        User user = new User();
+        user.setUserId(UUID.randomUUID());
+        user.setEmail("user@example.com");
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+        
+        // Existing active token
+        PasswordResetToken existingToken = new PasswordResetToken();
+        existingToken.setToken("existing-token");
+        existingToken.setUser(user);
+        existingToken.setCreatedAt(java.time.LocalDateTime.now().minusMinutes(10)); // Created 10 minutes ago (past cooldown)
+        when(tokenRepository.findActiveTokenByUserId(user.getUserId())).thenReturn(Optional.of(existingToken));
+
+        service.requestReset("user@example.com");
+
+        // Should resend existing token, not create new one
+        verify(tokenRepository, never()).deleteByUser_UserId(user.getUserId());
+        verify(tokenRepository, never()).save(any(PasswordResetToken.class));
+        verify(emailSender).sendEmailAsync(eq("user@example.com"), anyString(), contains("/reset-password/"));
     }
 
     // Simple reflection util to set private fields for test

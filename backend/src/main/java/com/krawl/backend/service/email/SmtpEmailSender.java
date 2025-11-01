@@ -90,7 +90,7 @@ public class SmtpEmailSender implements EmailSender {
             helper.setFrom(new InternetAddress(from, fromName));
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(body, false);
+            helper.setText(body, true); // true = HTML content
             
             log.debug("MIME message created successfully. Sending via SMTP...");
             mailSender.send(mime);

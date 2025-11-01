@@ -6,6 +6,7 @@ import com.krawl.backend.repository.RegistrationTokenRepository;
 import com.krawl.backend.repository.UserRepository;
 import com.krawl.backend.service.RegistrationService;
 import com.krawl.backend.service.email.EmailSender;
+import com.krawl.backend.service.email.EmailTemplates;
 import com.krawl.backend.dto.response.AuthResponse;
 import com.krawl.backend.entity.User;
 import com.krawl.backend.exception.ValidationException;
@@ -98,10 +99,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         String link = String.format("%s/signup/complete/%s", frontendUrl, token.getToken());
         String subject = "Complete your Krawl account";
-        String body = ("You're almost there!\n\n" +
-                "Click the link below to set your password and activate your Krawl account (valid for %d minutes):\n%s\n\n" +
-                "If you didn't request this, you can ignore this email.")
-                .formatted(expiryMinutes, link);
+        String body = EmailTemplates.registrationVerificationEmail(link, expiryMinutes);
 
         log.info("Registration verification link for {} (username: {}): {}", normalizedEmail, normalizedUsername, link);
         log.debug("Sending registration email to: {}", normalizedEmail);
