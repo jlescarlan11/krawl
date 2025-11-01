@@ -2,8 +2,6 @@
 
 import AppLayout from '@/components/AppLayout';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
 import { getMyProfile } from '@/lib/users';
 import type { MyProfile } from '@/types/user';
 import ProfileHeader from '@/components/profile/ProfileHeader';
@@ -13,13 +11,15 @@ import PageHeaderBar from '@/components/common/PageHeaderBar';
 import TierScoreBanner from './TierScoreBanner';
 import ProfileSkeleton from '@/components/skeletons/ProfileSkeleton';
 import { toUiProfileSelf } from '@/lib/users/uiProfile';
-import { LuLogOut } from 'react-icons/lu';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<MyProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const { logout } = useAuth();
   const router = useRouter();
 
@@ -52,30 +52,13 @@ export default function ProfilePage() {
               <PageHeaderBar
                 title="Your Profile"
                 action={
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      className="px-4 py-2 rounded-md border border-neutral-300 hover:bg-neutral-50 transition-colors"
-                      onClick={() => setEditOpen(true)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="px-4 py-2 rounded-md border border-red-300 text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
-                      onClick={async () => {
-                        try {
-                          await logout();
-                          router.push('/login');
-                        } catch (error) {
-                          console.error('Logout failed:', error);
-                        }
-                      }}
-                    >
-                      <LuLogOut size={18} />
-                      <span>Logout</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-md border border-neutral-300"
+                    onClick={() => router.back()}
+                  >
+                    Back
+                  </button>
                 }
               />
 
@@ -101,6 +84,35 @@ export default function ProfilePage() {
                   gemsCreated={profile.gemsCreated}
                   krawlsCreated={profile.krawlsCreated}
                 />
+
+                <div className="border-t border-neutral-200" />
+
+                <div className="pt-2 flex gap-3">
+                  <button
+                    type="button"
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-md border border-neutral-300"
+                    onClick={() => setEditOpen(true)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-md border border-red-300 text-red-700 hover:bg-red-50 disabled:opacity-50"
+                    onClick={async () => {
+                      if (loggingOut) return;
+                      setLoggingOut(true);
+                      try {
+                        await logout();
+                        router.push('/login');
+                      } finally {
+                        setLoggingOut(false);
+                      }
+                    }}
+                    disabled={loggingOut}
+                  >
+                    {loggingOut ? 'Logging out…' : 'Log out'}
+                  </button>
+                </div>
 
                 <ProfileEditModal
                   open={editOpen}
