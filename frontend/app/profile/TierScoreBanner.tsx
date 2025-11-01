@@ -26,42 +26,38 @@ export default function TierScoreBanner({
     return undefined;
   })();
 
+  // Only show status if earned (score > 0 or max tier)
+  const showStatus = score > 0 || tier === 'Krawl Master';
+
   return (
-    <div className="w-full rounded-lg bg-verde-700 text-white p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+    <div className="w-full rounded-lg bg-verde-500 text-white p-4 shadow-md">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4">
         {/* Left: Tier Info */}
-        <div className="flex items-start gap-3">
-          <LuCrown className="text-yellow-400 shrink-0 mt-1" size={24} />
+        <div className="flex items-center gap-2">
+          <LuCrown className="text-mango-400 shrink-0" size={20} />
           <div>
-           <div className="heading-4 text-white">{tier}</div>
-{displayTierNum && (
-  <div className="body-sm text-white mt-0.5">Tier {displayTierNum}</div>
-)}
+            <div className="heading-5 text-white">{tier}</div>
+            {displayTierNum && (
+              <div className="body-xs text-white/80">Tier {displayTierNum}</div>
+            )}
           </div>
         </div>
 
         {/* Right: Score & Status */}
         <div className="text-left sm:text-right">
-          <div className="flex items-baseline gap-2 justify-end">
-            <LuStar className="text-yellow-400 shrink-0" size={18} />
-            <div>
-
-<span className="heading-3 text-white">{formattedScore}</span>
-<span className="body-sm text-white ml-1">points</span>
-
-            </div>
+          <div className="flex items-center gap-2 sm:justify-end">
+            <LuStar className="text-mango-400 shrink-0" size={16} />
+            <span className="heading-5 text-white">{formattedScore}</span>
+            <span className="body-xs text-white/80">points</span>
           </div>
-          {statusMessage && (
-            <div className="flex items-center gap-1.5 justify-end mt-2">
-              <LuSparkles className="text-yellow-300 shrink-0" size={14} />
-             
-<span className="body-sm text-white">{statusMessage}</span>
-
+          {showStatus && statusMessage && (
+            <div className="flex items-center gap-1.5 sm:justify-end mt-1">
+              <LuSparkles className="text-mango-400 shrink-0" size={12} />
+              <span className="body-xs text-white/90">{statusMessage}</span>
             </div>
           )}
           {subtitle && (
-     
-<div className="body-xs text-white mt-1">{subtitle}</div>
+            <div className="body-xs text-white/80 mt-1">{subtitle}</div>
           )}
         </div>
       </div>
