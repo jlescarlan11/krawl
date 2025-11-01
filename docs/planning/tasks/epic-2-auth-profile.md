@@ -4,7 +4,7 @@
 
 **Epic ID:** EPIC-2  
 **Priority:** 🔴 Critical  
-**Status:** 🟢 Mostly Complete (90%)  
+**Status:** ✅ Complete (100%)  
 **Owner:** Backend & Frontend Developers
 
 ---
@@ -14,9 +14,9 @@
 - ✅ User registration with email/password
 - ✅ Login with JWT authentication
 - ✅ Frontend login UI with redirect and remember-me
-- 🟡 Profile viewing and editing
-- ⚪ Session management and refresh tokens
-- ⚪ Password reset flow
+- ✅ Profile viewing and editing
+- ✅ Session management and refresh tokens
+- ✅ Password reset flow
 
 ---
 
@@ -27,11 +27,14 @@
 │  To Do              In Progress            Done      │
 ├──────────────────────────────────────────────────────┤
 │                                                       │
-│                      AU-3                AU-1 ✅   │
+│                                          AU-1 ✅   │
 │                                          AU-2 ✅        │
-│  AU-7                                    AU-4 ✅        │
-│                                           AU-5 ✅       │
-│                                           AU-6 ✅       │
+│                                          AU-3 ✅        │
+│                                          AU-4 ✅        │
+│                                          AU-5 ✅       │
+│                                          AU-6 ✅       │
+│                                          AU-7 ✅       │
+│                                          AU-8 ✅       │
 │                                                       │
 └──────────────────────────────────────────────────────┘
 ```
@@ -231,48 +234,56 @@
 
 ---
 
-### ⚪ AU-7: Implement Session Management
+### ✅ AU-7: Implement Session Management
 
 **Description:** Handle token refresh and session expiration.
 
 **Acceptance Criteria:**
-- ⚪ Refresh token endpoint
-- ⚪ Automatic token refresh
-- ⚪ Logout functionality
-- ⚪ Token blacklist for revocation
+- ✅ Refresh token endpoint
+- ✅ Automatic token refresh
+- ✅ Logout functionality
+- ✅ Token blacklist for revocation
 
-#### How to Implement
-- Context: Maintain user sessions with refresh tokens and secure logout.
-- Prerequisites:
-  - JWT provider, token store/blacklist
-- Steps:
-  1) Backend: issue access (24h) + refresh (30d) token (HttpOnly cookie for refresh).
-  2) Add `/auth/refresh` to mint new access token if refresh valid.
-  3) Frontend: auto-refresh before expiry; intercept 401 to retry once.
-  4) Implement `/auth/logout` to revoke/blacklist tokens and clear cookies.
-  5) Force logout on password change.
+#### Implementation Summary
+- Backend:
+  - `POST /api/v1/auth/refresh` endpoint with token rotation (in `AuthControllerV1`)
+  - Refresh tokens stored in `refresh_tokens` table (SHA-256 hashed)
+  - HttpOnly cookie for refresh tokens (secure in production)
+  - `POST /api/v1/auth/logout` revokes refresh tokens and blacklists access tokens
+  - Token blacklist stored in `token_blacklist` table with expiry tracking
+  - Password reset forces logout via `revokeAllUserTokens` (all sessions revoked)
+- Frontend:
+  - Proactive token refresh in `AuthContext` (checks every minute, refreshes if expires in < 5 minutes)
+  - Automatic 401 retry with token refresh in `apiFetch` wrapper
+  - Token rotation: old refresh token invalidated when new one issued
+- Security:
+  - Token rotation prevents replay attacks
+  - Blacklisted tokens checked in `JwtAuthenticationFilter`
+  - Scheduled cleanup of expired tokens
 - References:
   - How-to: `docs/how-to/implement-security.md#2-implement-jwt-authentication`
   - Security: `docs/reference/security-requirements.md#session-management-standards`
 - Acceptance Criteria (verify):
-  - Silent refresh works; explicit logout revokes tokens
+  - ✅ Silent refresh works before expiry (proactive)
+  - ✅ 401 interception retries with refreshed token
+  - ✅ Explicit logout revokes tokens and clears cookies
+  - ✅ Password change forces logout all sessions
 - Test/Verification:
-  - E2E: token-expiry simulation; logout flow
-- Artifacts:
-  - PR: "auth: implement refresh and logout (frontend+backend)"
+  - Manual: token refresh before expiry; logout clears session; password reset logs out all devices
 
-**Status:** To Do
+**Status:** Done
 
 ---
 
-## Progress: 95%
+## Progress: 100%
 
 - [x] Backend authentication infrastructure
 - [x] JWT implementation
 - [x] Frontend auth UI (registration + login complete)
 - [x] Profile management (view/edit, counts, tier banner)
 - [x] Password reset
-- [ ] Session refresh
+- [x] Session refresh and token management
+- [x] IP-based rate limiting on authentication endpoints (brute-force protection)
 
 ---
 
@@ -325,8 +336,11 @@ Status: Done
 - ✅ Passwords hashed with BCrypt
 - ✅ JWT secrets in environment variables
 - ✅ HTTPS only in production
-- ✅ Rate limiting on password reset endpoints
-- ⚪ Account lockout after failed attempts
+- ✅ Rate limiting on authentication endpoints (login, password reset, registration)
+- ✅ IP-based brute-force protection (5 requests per 15 minutes)
+- ✅ Proxy-aware IP detection (X-Forwarded-For support)
+
+**Note:** Account lockout (per-user) deferred to post-MVP. Current IP-based rate limiting provides sufficient brute-force protection for MVP.
 
 See: [Security Requirements](../../reference/security-requirements.md)
 
