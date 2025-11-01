@@ -1,17 +1,19 @@
 package com.krawl.backend.service.impl;
 
-import com.krawl.backend.config.properties.JwtProperties;
 import com.krawl.backend.dto.request.LoginRequest;
 import com.krawl.backend.dto.request.RegisterRequest;
 import com.krawl.backend.dto.response.AuthResponse;
+import com.krawl.backend.entity.RefreshToken;
 import com.krawl.backend.entity.User;
 import com.krawl.backend.exception.ConflictException;
+import com.krawl.backend.repository.RefreshTokenRepository;
 import com.krawl.backend.repository.UserRepository;
 import com.krawl.backend.security.JwtTokenProvider;
 import com.krawl.backend.security.UserPrincipal;
 import com.krawl.backend.service.AuthenticationService;
 import com.krawl.backend.service.TokenService;
-import jakarta.servlet.http.Cookie;
+import com.krawl.backend.util.CookieHelper;
+import com.krawl.backend.util.TokenGenerator;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -33,7 +37,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
     private final TokenService tokenService;
-    private final JwtProperties jwtProperties;
+    private final CookieHelper cookieHelper;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenGenerator tokenGenerator;
     
     @Override
     @Transactional
@@ -64,7 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String refreshToken = tokenService.generateRefreshToken(user.getUserId());
         
         // Set HttpOnly cookie with refresh token
-        setRefreshTokenCookie(response, refreshToken);
+        cookieHelper.setRefreshTokenCookie(response, refreshToken);
         
         return new AuthResponse(
                 accessToken,
@@ -94,7 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String refreshToken = tokenService.generateRefreshToken(userPrincipal.getUserId());
         
         // Set HttpOnly cookie with refresh token
-        setRefreshTokenCookie(response, refreshToken);
+        cookieHelper.setRefreshTokenCookie(response, refreshToken);
         
         return new AuthResponse(
                 accessToken,
@@ -105,19 +111,72 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
     }
     
-    /**
-     * Set refresh token as HttpOnly cookie
-     * Secure flag is controlled by jwt.cookie-secure property (true in production, false in dev)
-     */
-    private void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-        Cookie cookie = new Cookie("refresh_token", refreshToken);
-        cookie.setHttpOnly(true);
-        // Use configuration: false for local dev (HTTP), true for production (HTTPS)
-        cookie.setSecure(jwtProperties.isCookieSecure());
-        cookie.setPath("/api/v1/auth"); // Limit cookie scope to auth endpoints
-        cookie.setMaxAge(30 * 24 * 60 * 60); // 30 days in seconds
-        cookie.setAttribute("SameSite", "Lax"); // CSRF protection
-        response.addCookie(cookie);
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<AuthResponse> refreshToken(String refreshToken, HttpServletResponse response) {
+        if (refreshToken == null) {
+            cookieHelper.clearRefreshTokenCookie(response);
+            return Optional.empty();
+        }
+        
+        // Validate and rotate refresh token
+        Optional<String> newRefreshTokenOpt = tokenService.validateAndRotateRefreshToken(refreshToken);
+        
+        if (newRefreshTokenOpt.isEmpty()) {
+            cookieHelper.clearRefreshTokenCookie(response);
+            return Optional.empty();
+        }
+        
+        // Get user from old refresh token
+        String tokenHash = tokenGenerator.hashToken(refreshToken);
+        RefreshToken oldToken = refreshTokenRepository.findByTokenHash(tokenHash).orElse(null);
+        
+        // If token was already rotated, find by new token
+        if (oldToken == null) {
+            tokenHash = tokenGenerator.hashToken(newRefreshTokenOpt.get());
+            oldToken = refreshTokenRepository.findByTokenHash(tokenHash).orElse(null);
+        }
+        
+        if (oldToken == null) {
+            cookieHelper.clearRefreshTokenCookie(response);
+            return Optional.empty();
+        }
+        
+        User user = oldToken.getUser();
+        
+        // Generate new access token
+        UserPrincipal userPrincipal = UserPrincipal.create(user);
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                userPrincipal, null, userPrincipal.getAuthorities());
+        String accessToken = tokenProvider.generateToken(auth);
+        
+        // Set new refresh token cookie
+        cookieHelper.setRefreshTokenCookie(response, newRefreshTokenOpt.get());
+        
+        return Optional.of(new AuthResponse(
+                accessToken,
+                "Bearer",
+                user.getUserId(),
+                user.getEmail(),
+                user.getUsername()
+        ));
+    }
+    
+    @Override
+    public void logout(String refreshToken, String accessToken, Authentication authentication, HttpServletResponse response) {
+        // Revoke refresh token if present
+        if (refreshToken != null) {
+            tokenService.revokeRefreshToken(refreshToken);
+        }
+        
+        // Blacklist current access token
+        if (accessToken != null && authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
+            UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+            tokenService.blacklistAccessToken(accessToken, principal.getUserId(), "logout");
+        }
+        
+        // Clear refresh token cookie
+        cookieHelper.clearRefreshTokenCookie(response);
     }
 }
 

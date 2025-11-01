@@ -2,10 +2,12 @@ package com.krawl.backend.service.impl;
 
 import com.krawl.backend.entity.PasswordResetToken;
 import com.krawl.backend.entity.User;
+import com.krawl.backend.exception.ValidationException;
 import com.krawl.backend.repository.PasswordResetTokenRepository;
 import com.krawl.backend.repository.UserRepository;
 import com.krawl.backend.service.TokenService;
 import com.krawl.backend.service.email.EmailSender;
+import com.krawl.backend.util.TokenGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,6 +31,7 @@ class PasswordResetServiceImplTest {
     private EmailSender emailSender;
     private TokenService tokenService;
     private PlatformTransactionManager transactionManager;
+    private TokenGenerator tokenGenerator;
     private PasswordResetServiceImpl service;
 
     @BeforeEach
@@ -39,8 +42,9 @@ class PasswordResetServiceImplTest {
         emailSender = mock(EmailSender.class);
         tokenService = mock(TokenService.class);
         transactionManager = mock(PlatformTransactionManager.class);
+        tokenGenerator = mock(TokenGenerator.class);
 
-        service = new PasswordResetServiceImpl(userRepository, tokenRepository, passwordEncoder, emailSender, tokenService, transactionManager);
+        service = new PasswordResetServiceImpl(userRepository, tokenRepository, passwordEncoder, emailSender, tokenService, transactionManager, tokenGenerator);
 
         // Inject defaults
         TestUtils.setField(service, "frontendUrl", "http://localhost:3000");
@@ -56,6 +60,7 @@ class PasswordResetServiceImplTest {
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
         // No existing active token
         when(tokenRepository.findActiveTokenByUserId(user.getUserId())).thenReturn(Optional.empty());
+        when(tokenGenerator.generateSecureToken()).thenReturn("test-token-123");
 
         service.requestReset("user@example.com");
 
@@ -67,7 +72,8 @@ class PasswordResetServiceImplTest {
     @Test
     void resetPassword_throwsOnInvalidToken() {
         when(tokenRepository.findByToken("bad")).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> service.resetPassword("bad", "newPass123"));
+        // Should throw ValidationException now (not IllegalArgumentException)
+        assertThrows(ValidationException.class, () -> service.resetPassword("bad", "newPass123"));
     }
 
     @Test

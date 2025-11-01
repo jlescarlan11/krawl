@@ -20,11 +20,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
+/**
+ * Legacy storage controller.
+ * 
+ * @deprecated This controller is deprecated. Please use {@link com.krawl.backend.controller.v1.StorageControllerV1} instead.
+ * The legacy endpoints under {@code /api/storage} will be removed in a future release.
+ * Migration path: Replace {@code /api/storage} with {@code /api/v1/storage} in your API calls.
+ * 
+ * @since 1.0.0
+ * @see com.krawl.backend.controller.v1.StorageControllerV1
+ */
+@Deprecated(since = "1.0.0", forRemoval = true)
 @Slf4j
 @RestController
 @RequestMapping("/api/storage")
 @RequiredArgsConstructor
-@Tag(name = "Storage", description = "Image upload and management endpoints using Cloudinary")
+@Tag(name = "Storage (Legacy)", description = "DEPRECATED: Use /api/v1/storage endpoints instead. Legacy image upload and management endpoints using Cloudinary")
 @SecurityRequirement(name = "bearerAuth")
 public class StorageController {
 
