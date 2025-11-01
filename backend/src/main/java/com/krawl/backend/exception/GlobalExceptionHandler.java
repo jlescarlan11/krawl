@@ -1,5 +1,6 @@
 package com.krawl.backend.exception;
 
+import com.krawl.backend.dto.DuplicateGemErrorResponse;
 import com.krawl.backend.dto.ErrorResponse;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolation;
@@ -21,6 +22,24 @@ import java.util.stream.Collectors;
 @Hidden
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(DuplicateGemException.class)
+    public ResponseEntity<DuplicateGemErrorResponse> handleDuplicateGem(
+            DuplicateGemException ex,
+            WebRequest request) {
+        
+        log.warn("Duplicate Gem detected: {} potential duplicates found", ex.getDuplicates().size());
+        
+        DuplicateGemErrorResponse error = new DuplicateGemErrorResponse(
+            ex.getErrorCode(),
+            ex.getMessage(),
+            HttpStatus.CONFLICT.value(),
+            request.getDescription(false).replace("uri=", ""),
+            ex.getDuplicates()
+        );
+        
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
 
     @ExceptionHandler(KrawlException.class)
     public ResponseEntity<ErrorResponse> handleKrawlException(

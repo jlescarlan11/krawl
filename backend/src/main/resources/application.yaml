@@ -156,6 +156,9 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:2592000000} # 30 days in milliseconds
   cookie-secure: ${JWT_COOKIE_SECURE:false} # Set to true in production (HTTPS)
 
+# Gem Configuration
+gem:
+  duplicate-radius-meters: ${GEM_DUPLICATE_RADIUS_METERS:50.0} # Radius in meters for duplicate detection
 
 # App configuration
 app:
