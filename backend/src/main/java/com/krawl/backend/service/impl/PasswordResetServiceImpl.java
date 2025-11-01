@@ -5,6 +5,7 @@ import com.krawl.backend.entity.User;
 import com.krawl.backend.repository.PasswordResetTokenRepository;
 import com.krawl.backend.repository.UserRepository;
 import com.krawl.backend.service.PasswordResetService;
+import com.krawl.backend.service.TokenService;
 import com.krawl.backend.service.email.EmailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -28,6 +28,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailSender emailSender;
+    private final TokenService tokenService;
 
     @Value("${app.frontend-url:http://localhost:3000}")
     private String frontendUrl;
@@ -83,6 +84,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         User user = token.getUser();
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+
+        // Force logout all sessions (revoke all refresh tokens)
+        tokenService.revokeAllUserTokens(user.getUserId());
 
         // Mark used and invalidate others
         token.setUsedAt(LocalDateTime.now());
