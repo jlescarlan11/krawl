@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { updateMyProfile } from '@/lib/users';
 import type { MyProfile } from '@/types/user';
+import Button from '@/components/ui/Button';
 
 type Props = {
   open: boolean;
@@ -25,6 +26,8 @@ export default function ProfileEditModal({
   const [bio, setBio] = useState(initialBio ?? '');
   const [saving, setSaving] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
+  const firstInputRef = useRef<HTMLInputElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -32,9 +35,17 @@ export default function ProfileEditModal({
     if (open) {
       setUsername(initialUsername);
       setBio(initialBio ?? '');
+      
+      // Save current focus and focus first input
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      setTimeout(() => firstInputRef.current?.focus(), 0);
+      
       const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
       document.addEventListener('keydown', onKey);
       return () => document.removeEventListener('keydown', onKey);
+    } else {
+      // Restore focus when modal closes
+      previousFocusRef.current?.focus();
     }
   }, [open, initialUsername, initialBio, onClose]);
 
@@ -66,6 +77,7 @@ export default function ProfileEditModal({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="edit-profile-title"
       className="fixed inset-0 z-50 flex items-center justify-center"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -74,49 +86,59 @@ export default function ProfileEditModal({
       <div className="absolute inset-0 bg-black/50" />
       <div
         ref={dialogRef}
-        className="relative z-10 w-full max-w-lg rounded-lg bg-white p-5 shadow-lg"
+        className="relative z-10 w-full max-w-lg rounded-lg bg-white p-6 shadow-lg mx-4"
       >
-        <h3 className="heading-4 mb-3">Edit Profile</h3>
-        <form onSubmit={save} className="space-y-3">
+        <h3 id="edit-profile-title" className="heading-4 mb-4">Edit Profile</h3>
+        <form onSubmit={save} className="space-y-4">
           <div>
-            <label className="body-sm text-neutral-600">Username</label>
+            <label htmlFor="username-input" className="body-sm text-neutral-600 block mb-1">
+              Username
+            </label>
             <input
+              id="username-input"
+              ref={firstInputRef}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full mt-1 rounded-md border border-neutral-300 p-2"
+              className="w-full rounded-md border border-neutral-300 p-2 focus-ring"
               maxLength={50}
               autoComplete="username"
               placeholder="yourname"
+              required
             />
           </div>
           <div>
-            <label className="body-sm text-neutral-600">Bio</label>
+            <label htmlFor="bio-input" className="body-sm text-neutral-600 block mb-1">
+              Bio
+            </label>
             <textarea
+              id="bio-input"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={4}
-              className="w-full mt-1 rounded-md border border-neutral-300 p-2"
+              className="w-full rounded-md border border-neutral-300 p-2 focus-ring"
               maxLength={1000}
               placeholder="Tell others about your local expertise"
             />
-            <div className="text-right body-xs text-neutral-500">{bio.length}/1000</div>
+            <div className="text-right body-xs text-neutral-500 mt-1">{bio.length}/1000</div>
           </div>
-          <div className="flex justify-end gap-2">
-            <button
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
+            <Button
               type="button"
-              className="px-4 py-2 rounded-md border border-neutral-300"
+              variant="secondary"
               onClick={onClose}
               disabled={saving}
+              className="sm:order-1"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 rounded-md bg-sand-800 text-white disabled:opacity-50"
-              disabled={saving}
+              variant="primary"
+              loading={saving}
+              className="sm:order-2"
             >
-              {saving ? 'Saving…' : 'Save'}
-            </button>
+              Save
+            </Button>
           </div>
         </form>
       </div>

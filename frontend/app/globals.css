@@ -441,7 +441,6 @@ input, button, textarea, select {
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
   letter-spacing: -0.025em;
-  color: var(--color-text-primary);
 }
 
 .heading-2 {
@@ -449,7 +448,6 @@ input, button, textarea, select {
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
   letter-spacing: -0.025em;
-  color: var(--color-text-primary);
 }
 
 .heading-3 {
@@ -457,53 +455,45 @@ input, button, textarea, select {
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
   letter-spacing: -0.025em;
-  color: var(--color-text-primary);
 }
 
 .heading-4 {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
 }
 
 .heading-5 {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
 }
 
 .heading-6 {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
 }
 
 /* Body text styles */
 .body-lg {
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);
-  color: var(--color-text-primary);
 }
 
 .body-base {
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
 }
 
 .body-sm {
   font-size: var(--font-size-sm);
   line-height: var(--line-height-normal);
-  color: var(--color-text-secondary);
 }
 
 .body-xs {
   font-size: var(--font-size-xs);
   line-height: var(--line-height-normal);
-  color: var(--color-text-secondary);
 }
 
 /* Caption and label styles */
@@ -542,6 +532,15 @@ input, button, textarea, select {
   .text-display {
     font-size: var(--font-size-4xl);
   }
+}
+
+/* ============================================================================
+   FOCUS RING UTILITY
+   ============================================================================ */
+
+/* Consistent focus ring for interactive elements */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-verde-500 focus:ring-offset-2 transition-shadow duration-150;
 }
 
 /* ============================================================================
