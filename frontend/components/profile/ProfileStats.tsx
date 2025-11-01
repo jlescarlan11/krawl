@@ -1,3 +1,5 @@
+"use client";
+
 import { LuMapPin, LuRoute } from 'react-icons/lu';
 import EmptyState from '@/components/common/EmptyState';
 import Button from '@/components/ui/Button';
