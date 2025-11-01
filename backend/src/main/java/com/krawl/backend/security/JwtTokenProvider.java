@@ -22,7 +22,7 @@ public class JwtTokenProvider {
     
     private final JwtProperties jwtProperties;
     
-    private SecretKey getSigningKey() {
+    public SecretKey getSigningKey() {
         byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -76,6 +76,16 @@ public class JwtTokenProvider {
             log.error("Error validating JWT token", ex);
         }
         return false;
+    }
+    
+    public Date getExpirationFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        
+        return claims.getExpiration();
     }
 }
 

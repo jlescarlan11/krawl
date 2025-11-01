@@ -383,7 +383,8 @@ After completing all tests, verify:
 
 - [Project Setup Guide](./project-setup.md) - Initial configuration
 - [API Documentation](./api-documentation.md) - Complete API reference
-- [System Architecture](./system-architecture.md) - System design
+- [Architecture Overview](./explanation/architecture-overview.md) - System architecture
+- [Design Patterns](./explanation/design-patterns.md) - Design patterns
 
 ---
 

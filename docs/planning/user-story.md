@@ -605,7 +605,7 @@ This document contains **47 user stories** across **9 feature categories**, prov
 
 - [User Persona Profile](./user-persona-profile.md) - Target user profiles
 - [User Journey](./user-journey.md) - User journey maps
-- [Scope of Work](./scope-of-work.md) - Feature scope and deliverables
+- [Scope of Work](./planning/scope-of-work.md) - Feature scope and deliverables
 - [Kanban Task](./kanban-task.md) - Task breakdown from user stories
 - [Testing Plan](./testing-plan.md) - Testing based on user stories
 

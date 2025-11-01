@@ -2,6 +2,9 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import * as auth from '@/lib/auth';
+import { getAuthData, setAuthData, clearAuthData } from '@/lib/auth/storage';
+import { refreshTokenIfNeeded } from '@/lib/auth/token';
+import { AUTH_CONSTANTS } from '@/lib/constants';
 
 type AuthState = {
   user: auth.User | null;
@@ -21,32 +24,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Load persisted session
   useEffect(() => {
-    const persisted =
-      typeof window !== 'undefined'
-        ? window.localStorage.getItem('auth') || window.sessionStorage.getItem('auth')
-        : null;
-    if (persisted) {
-      try {
-        const { token: t, user: u } = JSON.parse(persisted);
-        setToken(t);
-        setUser(u);
-      } catch {}
+    const authData = getAuthData();
+    if (authData) {
+      setToken(authData.token);
+      setUser(authData.user);
     }
   }, []);
+
+  // Proactive token refresh - check if token expires soon and refresh it
+  useEffect(() => {
+    if (!token) return;
+
+    const refreshTokenProactively = async () => {
+      await refreshTokenIfNeeded();
+      
+      // Update state from storage after refresh (if it happened)
+      const authData = getAuthData();
+      if (authData && authData.token !== token) {
+        setToken(authData.token);
+        setUser(authData.user);
+      }
+    };
+
+    // Check every minute
+    const interval = setInterval(refreshTokenProactively, AUTH_CONSTANTS.TOKEN_CHECK_INTERVAL_MS);
+    refreshTokenProactively(); // Initial check
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   const setSession = (t: string, u: auth.User, remember?: boolean) => {
     setToken(t);
     setUser(u);
-    const payload = JSON.stringify({ token: t, user: u });
-    if (remember) {
-      // Persist across browser sessions
-      window.localStorage.setItem('auth', payload);
-      window.sessionStorage.removeItem('auth');
-    } else {
-      // Store in sessionStorage only (clears when tab closes)
-      window.sessionStorage.setItem('auth', payload);
-      window.localStorage.removeItem('auth');
-    }
+    setAuthData(t, u, remember ?? false);
   };
 
   const loginFn = async (email: string, password: string, remember?: boolean) => {
@@ -65,8 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setToken(null);
       setUser(null);
-      window.localStorage.removeItem('auth');
-      window.sessionStorage.removeItem('auth');
+      clearAuthData();
     }
   };
 

@@ -149,6 +149,8 @@ cors:
 jwt:
   secret: ${JWT_SECRET:your-secret-key-change-this-in-production-min-256-bits}
   expiration: ${JWT_EXPIRATION:86400000} # 24 hours in milliseconds
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:2592000000} # 30 days in milliseconds
+  cookie-secure: ${JWT_COOKIE_SECURE:false} # Set to true in production (HTTPS)
 
 
 # App configuration
@@ -156,6 +158,7 @@ app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
   password-reset:
     expiry-minutes: ${APP_PASSWORD_RESET_EXPIRY_MINUTES:30}
+    resend-cooldown-minutes: ${APP_PASSWORD_RESET_RESEND_COOLDOWN_MINUTES:5}
   registration:
     expiry-minutes: ${APP_REGISTRATION_EXPIRY_MINUTES:60}
   mail:

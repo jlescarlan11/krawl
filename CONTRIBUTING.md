@@ -40,7 +40,7 @@ This project and everyone participating in it is governed by a Code of Conduct. 
 Before contributing, please:
 1. Read the [README.md](README.md) for project overview
 2. Follow the [Project Setup Guide](docs/project-setup.md) to configure your development environment
-3. Review the [Version Control Strategy](docs/version-control-strategy.md) for detailed Git workflow
+3. Review the [Version Control Strategy](docs/planning/version-control-strategy.md) for detailed Git workflow
 4. Familiarize yourself with our [Tech Stack](docs/tech-stack.md)
 
 ### Types of Contributions
@@ -198,7 +198,7 @@ git merge main
 git push origin feature/KRW-XX-description
 ```
 
-For complete branching strategy, protected branch rules, and detailed workflow, see [docs/version-control-strategy.md](docs/version-control-strategy.md).
+For complete branching strategy, protected branch rules, and detailed workflow, see [docs/planning/version-control-strategy.md](docs/planning/version-control-strategy.md).
 
 ---
 
@@ -245,7 +245,7 @@ Closes KRW-42"
 - No period at the end
 - Keep subject under 50 characters
 
-For complete commit message guidelines, scope examples, and best practices, see [docs/version-control-strategy.md](docs/version-control-strategy.md).
+For complete commit message guidelines, scope examples, and best practices, see [docs/planning/version-control-strategy.md](docs/planning/version-control-strategy.md).
 
 ---
 
@@ -544,7 +544,7 @@ Documentation is located in the [`docs/`](docs/) folder. See the README.md for a
 - [System Architecture](docs/system-architecture.md)
 - [Database Schema](docs/database-schema.md)
 - [API Documentation](docs/api-documentation.md)
-- [Version Control Strategy](docs/version-control-strategy.md)
+- [Version Control Strategy](docs/planning/version-control-strategy.md)
 
 ### External Resources
 - [Next.js Documentation](https://nextjs.org/docs)
@@ -593,7 +593,7 @@ Before submitting your contribution:
 
 ---
 
-**Last Updated**: October 28, 2025  
+**Last Updated**: 2025-11-01  
 **Version**: 1.0.0  
 **Maintainer**: Development Team
 

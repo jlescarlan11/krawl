@@ -6,6 +6,15 @@ export const API_CONSTANTS = {
   MAX_RETRIES: 3,
 } as const;
 
+export const AUTH_CONSTANTS = {
+  TOKEN_REFRESH_THRESHOLD_MS: 5 * 60 * 1000, // 5 minutes
+  TOKEN_CHECK_INTERVAL_MS: 60 * 1000, // 1 minute
+} as const;
+
+export const STORAGE_KEYS = {
+  AUTH: 'auth',
+} as const;
+
 export const ROUTES = {
   HOME: '/',
   EXPLORE: '/explore',

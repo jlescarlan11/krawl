@@ -213,7 +213,7 @@
   1) Generate Spring Boot (3.x) with Web, Validation, Security, JPA, PostgreSQL, Flyway.
   2) Add `application.yml` using `${DATABASE_URL}`, `${DB_USERNAME}`, `${DB_PASSWORD}` (no secrets in repo).
   3) Add Flyway `V1__initial_schema.sql` aligned with `docs/reference/database-schema.md`.
-  4) Build: `./mvnw clean install` or `./gradlew build`.
+  4) Build: `./mvnw clean install`
   5) Add base packages: `controllers`, `services`, `repositories`, `config`.
 - References:
   - Reference: `docs/reference/api-endpoints.md`
@@ -232,7 +232,7 @@
 **Tech Stack:**
 - Spring Boot 3.5.7
 - Java 17+
-- Gradle/Maven
+- Maven
 - PostgreSQL driver
 - PostGIS support
 

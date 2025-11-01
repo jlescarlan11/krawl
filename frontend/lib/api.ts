@@ -14,15 +14,19 @@ import {
 } from './db';
 import { checkActualConnectivity } from './utils/network';
 import { offlineFirstFetch, createWithOfflineSupport } from './api/offline-first';
+import { parseApiResponse } from './api/response';
+import { API_ROUTES } from './api/routes';
 import { config } from './config/env';
 import { API_CONSTANTS } from './constants';
 import { ApiError } from './errors/api-error';
+import { refreshAccessToken } from './auth/token';
+import { clearAuthData, getAuthToken } from './auth/storage';
 
 // Connectivity check caching to avoid checking on every request
 let lastConnectivityCheck = 0;
 let lastConnectivityResult = true;
 
-// Generic fetch wrapper with error handling
+// Generic fetch wrapper with error handling and automatic token refresh
 export async function apiFetch<T>(
   endpoint: string,
   options?: RequestInit
@@ -35,7 +39,7 @@ export async function apiFetch<T>(
   if (now - lastConnectivityCheck > API_CONSTANTS.CONNECTIVITY_CACHE_MS) {
     try {
       // Health endpoint is not versioned on the backend, use baseURL directly
-      lastConnectivityResult = await checkActualConnectivity(`${config.api.baseURL}/api/health`)
+      lastConnectivityResult = await checkActualConnectivity(`${config.api.baseURL}${API_ROUTES.HEALTH}`)
         .catch(() => checkActualConnectivity('/manifest.json'));
       lastConnectivityCheck = now;
     } catch {
@@ -53,21 +57,17 @@ export async function apiFetch<T>(
     'Content-Type': 'application/json',
   };
 
-  // Attach JWT if present (from either localStorage or sessionStorage)
-  let authHeader: Record<string, string> = {};
-  if (typeof window !== 'undefined') {
-    try {
-      const raw = window.localStorage.getItem('auth') || window.sessionStorage.getItem('auth');
-      if (raw) {
-        const { token } = JSON.parse(raw);
-        if (token) authHeader.Authorization = `Bearer ${token}`;
-      }
-    } catch {}
+  // Attach JWT if present
+  const token = getAuthToken();
+  const authHeader: Record<string, string> = {};
+  if (token) {
+    authHeader.Authorization = `Bearer ${token}`;
   }
 
   try {
     const response = await fetch(url, {
       ...options,
+      credentials: 'include', // Include cookies for refresh token
       headers: {
         ...defaultHeaders,
         ...authHeader,            // include the Authorization header
@@ -75,42 +75,48 @@ export async function apiFetch<T>(
       },
     });
 
-    if (!response.ok) {
-      // Clear invalid auth on 401
-      if (response.status === 401 && typeof window !== 'undefined') {
-        try {
-          window.localStorage.removeItem('auth');
-          window.sessionStorage.removeItem('auth');
-        } catch {}
+    // Handle 401 with token refresh (except for refresh endpoint itself)
+    if (response.status === 401 && !endpoint.includes(API_ROUTES.AUTH.REFRESH)) {
+      console.log('Received 401, attempting token refresh...');
+      
+      const newToken = await refreshAccessToken();
+      
+      if (newToken) {
+        // Retry original request with new token
+        console.log('Token refreshed, retrying request...');
+        const retryResponse = await fetch(url, {
+          ...options,
+          credentials: 'include',
+          headers: {
+            ...defaultHeaders,
+            Authorization: `Bearer ${newToken}`,
+            ...options?.headers,
+          },
+        });
+
+        if (!retryResponse.ok) {
+          const apiError = await ApiError.fromResponse(retryResponse);
+          toast.error(apiError.message);
+          throw apiError;
+        }
+
+        return parseApiResponse<T>(retryResponse);
+      } else {
+        // Refresh failed, clear auth
+        clearAuthData();
+        const apiError = await ApiError.fromResponse(response);
+        toast.error(apiError.message);
+        throw apiError;
       }
+    }
+
+    if (!response.ok) {
       const apiError = await ApiError.fromResponse(response);
       toast.error(apiError.message);
       throw apiError;
     }
 
-    // Check if response has a body before parsing JSON
-    const contentType = response.headers.get('content-type') || '';
-    const hasJsonBody = contentType.includes('application/json');
-    
-    // Handle 204 No Content or empty 200 responses
-    if (response.status === 204 || !hasJsonBody) {
-      return undefined as unknown as T;
-    }
-
-    // Read response as text first to check if empty
-    const text = await response.text();
-    if (!text.trim()) {
-      return undefined as unknown as T;
-    }
-
-    // Parse JSON only if content exists
-    try {
-      return JSON.parse(text) as T;
-    } catch (e) {
-      // If parsing fails, still return undefined rather than crashing
-      console.warn('Failed to parse JSON response, treating as empty:', e);
-      return undefined as unknown as T;
-    }
+    return parseApiResponse<T>(response);
   } catch (error) {
     console.error('API Fetch Error:', error);
     
@@ -140,14 +146,14 @@ export async function apiFetch<T>(
 export const api = {
   // Gems
   getGems: () => offlineFirstFetch({
-    fetchFn: () => apiFetch<Gem[]>('/gems'),
+    fetchFn: () => apiFetch<Gem[]>(API_ROUTES.GEMS.BASE),
     getCachedFn: getAllGems,
     saveCacheFn: saveGems,
     resourceName: 'gems',
   }),
 
   getGemById: (id: string) => offlineFirstFetch({
-    fetchFn: () => apiFetch<Gem>(`/gems/${id}`),
+    fetchFn: () => apiFetch<Gem>(API_ROUTES.GEMS.BY_ID(id)),
     getCachedFn: async () => {
       const gem = await getGem(id);
       return gem ?? null;
@@ -158,14 +164,14 @@ export const api = {
 
   // Krawls
   getKrawls: () => offlineFirstFetch({
-    fetchFn: () => apiFetch<Krawl[]>('/krawls'),
+    fetchFn: () => apiFetch<Krawl[]>(API_ROUTES.KRAWLS.BASE),
     getCachedFn: getAllKrawls,
     saveCacheFn: saveKrawls,
     resourceName: 'krawls',
   }),
 
   getKrawlById: (id: string) => offlineFirstFetch({
-    fetchFn: () => apiFetch<Krawl>(`/krawls/${id}`),
+    fetchFn: () => apiFetch<Krawl>(API_ROUTES.KRAWLS.BY_ID(id)),
     getCachedFn: async () => {
       const krawl = await getKrawl(id);
       return krawl ?? null;
@@ -177,7 +183,7 @@ export const api = {
   // Create with offline support
   createGem: (gemData: Omit<Gem, 'gem_id' | 'created_at' | 'updated_at'>) => createWithOfflineSupport({
     data: gemData,
-    createFn: (data) => apiFetch<Gem>('/gems', {
+    createFn: (data) => apiFetch<Gem>(API_ROUTES.GEMS.BASE, {
       method: 'POST',
       body: JSON.stringify(data),
     }),
@@ -196,7 +202,7 @@ export const api = {
 
   createKrawl: (krawlData: Omit<Krawl, 'krawl_id' | 'created_at' | 'updated_at'>) => createWithOfflineSupport({
     data: krawlData,
-    createFn: (data) => apiFetch<Krawl>('/krawls', {
+    createFn: (data) => apiFetch<Krawl>(API_ROUTES.KRAWLS.BASE, {
       method: 'POST',
       body: JSON.stringify(data),
     }),

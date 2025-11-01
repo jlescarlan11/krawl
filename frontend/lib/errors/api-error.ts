@@ -26,10 +26,24 @@ export class ApiError extends Error {
     try {
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
-        errorData = await response.json();
+        // Clone response to avoid consuming the stream
+        const clonedResponse = response.clone();
+        const text = await clonedResponse.text();
+        if (text.trim()) {
+          try {
+            errorData = JSON.parse(text);
+            // Handle backend ErrorResponse structure (has both 'error' and 'message' fields)
+            if (!errorData.message && (errorData as any).error) {
+              errorData.message = (errorData as any).message || (errorData as any).error;
+            }
+          } catch (jsonError) {
+            console.warn('Failed to parse error JSON:', jsonError, 'Response text:', text.substring(0, 200));
+          }
+        }
       }
-    } catch {
-      // If parsing fails, use defaults
+    } catch (parseError) {
+      // If parsing fails, log but continue with defaults
+      console.warn('Failed to read error response:', parseError);
     }
 
     const fallbackByStatus: Record<number, string> = {
@@ -40,9 +54,17 @@ export class ApiError extends Error {
       500: 'An unexpected error occurred. Please try again later.',
     };
 
+    // Extract message, handling both 'message' and 'error' fields from backend
+    const message = errorData.message 
+      || (errorData as any).message 
+      || (errorData as any).error 
+      || fallbackByStatus[response.status] 
+      || response.statusText 
+      || 'An error occurred';
+    
     return new ApiError(
       response.status,
-      errorData.message || fallbackByStatus[response.status] || response.statusText || 'An error occurred',
+      message,
       errorData.errors
     );
   }

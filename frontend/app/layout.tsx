@@ -7,6 +7,7 @@ import DBInitializer from "@/components/DBInitializer";
 import NetworkStatus from "@/components/NetworkStatus";
 import SyncManager from "@/components/SyncManager";
 import { AuthProvider } from "@/context/AuthContext";
+import { SidebarProvider } from "@/context/SidebarContext";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -52,7 +53,9 @@ export default function RootLayout({
         <NetworkStatus />
         <SyncManager />
         <Toaster />
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <SidebarProvider>{children}</SidebarProvider>
+        </AuthProvider>
       </body>
     </html>
   );

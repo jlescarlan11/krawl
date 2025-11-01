@@ -10,14 +10,13 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -94,9 +93,11 @@ public class AuthControllerV1 {
         )
     })
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        AuthResponse response = authenticationService.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<AuthResponse> register(
+            @Valid @RequestBody RegisterRequest request,
+            HttpServletResponse response) {
+        AuthResponse authResponse = authenticationService.register(request, response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
     }
     
     @Operation(
@@ -156,9 +157,71 @@ public class AuthControllerV1 {
         )
     })
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        AuthResponse response = authenticationService.login(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response) {
+        AuthResponse authResponse = authenticationService.login(request, response);
+        return ResponseEntity.ok(authResponse);
+    }
+    
+    @Operation(
+        summary = "Refresh access token",
+        description = "Uses refresh token from HttpOnly cookie to generate a new access token. " +
+                     "Implements token rotation for security (old refresh token is invalidated)."
+    )
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "Token refreshed successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = AuthResponse.class)
+            )
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - refresh token invalid or expired",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = com.krawl.backend.dto.ErrorResponse.class)
+            )
+        )
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(
+            @CookieValue(value = "refresh_token", required = false) String refreshToken,
+            HttpServletResponse response) {
+        
+        return authenticationService.refreshToken(refreshToken, response)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+    
+    @Operation(
+        summary = "Logout",
+        description = "Revokes the refresh token and blacklists the current access token. " +
+                     "Clears the refresh token cookie."
+    )
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "Logged out successfully"
+        )
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @CookieValue(value = "refresh_token", required = false) String refreshToken,
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            HttpServletResponse response,
+            Authentication authentication) {
+        
+        String accessToken = authHeader != null && authHeader.startsWith("Bearer ") 
+                ? authHeader.substring(7) 
+                : null;
+        
+        authenticationService.logout(refreshToken, accessToken, authentication, response);
+        
+        return ResponseEntity.ok().build();
     }
 }
 
