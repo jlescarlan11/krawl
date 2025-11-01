@@ -134,9 +134,12 @@ public class DataSourceConfig {
                     queryParams.append("sslmode=").append(sslMode);
                 }
                 
-                // Add prepareThreshold for performance
+                // Add prepareThreshold=0 to disable prepared statements
+                // This is required for connection poolers (PgBouncer, Supabase Pooler)
+                // and is safe for direct connections too
                 if (!queryParams.toString().contains("prepareThreshold")) {
-                    queryParams.append("&prepareThreshold=0");
+                    queryParams.append(queryParams.length() == 0 ? "?" : "&");
+                    queryParams.append("prepareThreshold=0");
                 }
                 
                 jdbcUrl.append(queryParams);
@@ -158,6 +161,33 @@ public class DataSourceConfig {
         return new DatabaseConnectionInfo(url, null, null);
     }
 
+    /**
+     * Checks if we're using a connection pooler (PgBouncer, Supabase Pooler, etc.)
+     * Poolers are typically identified by:
+     * - Hostname containing "pooler"
+     * - Port 6543 (common pooler port)
+     * - Or explicit pooler indicators in the URL
+     */
+    private boolean isUsingPooler(String jdbcUrl) {
+        if (!StringUtils.hasText(jdbcUrl)) {
+            return false;
+        }
+        
+        String urlLower = jdbcUrl.toLowerCase();
+        
+        // Check for pooler in hostname
+        if (urlLower.contains("pooler") || urlLower.contains("pgbouncer")) {
+            return true;
+        }
+        
+        // Check for common pooler port (6543)
+        if (urlLower.contains(":6543/") || urlLower.contains(":6543?")) {
+            return true;
+        }
+        
+        return false;
+    }
+
     @Bean
     @Primary
     public DataSource dataSource() {
@@ -170,6 +200,9 @@ public class DataSourceConfig {
         String finalPassword = StringUtils.hasText(connectionInfo.extractedPassword) 
             ? connectionInfo.extractedPassword 
             : password;
+        
+        // Detect if using a connection pooler
+        boolean usingPooler = isUsingPooler(connectionInfo.jdbcUrl);
         
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(connectionInfo.jdbcUrl);
@@ -189,21 +222,52 @@ public class DataSourceConfig {
         // Connection test query
         config.setConnectionTestQuery("SELECT 1");
         
-        // PostgreSQL-specific optimizations
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        config.addDataSourceProperty("useServerPrepStmts", "true");
-        config.addDataSourceProperty("useLocalSessionState", "true");
-        config.addDataSourceProperty("rewriteBatchedStatements", "true");
-        config.addDataSourceProperty("cacheResultSetMetadata", "true");
-        config.addDataSourceProperty("cacheServerConfiguration", "true");
-        config.addDataSourceProperty("elideSetAutoCommits", "true");
-        config.addDataSourceProperty("maintainTimeStats", "false");
+        if (usingPooler) {
+            // Connection pooler mode: disable prepared statements completely
+            // Poolers like PgBouncer/Supabase Pooler don't support prepared statements properly
+            log.info("Connection pooler detected - disabling prepared statement caching");
+            
+            // Ensure prepareThreshold=0 is in URL (should already be there, but verify)
+            String jdbcUrl = connectionInfo.jdbcUrl;
+            if (!jdbcUrl.contains("prepareThreshold=0")) {
+                jdbcUrl += (jdbcUrl.contains("?") ? "&" : "?") + "prepareThreshold=0";
+                config.setJdbcUrl(jdbcUrl);
+                connectionInfo = new DatabaseConnectionInfo(jdbcUrl, connectionInfo.extractedUsername, connectionInfo.extractedPassword);
+            }
+            
+            // Disable all prepared statement optimizations
+            config.addDataSourceProperty("cachePrepStmts", "false");
+            config.addDataSourceProperty("useServerPrepStmts", "false");
+            config.addDataSourceProperty("prepStmtCacheSize", "0");
+            
+            // Keep only safe optimizations that don't use prepared statements
+            config.addDataSourceProperty("useLocalSessionState", "true");
+            config.addDataSourceProperty("cacheResultSetMetadata", "true");
+            config.addDataSourceProperty("cacheServerConfiguration", "true");
+            config.addDataSourceProperty("elideSetAutoCommits", "true");
+            config.addDataSourceProperty("maintainTimeStats", "false");
+            
+            // Disable batch rewriting (uses prepared statements)
+            config.addDataSourceProperty("rewriteBatchedStatements", "false");
+        } else {
+            // Direct connection mode: enable prepared statement optimizations
+            log.debug("Direct database connection detected - enabling prepared statement optimizations");
+            
+            config.addDataSourceProperty("cachePrepStmts", "true");
+            config.addDataSourceProperty("prepStmtCacheSize", "250");
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            config.addDataSourceProperty("useServerPrepStmts", "true");
+            config.addDataSourceProperty("useLocalSessionState", "true");
+            config.addDataSourceProperty("rewriteBatchedStatements", "true");
+            config.addDataSourceProperty("cacheResultSetMetadata", "true");
+            config.addDataSourceProperty("cacheServerConfiguration", "true");
+            config.addDataSourceProperty("elideSetAutoCommits", "true");
+            config.addDataSourceProperty("maintainTimeStats", "false");
+        }
 
         HikariDataSource dataSource = new HikariDataSource(config);
         
-        log.info("HikariCP DataSource configured successfully");
+        log.info("HikariCP DataSource configured successfully (pooler mode: {})", usingPooler);
         log.debug("JDBC URL: {}", connectionInfo.jdbcUrl.replaceAll("password=[^&]*", "password=***"));
         
         return dataSource;
