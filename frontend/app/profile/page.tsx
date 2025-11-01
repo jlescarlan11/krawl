@@ -2,6 +2,7 @@
 
 import AppLayout from '@/components/AppLayout';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { getMyProfile } from '@/lib/users';
 import type { MyProfile } from '@/types/user';
 import ProfileHeader from '@/components/profile/ProfileHeader';
@@ -11,12 +12,15 @@ import PageHeaderBar from '@/components/common/PageHeaderBar';
 import TierScoreBanner from './TierScoreBanner';
 import ProfileSkeleton from '@/components/skeletons/ProfileSkeleton';
 import { toUiProfileSelf } from '@/lib/users/uiProfile';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<MyProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const { logout } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     let mounted = true;
@@ -26,6 +30,15 @@ export default function ProfilePage() {
       .finally(() => mounted && setLoading(false));
     return () => { mounted = false; };
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <AppLayout showBottomNav={true}>
@@ -78,6 +91,16 @@ export default function ProfilePage() {
                   onClose={() => setEditOpen(false)}
                   onUpdated={(p) => setProfile(p)}
                 />
+
+                <div className="pt-4 border-t border-neutral-200">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+                  >
+                    Log Out
+                  </button>
+                </div>
               </div>
             </div>
           )}
