@@ -100,7 +100,7 @@
 - [User Stories](./user-story.md) - Feature requirements
 - [Wireframe](./wireframe.md) - UI wireframes for user flows
 - [UI/UX Design System](./ui-ux-design-system.md) - Design implementation
-- [Scope of Work](./scope-of-work.md) - Feature scope
+- [Scope of Work](./planning/scope-of-work.md) - Feature scope
 
 ---
 

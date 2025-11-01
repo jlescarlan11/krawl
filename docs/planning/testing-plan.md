@@ -305,11 +305,12 @@ The Krawl MVP is ready for launch when:
 ## 📚 Related Documents
 
 - [User Stories](./user-story.md) - Feature requirements and acceptance criteria
-- [Scope of Work](./scope-of-work.md) - Detailed feature scope
-- [System Architecture](./system-architecture.md) - System components to test
+- [Scope of Work](./planning/scope-of-work.md) - Detailed feature scope
+- [Architecture Overview](./explanation/architecture-overview.md) - System components to test
+- [Design Patterns](./explanation/design-patterns.md) - Design patterns to verify
 - [API Documentation](./api-documentation.md) - API endpoints for integration testing
 - [Database Testing Guide](./database-testing-guide.md) - Database testing procedures
-- [Version Control Strategy](./version-control-strategy.md) - CI/CD integration
+- [Version Control Strategy](./planning/version-control-strategy.md) - CI/CD integration
 
 ---
 

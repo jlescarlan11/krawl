@@ -282,9 +282,9 @@ Other             █░░░░░░░░░░░░░░░░░░░  
 
 ## 📚 Related Documents
 
-- [Project Proposal](./project-proposal.md) - Overall project proposal with budget overview
-- [Milestone and Timeline](./milestone-and-timeline.md) - Development schedule
-- [Scope of Work](./scope-of-work.md) - Deliverables and feature scope
+- [Project Brief](./planning/project-brief.md) - Project overview with budget overview
+- [Milestone and Timeline](./planning/milestone-and-timeline.md) - Development schedule
+- [Scope of Work](./planning/scope-of-work.md) - Deliverables and feature scope
 - [Tech Stack](./tech-stack.md) - Technology choices affecting infrastructure costs
 
 ---
