@@ -1,5 +1,6 @@
 package com.krawl.backend.security;
 
+import com.krawl.backend.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     private final JwtTokenProvider tokenProvider;
     private final UserDetailsService userDetailsService;
+    private final TokenService tokenService;
     
     @Override
     protected void doFilterInternal(@org.springframework.lang.NonNull HttpServletRequest request, 
@@ -35,6 +37,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
             
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+                // Check if token is blacklisted
+                if (tokenService.isAccessTokenBlacklisted(jwt)) {
+                    log.warn("Attempted use of blacklisted token");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                
                 UUID userId = tokenProvider.getUserIdFromToken(jwt);
                 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userId.toString());

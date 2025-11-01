@@ -1,5 +1,6 @@
 package com.krawl.backend.service.impl;
 
+import com.krawl.backend.config.properties.JwtProperties;
 import com.krawl.backend.dto.request.LoginRequest;
 import com.krawl.backend.dto.request.RegisterRequest;
 import com.krawl.backend.dto.response.AuthResponse;
@@ -9,6 +10,9 @@ import com.krawl.backend.repository.UserRepository;
 import com.krawl.backend.security.JwtTokenProvider;
 import com.krawl.backend.security.UserPrincipal;
 import com.krawl.backend.service.AuthenticationService;
+import com.krawl.backend.service.TokenService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,10 +32,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
+    private final TokenService tokenService;
+    private final JwtProperties jwtProperties;
     
     @Override
     @Transactional
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request, HttpServletResponse response) {
         // Check if user already exists
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ConflictException("Email already registered");
@@ -52,10 +58,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserPrincipal userPrincipal = UserPrincipal.create(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userPrincipal, null, userPrincipal.getAuthorities());
-        String token = tokenProvider.generateToken(authentication);
+        String accessToken = tokenProvider.generateToken(authentication);
+        
+        // Generate refresh token
+        String refreshToken = tokenService.generateRefreshToken(user.getUserId());
+        
+        // Set HttpOnly cookie with refresh token
+        setRefreshTokenCookie(response, refreshToken);
         
         return new AuthResponse(
-                token,
+                accessToken,
                 "Bearer",
                 user.getUserId(),
                 user.getEmail(),
@@ -65,7 +77,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     
     @Override
     @Transactional(readOnly = true)
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmailOrUsername(),
@@ -76,15 +88,36 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        String token = tokenProvider.generateToken(authentication);
+        String accessToken = tokenProvider.generateToken(authentication);
+        
+        // Generate refresh token
+        String refreshToken = tokenService.generateRefreshToken(userPrincipal.getUserId());
+        
+        // Set HttpOnly cookie with refresh token
+        setRefreshTokenCookie(response, refreshToken);
         
         return new AuthResponse(
-                token,
+                accessToken,
                 "Bearer",
                 userPrincipal.getUserId(),
                 userPrincipal.getEmail(),
                 userPrincipal.getUsername()
         );
+    }
+    
+    /**
+     * Set refresh token as HttpOnly cookie
+     * Secure flag is controlled by jwt.cookie-secure property (true in production, false in dev)
+     */
+    private void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+        Cookie cookie = new Cookie("refresh_token", refreshToken);
+        cookie.setHttpOnly(true);
+        // Use configuration: false for local dev (HTTP), true for production (HTTPS)
+        cookie.setSecure(jwtProperties.isCookieSecure());
+        cookie.setPath("/api/v1/auth"); // Limit cookie scope to auth endpoints
+        cookie.setMaxAge(30 * 24 * 60 * 60); // 30 days in seconds
+        cookie.setAttribute("SameSite", "Lax"); // CSRF protection
+        response.addCookie(cookie);
     }
 }
 
